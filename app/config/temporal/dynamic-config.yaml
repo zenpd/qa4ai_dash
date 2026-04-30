@@ -1,0 +1,9 @@
+system.metricsPrefix:
+  - value: "temporal"
+
+system.enableGracefulFailover:
+  - value: true
+
+# Expose Prometheus metrics on port 8080
+frontend.enableClientVersionCheck:
+  - value: false

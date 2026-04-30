@@ -1,0 +1,164 @@
+{
+  "uid": "alerts-overview",
+  "title": "Alerts",
+  "tags": ["alerts", "anomaly"],
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "30s",
+  "time": { "from": "now-1h", "to": "now" },
+  "templating": {
+    "list": [
+      {
+        "name": "drift_threshold",
+        "label": "Drift Threshold",
+        "type": "custom",
+        "query": "0.03,0.05,0.1",
+        "current": { "value": "0.05", "text": "0.05" }
+      },
+      {
+        "name": "error_rate_threshold",
+        "label": "Error Rate Threshold (%)",
+        "type": "custom",
+        "query": "0.5,1,2,5",
+        "current": { "value": "1", "text": "1" }
+      },
+      {
+        "name": "workflow_failure_threshold",
+        "label": "Workflow Failure Threshold (%)",
+        "type": "custom",
+        "query": "5,10,20",
+        "current": { "value": "10", "text": "10" }
+      },
+      {
+        "name": "resource_threshold",
+        "label": "CPU/Memory Threshold (%)",
+        "type": "custom",
+        "query": "70,80,85,90",
+        "current": { "value": "85", "text": "85" }
+      }
+    ]
+  },
+  "panels": [
+    {
+      "id": 1,
+      "title": "Model Drift vs Threshold",
+      "type": "timeseries",
+      "datasource": { "uid": "prometheus-ds", "type": "prometheus" },
+      "gridPos": { "x": 0, "y": 0, "w": 12, "h": 8 },
+      "targets": [
+        {
+          "expr": "max(phoenix_model_drift_score) by (model_name)",
+          "legendFormat": "Drift — {{model_name}}"
+        },
+        {
+          "expr": "vector($drift_threshold)",
+          "legendFormat": "Threshold"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": { "unit": "short" },
+        "overrides": [
+          {
+            "matcher": { "id": "byName", "options": "Threshold" },
+            "properties": [
+              { "id": "color", "value": { "mode": "fixed", "fixedColor": "red" } },
+              { "id": "custom.lineStyle", "value": { "fill": "dash" } }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": 2,
+      "title": "Error Rate vs Threshold",
+      "type": "timeseries",
+      "datasource": { "uid": "prometheus-ds", "type": "prometheus" },
+      "gridPos": { "x": 12, "y": 0, "w": 12, "h": 8 },
+      "targets": [
+        {
+          "expr": "azure_error_rate_percent",
+          "legendFormat": "Error Rate — {{resource_name}}"
+        },
+        {
+          "expr": "vector($error_rate_threshold)",
+          "legendFormat": "Threshold"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": { "unit": "percent" },
+        "overrides": [
+          {
+            "matcher": { "id": "byName", "options": "Threshold" },
+            "properties": [
+              { "id": "color", "value": { "mode": "fixed", "fixedColor": "red" } },
+              { "id": "custom.lineStyle", "value": { "fill": "dash" } }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": 3,
+      "title": "Workflow Failure Rate vs Threshold",
+      "type": "timeseries",
+      "datasource": { "uid": "prometheus-ds", "type": "prometheus" },
+      "gridPos": { "x": 0, "y": 8, "w": 12, "h": 8 },
+      "targets": [
+        {
+          "expr": "sum(rate(temporal_workflow_failed_total[5m])) / sum(rate(temporal_workflow_completed_total[5m])) * 100",
+          "legendFormat": "Failure Rate %"
+        },
+        {
+          "expr": "vector($workflow_failure_threshold)",
+          "legendFormat": "Threshold"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": { "unit": "percent" },
+        "overrides": [
+          {
+            "matcher": { "id": "byName", "options": "Threshold" },
+            "properties": [
+              { "id": "color", "value": { "mode": "fixed", "fixedColor": "red" } },
+              { "id": "custom.lineStyle", "value": { "fill": "dash" } }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": 4,
+      "title": "CPU / Memory vs Threshold",
+      "type": "timeseries",
+      "datasource": { "uid": "prometheus-ds", "type": "prometheus" },
+      "gridPos": { "x": 12, "y": 8, "w": 12, "h": 8 },
+      "targets": [
+        {
+          "expr": "azure_cpu_usage_percent",
+          "legendFormat": "CPU — {{resource_name}}"
+        },
+        {
+          "expr": "azure_memory_usage_percent",
+          "legendFormat": "Memory — {{resource_name}}"
+        },
+        {
+          "expr": "vector($resource_threshold)",
+          "legendFormat": "Threshold"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": { "unit": "percent" },
+        "overrides": [
+          {
+            "matcher": { "id": "byName", "options": "Threshold" },
+            "properties": [
+              { "id": "color", "value": { "mode": "fixed", "fixedColor": "red" } },
+              { "id": "custom.lineStyle", "value": { "fill": "dash" } }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

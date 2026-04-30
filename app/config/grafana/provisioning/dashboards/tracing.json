@@ -1,0 +1,103 @@
+{
+  "uid": "tracing",
+  "title": "Tracing",
+  "tags": ["tracing", "spans", "opentelemetry"],
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "30s",
+  "time": { "from": "now-1h", "to": "now" },
+  "panels": [
+    {
+      "id": 1,
+      "title": "Span Duration by Stage",
+      "type": "bargauge",
+      "datasource": { "uid": "prometheus-ds", "type": "prometheus" },
+      "gridPos": { "x": 0, "y": 0, "w": 12, "h": 10 },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum(rate(otelcol_processor_batch_timeout_trigger_send_bucket[5m])) by (le, span_name))",
+          "legendFormat": "{{span_name}} p95",
+          "instant": true
+        }
+      ],
+      "options": {
+        "orientation": "horizontal",
+        "displayMode": "gradient"
+      },
+      "fieldConfig": {
+        "defaults": { "unit": "ms" }
+      }
+    },
+    {
+      "id": 2,
+      "title": "Trace Volume (spans/s)",
+      "type": "timeseries",
+      "datasource": { "uid": "prometheus-ds", "type": "prometheus" },
+      "gridPos": { "x": 12, "y": 0, "w": 12, "h": 10 },
+      "targets": [
+        {
+          "expr": "sum(rate(otelcol_receiver_accepted_spans_total[1m]))",
+          "legendFormat": "Accepted Spans/s"
+        },
+        {
+          "expr": "sum(rate(otelcol_receiver_refused_spans_total[1m]))",
+          "legendFormat": "Refused Spans/s"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": { "unit": "short" }
+      }
+    },
+    {
+      "id": 3,
+      "title": "P50 / P95 / P99 Latency per Stage",
+      "type": "timeseries",
+      "datasource": { "uid": "phoenix-ds", "type": "yesoreyeram-infinity-datasource" },
+      "gridPos": { "x": 0, "y": 10, "w": 24, "h": 10 },
+      "targets": [
+        {
+          "refId": "A",
+          "type": "json",
+          "url": "/v1/traces/latency_percentiles",
+          "root_selector": "data",
+          "columns": [
+            { "selector": "stage", "text": "Stage", "type": "string" },
+            { "selector": "p50", "text": "p50 (ms)", "type": "number" },
+            { "selector": "p95", "text": "p95 (ms)", "type": "number" },
+            { "selector": "p99", "text": "p99 (ms)", "type": "number" }
+          ]
+        }
+      ],
+      "fieldConfig": {
+        "defaults": { "unit": "ms" }
+      }
+    },
+    {
+      "id": 4,
+      "title": "Error Spans",
+      "type": "stat",
+      "datasource": { "uid": "prometheus-ds", "type": "prometheus" },
+      "gridPos": { "x": 0, "y": 20, "w": 8, "h": 6 },
+      "targets": [
+        {
+          "expr": "sum(increase(otelcol_exporter_send_failed_spans_total[1h]))",
+          "legendFormat": "Failed Spans"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 10 },
+              { "color": "red", "value": 50 }
+            ]
+          }
+        }
+      }
+    }
+  ]
+}

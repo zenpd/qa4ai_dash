@@ -1,0 +1,130 @@
+{
+  "uid": "data-quality",
+  "title": "Data Quality (Phoenix)",
+  "tags": ["phoenix", "data-quality", "drift"],
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "1m",
+  "time": { "from": "now-6h", "to": "now" },
+  "templating": {
+    "list": [
+      {
+        "name": "model_name",
+        "label": "Model",
+        "type": "query",
+        "datasource": { "uid": "prometheus-ds", "type": "prometheus" },
+        "query": "label_values(phoenix_feature_drift, model_name)",
+        "refresh": 2,
+        "multi": false,
+        "includeAll": true
+      }
+    ]
+  },
+  "panels": [
+    {
+      "id": 1,
+      "title": "Feature Drift per Feature",
+      "type": "bargauge",
+      "datasource": { "uid": "prometheus-ds", "type": "prometheus" },
+      "gridPos": { "x": 0, "y": 0, "w": 14, "h": 10 },
+      "targets": [
+        {
+          "expr": "phoenix_feature_drift{model_name=~\"$model_name\"}",
+          "legendFormat": "{{feature}}",
+          "instant": true
+        }
+      ],
+      "options": {
+        "orientation": "horizontal",
+        "displayMode": "gradient"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 0.03 },
+              { "color": "red", "value": 0.05 }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": 2,
+      "title": "Outlier Count",
+      "type": "stat",
+      "datasource": { "uid": "prometheus-ds", "type": "prometheus" },
+      "gridPos": { "x": 14, "y": 0, "w": 5, "h": 5 },
+      "targets": [
+        {
+          "expr": "sum(phoenix_outlier_count{model_name=~\"$model_name\"})",
+          "legendFormat": "Outliers"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 10 },
+              { "color": "red", "value": 50 }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": 3,
+      "title": "Bias Score per Slice",
+      "type": "bargauge",
+      "datasource": { "uid": "prometheus-ds", "type": "prometheus" },
+      "gridPos": { "x": 14, "y": 5, "w": 10, "h": 10 },
+      "targets": [
+        {
+          "expr": "phoenix_bias_score{model_name=~\"$model_name\"}",
+          "legendFormat": "{{slice}}",
+          "instant": true
+        }
+      ],
+      "options": {
+        "orientation": "horizontal",
+        "displayMode": "gradient"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 0.1 },
+              { "color": "red", "value": 0.2 }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": 4,
+      "title": "Feature Drift Over Time",
+      "type": "timeseries",
+      "datasource": { "uid": "prometheus-ds", "type": "prometheus" },
+      "gridPos": { "x": 0, "y": 10, "w": 14, "h": 8 },
+      "targets": [
+        {
+          "expr": "phoenix_feature_drift{model_name=~\"$model_name\"}",
+          "legendFormat": "{{feature}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": { "unit": "short", "color": { "mode": "palette-classic" } }
+      }
+    }
+  ]
+}

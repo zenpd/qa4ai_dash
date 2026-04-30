@@ -1,0 +1,115 @@
+{
+  "uid": "explainability",
+  "title": "Explainability (Phoenix)",
+  "tags": ["phoenix", "explainability", "shap", "lime"],
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "5m",
+  "time": { "from": "now-24h", "to": "now" },
+  "templating": {
+    "list": [
+      {
+        "name": "model_name",
+        "label": "Model",
+        "type": "query",
+        "datasource": { "uid": "prometheus-ds", "type": "prometheus" },
+        "query": "label_values(phoenix_feature_importance, model_name)",
+        "refresh": 2,
+        "multi": false,
+        "includeAll": true
+      }
+    ]
+  },
+  "panels": [
+    {
+      "id": 1,
+      "title": "Feature Importance (SHAP / LIME)",
+      "type": "bargauge",
+      "datasource": { "uid": "prometheus-ds", "type": "prometheus" },
+      "gridPos": { "x": 0, "y": 0, "w": 14, "h": 12 },
+      "targets": [
+        {
+          "expr": "phoenix_feature_importance{model_name=~\"$model_name\"}",
+          "legendFormat": "{{feature}}",
+          "instant": true
+        }
+      ],
+      "options": {
+        "orientation": "horizontal",
+        "displayMode": "gradient"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": { "mode": "continuous-BlPu" }
+        }
+      }
+    },
+    {
+      "id": 2,
+      "title": "Counterfactual Count",
+      "type": "stat",
+      "datasource": { "uid": "prometheus-ds", "type": "prometheus" },
+      "gridPos": { "x": 14, "y": 0, "w": 5, "h": 6 },
+      "targets": [
+        {
+          "expr": "sum(phoenix_counterfactual_count{model_name=~\"$model_name\"})",
+          "legendFormat": "Counterfactuals"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": { "unit": "short", "color": { "mode": "fixed", "fixedColor": "purple" } }
+      }
+    },
+    {
+      "id": 3,
+      "title": "Sensitive Feature Scores",
+      "type": "table",
+      "datasource": { "uid": "prometheus-ds", "type": "prometheus" },
+      "gridPos": { "x": 14, "y": 6, "w": 10, "h": 12 },
+      "targets": [
+        {
+          "expr": "phoenix_sensitive_feature_score{model_name=~\"$model_name\"}",
+          "legendFormat": "{{feature}}",
+          "instant": true
+        }
+      ],
+      "options": {
+        "sortBy": [{ "displayName": "Value", "desc": true }]
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 0.3 },
+              { "color": "red", "value": 0.6 }
+            ]
+          },
+          "custom": {
+            "displayMode": "color-background"
+          }
+        }
+      }
+    },
+    {
+      "id": 4,
+      "title": "Feature Importance Over Time",
+      "type": "timeseries",
+      "datasource": { "uid": "prometheus-ds", "type": "prometheus" },
+      "gridPos": { "x": 0, "y": 12, "w": 14, "h": 8 },
+      "targets": [
+        {
+          "expr": "phoenix_feature_importance{model_name=~\"$model_name\"}",
+          "legendFormat": "{{feature}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": { "unit": "short", "color": { "mode": "palette-classic" } }
+      }
+    }
+  ]
+}

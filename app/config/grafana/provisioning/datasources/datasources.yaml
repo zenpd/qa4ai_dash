@@ -1,0 +1,25 @@
+apiVersion: 1
+
+datasources:
+  - name: Prometheus
+    uid: prometheus-ds
+    type: prometheus
+    access: proxy
+    url: http://prometheus:9090
+    isDefault: true
+    editable: false
+    jsonData:
+      timeInterval: "15s"
+      queryTimeout: "60s"
+      httpMethod: POST
+
+  - name: Phoenix
+    uid: phoenix-ds
+    type: yesoreyeram-infinity-datasource
+    access: proxy
+    editable: false
+    jsonData:
+      baseURL: http://host.containers.internal:6006
+      allowedHosts:
+        - http://host.containers.internal:6006
+

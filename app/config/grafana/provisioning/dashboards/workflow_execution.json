@@ -1,0 +1,151 @@
+{
+  "uid": "workflow-execution",
+  "title": "Workflow Execution (Temporal)",
+  "tags": ["temporal", "workflows"],
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "30s",
+  "time": { "from": "now-1h", "to": "now" },
+  "panels": [
+    {
+      "id": 1,
+      "title": "Active Workflows",
+      "type": "stat",
+      "datasource": { "uid": "prometheus-ds", "type": "prometheus" },
+      "gridPos": { "x": 0, "y": 0, "w": 6, "h": 6 },
+      "targets": [
+        {
+          "expr": "sum(temporal_workflow_active{namespace=\"default\"})",
+          "legendFormat": "Active"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": { "unit": "short", "color": { "mode": "fixed", "fixedColor": "blue" } }
+      }
+    },
+    {
+      "id": 2,
+      "title": "Workflow States",
+      "type": "piechart",
+      "datasource": { "uid": "prometheus-ds", "type": "prometheus" },
+      "gridPos": { "x": 6, "y": 0, "w": 10, "h": 8 },
+      "targets": [
+        {
+          "expr": "sum(increase(temporal_workflow_completed_total[1h]))",
+          "legendFormat": "Completed"
+        },
+        {
+          "expr": "sum(increase(temporal_workflow_failed_total[1h]))",
+          "legendFormat": "Failed"
+        },
+        {
+          "expr": "sum(increase(temporal_workflow_timed_out_total[1h]))",
+          "legendFormat": "Timed Out"
+        },
+        {
+          "expr": "sum(increase(temporal_workflow_canceled_total[1h]))",
+          "legendFormat": "Canceled"
+        }
+      ],
+      "options": { "pieType": "donut" }
+    },
+    {
+      "id": 3,
+      "title": "Workflow Failure Rate",
+      "type": "stat",
+      "datasource": { "uid": "prometheus-ds", "type": "prometheus" },
+      "gridPos": { "x": 16, "y": 0, "w": 8, "h": 6 },
+      "targets": [
+        {
+          "expr": "sum(rate(temporal_workflow_failed_total[5m])) / sum(rate(temporal_workflow_completed_total[5m])) * 100",
+          "legendFormat": "Failure Rate %"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 5 },
+              { "color": "red", "value": 10 }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": 4,
+      "title": "Retry Count Over Time",
+      "type": "timeseries",
+      "datasource": { "uid": "prometheus-ds", "type": "prometheus" },
+      "gridPos": { "x": 0, "y": 8, "w": 12, "h": 8 },
+      "targets": [
+        {
+          "expr": "sum(rate(temporal_activity_task_error_total[5m])) by (activity_type)",
+          "legendFormat": "{{activity_type}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": { "unit": "short", "color": { "mode": "palette-classic" } }
+      }
+    },
+    {
+      "id": 5,
+      "title": "Activity Execution Duration (p50 / p95 / p99)",
+      "type": "timeseries",
+      "datasource": { "uid": "prometheus-ds", "type": "prometheus" },
+      "gridPos": { "x": 12, "y": 8, "w": 12, "h": 8 },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.50, sum(rate(temporal_activity_execution_latency_bucket[5m])) by (le))",
+          "legendFormat": "p50"
+        },
+        {
+          "expr": "histogram_quantile(0.95, sum(rate(temporal_activity_execution_latency_bucket[5m])) by (le))",
+          "legendFormat": "p95"
+        },
+        {
+          "expr": "histogram_quantile(0.99, sum(rate(temporal_activity_execution_latency_bucket[5m])) by (le))",
+          "legendFormat": "p99"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": { "unit": "ms" }
+      }
+    },
+    {
+      "id": 6,
+      "title": "Failure Causes",
+      "type": "table",
+      "datasource": { "uid": "prometheus-ds", "type": "prometheus" },
+      "gridPos": { "x": 0, "y": 16, "w": 12, "h": 8 },
+      "targets": [
+        {
+          "expr": "sum(increase(temporal_activity_task_error_total[1h])) by (activity_type, error_type)",
+          "legendFormat": "{{activity_type}} — {{error_type}}",
+          "instant": true
+        }
+      ],
+      "options": { "sortBy": [{ "displayName": "Value", "desc": true }] }
+    },
+    {
+      "id": 7,
+      "title": "Workflow End-to-End Duration",
+      "type": "timeseries",
+      "datasource": { "uid": "prometheus-ds", "type": "prometheus" },
+      "gridPos": { "x": 12, "y": 16, "w": 12, "h": 8 },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum(rate(temporal_workflow_endtoend_latency_bucket[5m])) by (le, workflow_type))",
+          "legendFormat": "{{workflow_type}} p95"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": { "unit": "ms" }
+      }
+    }
+  ]
+}
