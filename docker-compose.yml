@@ -1,20 +1,6 @@
 version: "3.9"
 
 services:
-  app:
-    build:
-      context: ./app
-      dockerfile: Dockerfile
-    container_name: metrics-collector
-    ports:
-      - "8000:8000"
-      - "8001:8001"
-    env_file:
-      - .env
-    networks:
-      - poc-network
-    restart: unless-stopped
-
   prometheus:
     image: prom/prometheus:v2.51.0
     container_name: prometheus
@@ -52,7 +38,6 @@ services:
       - poc-network
     depends_on:
       - prometheus
-      - app
     restart: unless-stopped
 
 networks:
