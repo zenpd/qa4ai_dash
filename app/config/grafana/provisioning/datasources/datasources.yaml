@@ -1,6 +1,7 @@
 apiVersion: 1
 
 datasources:
+  # ── Primary: Prometheus (local — scrapes the Python bridge metrics) ──────────
   - name: Prometheus
     uid: prometheus-ds
     type: prometheus
@@ -13,13 +14,45 @@ datasources:
       queryTimeout: "60s"
       httpMethod: POST
 
+  # ── Phoenix Cloud (Infinity — direct REST queries to cloud Phoenix) ───────────
   - name: Phoenix
     uid: phoenix-ds
     type: yesoreyeram-infinity-datasource
     access: proxy
     editable: false
     jsonData:
-      baseURL: http://phoenix:6006
+      baseURL: https://zaf-phoenix.bravesky-d9f9eeb7.eastus2.azurecontainerapps.io
       allowedHosts:
-        - http://phoenix:6006
+        - https://zaf-phoenix.bravesky-d9f9eeb7.eastus2.azurecontainerapps.io
+      auth_type: bearer_token
+      tlsSkipVerify: false
+    secureJsonData:
+      bearerToken: ${PHOENIX_API_KEY}
+
+  # ── Temporal Cloud (Infinity — direct REST queries to Temporal UI API) ───────
+  - name: Temporal
+    uid: temporal-ds
+    type: yesoreyeram-infinity-datasource
+    access: proxy
+    editable: false
+    jsonData:
+      baseURL: https://temporal-ui.bravesky-d9f9eeb7.eastus2.azurecontainerapps.io
+      allowedHosts:
+        - https://temporal-ui.bravesky-d9f9eeb7.eastus2.azurecontainerapps.io
+
+  # ── Azure Monitor (Container Apps, ACA env, OpenAI metrics) ─────────────────
+  # Fill AZURE_TENANT_ID, AZURE_CLIENT_ID, AZURE_CLIENT_SECRET, AZURE_SUBSCRIPTION_ID in .env
+  - name: AzureMonitor
+    uid: azure-monitor-ds
+    type: grafana-azure-monitor-datasource
+    access: proxy
+    editable: true
+    jsonData:
+      cloudName: azuremonitor
+      azureAuthType: clientsecret
+      tenantId: "207c3e32-7115-4ed3-8a55-22f7edb77dc9"
+      clientId: ${AZURE_CLIENT_ID}
+      subscriptionId: "bc978289-ba91-4be9-8eee-82dc18f9cde9"
+    secureJsonData:
+      clientSecret: ${AZURE_CLIENT_SECRET}
 
