@@ -7,6 +7,33 @@
   "version": 1,
   "refresh": "30s",
   "time": { "from": "now-1h", "to": "now" },
+  "templating": {
+    "list": [
+      {
+        "name": "namespace",
+        "label": "Namespace",
+        "type": "custom",
+        "query": "zenarc,retail-onboarding,merchant-onboarding,capmarkets,cccm,insureflow,agentzoo,zaf-aria-idp,zaf-kyx",
+        "options": [
+          {"selected": true, "text": "zenarc", "value": "zenarc"},
+          {"selected": false, "text": "retail-onboarding", "value": "retail-onboarding"},
+          {"selected": false, "text": "merchant-onboarding", "value": "merchant-onboarding"},
+          {"selected": false, "text": "capmarkets", "value": "capmarkets"},
+          {"selected": false, "text": "cccm", "value": "cccm"},
+          {"selected": false, "text": "insureflow", "value": "insureflow"},
+          {"selected": false, "text": "agentzoo", "value": "agentzoo"},
+          {"selected": false, "text": "zaf-aria-idp", "value": "zaf-aria-idp"},
+          {"selected": false, "text": "zaf-kyx", "value": "zaf-kyx"}
+        ],
+        "current": {"selected": true, "text": "zenarc", "value": "zenarc"},
+        "multi": false,
+        "includeAll": false,
+        "sort": 0,
+        "refresh": 0,
+        "hide": 0
+      }
+    ]
+  },
   "panels": [
     {
       "id": 1,
@@ -16,12 +43,16 @@
       "gridPos": { "x": 0, "y": 0, "w": 6, "h": 6 },
       "targets": [
         {
-          "expr": "sum(temporal_workflow_active{namespace=\"zenarc\"})",
+          "expr": "sum(temporal_workflow_active{namespace=\"${namespace}\"})",
           "legendFormat": "Active"
         }
       ],
       "fieldConfig": {
-        "defaults": { "unit": "short", "color": { "mode": "fixed", "fixedColor": "blue" } }
+        "defaults": {
+          "unit": "short",
+          "color": { "mode": "fixed", "fixedColor": "green" },
+          "thresholds": { "mode": "absolute", "steps": [] }
+        }
       }
     },
     {
@@ -32,23 +63,37 @@
       "gridPos": { "x": 6, "y": 0, "w": 10, "h": 8 },
       "targets": [
         {
-          "expr": "sum(increase(temporal_workflow_completed_total[1h]))",
+          "expr": "temporal_workflow_active{namespace=\"${namespace}\"}",
+          "legendFormat": "Running"
+        },
+        {
+          "expr": "temporal_workflow_completed_total{namespace=\"${namespace}\"}",
           "legendFormat": "Completed"
         },
         {
-          "expr": "sum(increase(temporal_workflow_failed_total[1h]))",
+          "expr": "temporal_workflow_failed_total{namespace=\"${namespace}\"}",
           "legendFormat": "Failed"
         },
         {
-          "expr": "sum(increase(temporal_workflow_timed_out_total[1h]))",
+          "expr": "temporal_workflow_timed_out_total{namespace=\"${namespace}\"}",
           "legendFormat": "Timed Out"
         },
         {
-          "expr": "sum(increase(temporal_workflow_canceled_total[1h]))",
+          "expr": "temporal_workflow_canceled_total{namespace=\"${namespace}\"}",
           "legendFormat": "Canceled"
         }
       ],
-      "options": { "pieType": "donut" }
+      "options": { "pieType": "donut" },
+      "fieldConfig": {
+        "defaults": { "color": { "mode": "palette-classic" } },
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "Running" }, "properties": [{ "id": "color", "value": { "mode": "fixed", "fixedColor": "green" } }] },
+          { "matcher": { "id": "byName", "options": "Completed" }, "properties": [{ "id": "color", "value": { "mode": "fixed", "fixedColor": "blue" } }] },
+          { "matcher": { "id": "byName", "options": "Failed" }, "properties": [{ "id": "color", "value": { "mode": "fixed", "fixedColor": "red" } }] },
+          { "matcher": { "id": "byName", "options": "Timed Out" }, "properties": [{ "id": "color", "value": { "mode": "fixed", "fixedColor": "orange" } }] },
+          { "matcher": { "id": "byName", "options": "Canceled" }, "properties": [{ "id": "color", "value": { "mode": "fixed", "fixedColor": "gray" } }] }
+        ]
+      }
     },
     {
       "id": 3,
@@ -58,19 +103,20 @@
       "gridPos": { "x": 16, "y": 0, "w": 8, "h": 6 },
       "targets": [
         {
-          "expr": "sum(rate(temporal_workflow_failed_total[5m])) / sum(rate(temporal_workflow_completed_total[5m])) * 100",
+          "expr": "temporal_workflow_failed_total{namespace=\"${namespace}\"} / (temporal_workflow_failed_total{namespace=\"${namespace}\"} + temporal_workflow_completed_total{namespace=\"${namespace}\"} + temporal_workflow_active{namespace=\"${namespace}\"}) * 100",
           "legendFormat": "Failure Rate %"
         }
       ],
       "fieldConfig": {
         "defaults": {
           "unit": "percent",
+          "color": { "mode": "thresholds" },
           "thresholds": {
             "mode": "absolute",
             "steps": [
               { "color": "green", "value": null },
               { "color": "yellow", "value": 5 },
-              { "color": "red", "value": 10 }
+              { "color": "red", "value": 15 }
             ]
           }
         }
@@ -78,54 +124,92 @@
     },
     {
       "id": 4,
-      "title": "Retry Count Over Time",
+      "title": "Workflow Counts Over Time",
       "type": "timeseries",
       "datasource": { "uid": "prometheus-ds", "type": "prometheus" },
       "gridPos": { "x": 0, "y": 8, "w": 12, "h": 8 },
       "targets": [
         {
-          "expr": "sum(rate(temporal_activity_task_error_total[5m])) by (activity_type)",
-          "legendFormat": "{{activity_type}}"
+          "expr": "temporal_workflow_active{namespace=\"${namespace}\"}",
+          "legendFormat": "Running"
+        },
+        {
+          "expr": "temporal_workflow_completed_total{namespace=\"${namespace}\"}",
+          "legendFormat": "Completed"
+        },
+        {
+          "expr": "temporal_workflow_failed_total{namespace=\"${namespace}\"}",
+          "legendFormat": "Failed"
+        },
+        {
+          "expr": "temporal_workflow_canceled_total{namespace=\"${namespace}\"}",
+          "legendFormat": "Canceled"
         }
       ],
       "fieldConfig": {
-        "defaults": { "unit": "short", "color": { "mode": "palette-classic" } }
+        "defaults": { "unit": "short", "color": { "mode": "palette-classic" } },
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "Running" }, "properties": [{ "id": "color", "value": { "mode": "fixed", "fixedColor": "green" } }] },
+          { "matcher": { "id": "byName", "options": "Completed" }, "properties": [{ "id": "color", "value": { "mode": "fixed", "fixedColor": "blue" } }] },
+          { "matcher": { "id": "byName", "options": "Failed" }, "properties": [{ "id": "color", "value": { "mode": "fixed", "fixedColor": "red" } }] },
+          { "matcher": { "id": "byName", "options": "Canceled" }, "properties": [{ "id": "color", "value": { "mode": "fixed", "fixedColor": "gray" } }] }
+        ]
       }
     },
     {
       "id": 5,
-      "title": "Activity Execution Duration (p50 / p95 / p99)",
+      "title": "Timed Out & Canceled Workflows",
       "type": "timeseries",
       "datasource": { "uid": "prometheus-ds", "type": "prometheus" },
       "gridPos": { "x": 12, "y": 8, "w": 12, "h": 8 },
       "targets": [
         {
-          "expr": "histogram_quantile(0.50, sum(rate(temporal_activity_execution_latency_bucket[5m])) by (le))",
-          "legendFormat": "p50"
+          "expr": "temporal_workflow_timed_out_total{namespace=\"${namespace}\"}",
+          "legendFormat": "Timed Out"
         },
         {
-          "expr": "histogram_quantile(0.95, sum(rate(temporal_activity_execution_latency_bucket[5m])) by (le))",
-          "legendFormat": "p95"
-        },
-        {
-          "expr": "histogram_quantile(0.99, sum(rate(temporal_activity_execution_latency_bucket[5m])) by (le))",
-          "legendFormat": "p99"
+          "expr": "temporal_workflow_canceled_total{namespace=\"${namespace}\"}",
+          "legendFormat": "Canceled"
         }
       ],
       "fieldConfig": {
-        "defaults": { "unit": "ms" }
+        "defaults": { "unit": "short", "color": { "mode": "palette-classic" } },
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "Timed Out" }, "properties": [{ "id": "color", "value": { "mode": "fixed", "fixedColor": "orange" } }] },
+          { "matcher": { "id": "byName", "options": "Canceled" }, "properties": [{ "id": "color", "value": { "mode": "fixed", "fixedColor": "gray" } }] }
+        ]
       }
     },
     {
       "id": 6,
-      "title": "Failure Causes",
+      "title": "Workflow Status Summary",
       "type": "table",
       "datasource": { "uid": "prometheus-ds", "type": "prometheus" },
       "gridPos": { "x": 0, "y": 16, "w": 12, "h": 8 },
       "targets": [
         {
-          "expr": "sum(increase(temporal_activity_task_error_total[1h])) by (activity_type, error_type)",
-          "legendFormat": "{{activity_type}} — {{error_type}}",
+          "expr": "temporal_workflow_active{namespace=\"${namespace}\"}",
+          "legendFormat": "Running",
+          "instant": true
+        },
+        {
+          "expr": "temporal_workflow_completed_total{namespace=\"${namespace}\"}",
+          "legendFormat": "Completed",
+          "instant": true
+        },
+        {
+          "expr": "temporal_workflow_failed_total{namespace=\"${namespace}\"}",
+          "legendFormat": "Failed",
+          "instant": true
+        },
+        {
+          "expr": "temporal_workflow_timed_out_total{namespace=\"${namespace}\"}",
+          "legendFormat": "Timed Out",
+          "instant": true
+        },
+        {
+          "expr": "temporal_workflow_canceled_total{namespace=\"${namespace}\"}",
+          "legendFormat": "Canceled",
           "instant": true
         }
       ],
@@ -133,19 +217,48 @@
     },
     {
       "id": 7,
-      "title": "Workflow End-to-End Duration",
-      "type": "timeseries",
+      "title": "Total Workflows by Status",
+      "type": "bargauge",
       "datasource": { "uid": "prometheus-ds", "type": "prometheus" },
       "gridPos": { "x": 12, "y": 16, "w": 12, "h": 8 },
       "targets": [
         {
-          "expr": "histogram_quantile(0.95, sum(rate(temporal_workflow_endtoend_latency_bucket[5m])) by (le, workflow_type))",
-          "legendFormat": "{{workflow_type}} p95"
+          "expr": "temporal_workflow_active{namespace=\"${namespace}\"}",
+          "legendFormat": "Running",
+          "instant": true
+        },
+        {
+          "expr": "temporal_workflow_completed_total{namespace=\"${namespace}\"}",
+          "legendFormat": "Completed",
+          "instant": true
+        },
+        {
+          "expr": "temporal_workflow_failed_total{namespace=\"${namespace}\"}",
+          "legendFormat": "Failed",
+          "instant": true
+        },
+        {
+          "expr": "temporal_workflow_timed_out_total{namespace=\"${namespace}\"}",
+          "legendFormat": "Timed Out",
+          "instant": true
+        },
+        {
+          "expr": "temporal_workflow_canceled_total{namespace=\"${namespace}\"}",
+          "legendFormat": "Canceled",
+          "instant": true
         }
       ],
       "fieldConfig": {
-        "defaults": { "unit": "ms" }
-      }
+        "defaults": { "unit": "short", "color": { "mode": "palette-classic" } },
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "Running" }, "properties": [{ "id": "color", "value": { "mode": "fixed", "fixedColor": "green" } }] },
+          { "matcher": { "id": "byName", "options": "Completed" }, "properties": [{ "id": "color", "value": { "mode": "fixed", "fixedColor": "blue" } }] },
+          { "matcher": { "id": "byName", "options": "Failed" }, "properties": [{ "id": "color", "value": { "mode": "fixed", "fixedColor": "red" } }] },
+          { "matcher": { "id": "byName", "options": "Timed Out" }, "properties": [{ "id": "color", "value": { "mode": "fixed", "fixedColor": "orange" } }] },
+          { "matcher": { "id": "byName", "options": "Canceled" }, "properties": [{ "id": "color", "value": { "mode": "fixed", "fixedColor": "gray" } }] }
+        ]
+      },
+      "options": { "orientation": "horizontal", "displayMode": "gradient" }
     }
   ]
 }
