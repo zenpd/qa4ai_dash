@@ -347,7 +347,7 @@
             "type": "prometheus",
             "uid": "prometheus-ds"
           },
-          "expr": "temporal_workflow_active{namespace=\"zenarc\"}",
+          "expr": "temporal_workflow_active{namespace=~\".+\"}",
           "legendFormat": "",
           "refId": "A"
         }
@@ -486,7 +486,7 @@
         "y": 8
       },
       "id": 100,
-      "title": "Temporal \u2014 Workflow Health (zenarc namespace)",
+      "title": "Temporal \u2014 Workflow Health (all namespaces)",
       "type": "row"
     },
     {
@@ -549,7 +549,7 @@
             "type": "prometheus",
             "uid": "prometheus-ds"
           },
-          "expr": "temporal_workflow_active{namespace=\"zenarc\"}",
+          "expr": "temporal_workflow_active{namespace=~\".+\"}",
           "legendFormat": "",
           "refId": "A"
         }
@@ -611,7 +611,7 @@
             "type": "prometheus",
             "uid": "prometheus-ds"
           },
-          "expr": "temporal_workflow_completed_total{namespace=\"zenarc\"}",
+          "expr": "temporal_workflow_completed_total{namespace=~\".+\"}",
           "legendFormat": "",
           "refId": "A"
         }
@@ -677,7 +677,7 @@
             "type": "prometheus",
             "uid": "prometheus-ds"
           },
-          "expr": "temporal_workflow_failed_total{namespace=\"zenarc\"}",
+          "expr": "temporal_workflow_failed_total{namespace=~\".+\"}",
           "legendFormat": "",
           "refId": "A"
         }
@@ -743,7 +743,7 @@
             "type": "prometheus",
             "uid": "prometheus-ds"
           },
-          "expr": "temporal_workflow_timed_out_total{namespace=\"zenarc\"}",
+          "expr": "temporal_workflow_timed_out_total{namespace=~\".+\"}",
           "legendFormat": "",
           "refId": "A"
         }
@@ -809,7 +809,7 @@
             "type": "prometheus",
             "uid": "prometheus-ds"
           },
-          "expr": "temporal_workflow_canceled_total{namespace=\"zenarc\"}",
+          "expr": "temporal_workflow_canceled_total{namespace=~\".+\"}",
           "legendFormat": "",
           "refId": "A"
         }
@@ -859,7 +859,7 @@
             "type": "prometheus",
             "uid": "prometheus-ds"
           },
-          "expr": "temporal_workflow_active{namespace=\"zenarc\"}",
+          "expr": "temporal_workflow_active{namespace=~\".+\"}",
           "legendFormat": "Running",
           "refId": "A"
         },
@@ -868,7 +868,7 @@
             "type": "prometheus",
             "uid": "prometheus-ds"
           },
-          "expr": "temporal_workflow_completed_total{namespace=\"zenarc\"}",
+          "expr": "temporal_workflow_completed_total{namespace=~\".+\"}",
           "legendFormat": "Completed",
           "refId": "B"
         },
@@ -877,7 +877,7 @@
             "type": "prometheus",
             "uid": "prometheus-ds"
           },
-          "expr": "temporal_workflow_failed_total{namespace=\"zenarc\"}",
+          "expr": "temporal_workflow_failed_total{namespace=~\".+\"}",
           "legendFormat": "Failed",
           "refId": "C"
         }
@@ -1208,6 +1208,548 @@
         "x": 0,
         "y": 32
       },
+      "id": 310,
+      "title": "Phoenix \u2014 Tracing & Token Usage (filtered by $app)",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus-ds"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": null
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 0,
+        "y": 33
+      },
+      "id": 311,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "value_and_name"
+      },
+      "title": "Total Traces",
+      "type": "stat",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus-ds"
+          },
+          "expr": "sum(phoenix_trace_count{app=~\"$app\"})",
+          "legendFormat": "",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus-ds"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "purple",
+                "value": null
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 6,
+        "y": 33
+      },
+      "id": 312,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "value_and_name"
+      },
+      "title": "Total Tokens",
+      "type": "stat",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus-ds"
+          },
+          "expr": "sum(phoenix_token_count_total{app=~\"$app\"})",
+          "legendFormat": "",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus-ds"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "orange",
+                "value": null
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 12,
+        "y": 33
+      },
+      "id": 313,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "value_and_name"
+      },
+      "title": "Prompt Tokens",
+      "type": "stat",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus-ds"
+          },
+          "expr": "sum(phoenix_token_count_prompt{app=~\"$app\"})",
+          "legendFormat": "",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus-ds"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 18,
+        "y": 33
+      },
+      "id": 314,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "value_and_name"
+      },
+      "title": "Completion Tokens",
+      "type": "stat",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus-ds"
+          },
+          "expr": "sum(phoenix_token_count_completion{app=~\"$app\"})",
+          "legendFormat": "",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus-ds"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 37
+      },
+      "id": 315,
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        },
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        }
+      },
+      "title": "Tokens by Project",
+      "type": "timeseries",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus-ds"
+          },
+          "expr": "phoenix_token_count_total{app=~\"$app\"}",
+          "legendFormat": "{{project_name}}",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus-ds"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "unit": "ms"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 37
+      },
+      "id": 316,
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        },
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        }
+      },
+      "title": "LLM Latency by Project",
+      "type": "timeseries",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus-ds"
+          },
+          "expr": "phoenix_latency_ms_p50{app=~\"$app\"}",
+          "legendFormat": "p50 {{project_name}}",
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus-ds"
+          },
+          "expr": "phoenix_latency_ms_p99{app=~\"$app\"}",
+          "legendFormat": "p99 {{project_name}}",
+          "refId": "B"
+        }
+      ]
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus-ds"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": null
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "project_name"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Project"
+              },
+              {
+                "id": "custom.width",
+                "value": 240
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "app"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "App"
+              },
+              {
+                "id": "custom.width",
+                "value": 140
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Value #A"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Traces"
+              },
+              {
+                "id": "custom.width",
+                "value": 80
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Value #B"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Total Tokens"
+              },
+              {
+                "id": "custom.width",
+                "value": 110
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Value #C"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "p50 Latency (ms)"
+              },
+              {
+                "id": "custom.width",
+                "value": 130
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Value #D"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "p99 Latency (ms)"
+              },
+              {
+                "id": "custom.width",
+                "value": 130
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 45
+      },
+      "id": 317,
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "show": false
+        },
+        "showHeader": true
+      },
+      "title": "Phoenix Project Details \u2014 filtered by $app",
+      "type": "table",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus-ds"
+          },
+          "expr": "phoenix_trace_count{app=~\"$app\"}",
+          "instant": true,
+          "refId": "A",
+          "format": "table"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus-ds"
+          },
+          "expr": "phoenix_token_count_total{app=~\"$app\"}",
+          "instant": true,
+          "refId": "B",
+          "format": "table"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus-ds"
+          },
+          "expr": "phoenix_latency_ms_p50{app=~\"$app\"}",
+          "instant": true,
+          "refId": "C",
+          "format": "table"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus-ds"
+          },
+          "expr": "phoenix_latency_ms_p99{app=~\"$app\"}",
+          "instant": true,
+          "refId": "D",
+          "format": "table"
+        }
+      ],
+      "transformations": [
+        {
+          "id": "merge",
+          "options": {}
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "__name__": true,
+              "Time": true,
+              "job": true,
+              "instance": true,
+              "Time 1": true,
+              "Time 2": true,
+              "Time 3": true,
+              "Time 4": true
+            },
+            "renameByName": {}
+          }
+        }
+      ]
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 53
+      },
       "id": 102,
       "title": "Azure Container Apps (filtered by $app)",
       "type": "row"
@@ -1243,7 +1785,7 @@
         "h": 4,
         "w": 6,
         "x": 0,
-        "y": 33
+        "y": 54
       },
       "id": 20,
       "options": {
@@ -1305,7 +1847,7 @@
         "h": 4,
         "w": 6,
         "x": 6,
-        "y": 33
+        "y": 54
       },
       "id": 21,
       "options": {
@@ -1367,7 +1909,7 @@
         "h": 4,
         "w": 6,
         "x": 12,
-        "y": 33
+        "y": 54
       },
       "id": 22,
       "options": {
@@ -1429,7 +1971,7 @@
         "h": 4,
         "w": 6,
         "x": 18,
-        "y": 33
+        "y": 54
       },
       "id": 23,
       "options": {
@@ -1478,7 +2020,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 37
+        "y": 58
       },
       "id": 24,
       "options": {
@@ -1528,7 +2070,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 37
+        "y": 58
       },
       "id": 25,
       "options": {
@@ -1578,7 +2120,7 @@
         "h": 6,
         "w": 24,
         "x": 0,
-        "y": 45
+        "y": 66
       },
       "id": 26,
       "options": {
@@ -1719,7 +2261,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 51
+        "y": 72
       },
       "id": 27,
       "options": {
@@ -1796,7 +2338,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 59
+        "y": 80
       },
       "id": 103,
       "title": "System Health (Local Collector)",
@@ -1839,7 +2381,7 @@
         "h": 5,
         "w": 6,
         "x": 0,
-        "y": 60
+        "y": 81
       },
       "id": 30,
       "options": {
@@ -1864,7 +2406,7 @@
             "type": "prometheus",
             "uid": "prometheus-ds"
           },
-          "expr": "kpi_cpu_usage_percent",
+          "expr": "system_cpu_usage_percent",
           "legendFormat": "",
           "refId": "A"
         }
@@ -1907,7 +2449,7 @@
         "h": 5,
         "w": 6,
         "x": 6,
-        "y": 60
+        "y": 81
       },
       "id": 31,
       "options": {
@@ -1932,7 +2474,7 @@
             "type": "prometheus",
             "uid": "prometheus-ds"
           },
-          "expr": "kpi_memory_usage_percent",
+          "expr": "system_memory_usage_percent",
           "legendFormat": "",
           "refId": "A"
         }
@@ -1975,7 +2517,7 @@
         "h": 5,
         "w": 6,
         "x": 12,
-        "y": 60
+        "y": 81
       },
       "id": 32,
       "options": {
@@ -2000,7 +2542,7 @@
             "type": "prometheus",
             "uid": "prometheus-ds"
           },
-          "expr": "kpi_disk_usage_percent",
+          "expr": "system_disk_usage_percent",
           "legendFormat": "",
           "refId": "A"
         }
@@ -2037,7 +2579,7 @@
         "h": 5,
         "w": 6,
         "x": 18,
-        "y": 60
+        "y": 81
       },
       "id": 33,
       "options": {
@@ -2062,7 +2604,7 @@
             "type": "prometheus",
             "uid": "prometheus-ds"
           },
-          "expr": "kpi_memory_available_gb",
+          "expr": "system_memory_available_gb",
           "legendFormat": "",
           "refId": "A"
         }
@@ -2074,7 +2616,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 65
+        "y": 86
       },
       "id": 104,
       "title": "Quick Links",
@@ -2089,7 +2631,7 @@
         "h": 5,
         "w": 24,
         "x": 0,
-        "y": 66
+        "y": 87
       },
       "id": 50,
       "options": {
@@ -2098,7 +2640,7 @@
           "showLineNumbers": false,
           "showMiniMap": false
         },
-        "content": "| Service | URL | Note |\n|---|---|---|\n| **Temporal UI** | [zenarc workflows](https://temporal-ui.bravesky-d9f9eeb7.eastus2.azurecontainerapps.io/namespaces/zenarc/workflows) | All apps share zenarc namespace |\n| **Arize Phoenix** | [projects](https://zaf-phoenix.bravesky-d9f9eeb7.eastus2.azurecontainerapps.io/projects) | 12 projects mapped to apps |\n| **Prometheus** | [localhost:9090](http://localhost:9090) | Local |\n| **Grafana** | [localhost:3000](http://localhost:3000) | Local |\n| **Metrics Bridge** | [localhost:8001/metrics](http://localhost:8001/metrics) | Phoenix + Temporal + Azure ACA |",
+        "content": "| Service | URL | Note |\n|---|---|---|\n| **Temporal UI** | [zenarc workflows](https://temporal-ui.bravesky-d9f9eeb7.eastus2.azurecontainerapps.io/namespaces/zenarc/workflows) | retail-onboarding, zenarc namespaces |\n| **Arize Phoenix** | [projects](https://zaf-phoenix.bravesky-d9f9eeb7.eastus2.azurecontainerapps.io/projects) | 12 projects mapped to apps |\n| **Prometheus** | [localhost:9090](http://localhost:9090) | Local |\n| **Grafana** | [localhost:3000](http://localhost:3000) | Local |\n| **Metrics Bridge** | [localhost:8001/metrics](http://localhost:8001/metrics) | Phoenix + Temporal + Azure ACA |",
         "mode": "markdown"
       },
       "title": "Datasource URLs",
