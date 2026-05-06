@@ -1,0 +1,108 @@
+{
+  "uid": "costs-efficiency",
+  "title": "Costs & Efficiency",
+  "tags": ["costs", "temporal"],
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "30s",
+  "time": { "from": "now-24h", "to": "now" },
+  "panels": [
+    {
+      "id": 1,
+      "title": "Avg Workflow Execution Time p50",
+      "type": "stat",
+      "datasource": { "uid": "prometheus-ds", "type": "prometheus" },
+      "gridPos": { "x": 0, "y": 0, "w": 6, "h": 5 },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.50, sum(rate(temporal_workflow_endtoend_latency_bucket[1h])) by (le))",
+          "legendFormat": "p50"
+        }
+      ],
+      "fieldConfig": { "defaults": { "unit": "ms" } }
+    },
+    {
+      "id": 2,
+      "title": "Avg Workflow Execution Time p95",
+      "type": "stat",
+      "datasource": { "uid": "prometheus-ds", "type": "prometheus" },
+      "gridPos": { "x": 6, "y": 0, "w": 6, "h": 5 },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum(rate(temporal_workflow_endtoend_latency_bucket[1h])) by (le))",
+          "legendFormat": "p95"
+        }
+      ],
+      "fieldConfig": { "defaults": { "unit": "ms" } }
+    },
+    {
+      "id": 3,
+      "title": "Total Workflows Completed Today",
+      "type": "stat",
+      "datasource": { "uid": "prometheus-ds", "type": "prometheus" },
+      "gridPos": { "x": 12, "y": 0, "w": 6, "h": 5 },
+      "targets": [
+        {
+          "expr": "sum(increase(temporal_workflow_completed_total[24h]))",
+          "legendFormat": "Completed"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": { "unit": "short", "color": { "mode": "fixed", "fixedColor": "green" } }
+      }
+    },
+    {
+      "id": 4,
+      "title": "Total Activity Executions Today",
+      "type": "stat",
+      "datasource": { "uid": "prometheus-ds", "type": "prometheus" },
+      "gridPos": { "x": 18, "y": 0, "w": 6, "h": 5 },
+      "targets": [
+        {
+          "expr": "sum(increase(temporal_activity_execution_latency_count[24h]))",
+          "legendFormat": "Activities"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": { "unit": "short", "color": { "mode": "fixed", "fixedColor": "blue" } }
+      }
+    },
+    {
+      "id": 5,
+      "title": "Workflow Execution Time Over Time",
+      "type": "timeseries",
+      "datasource": { "uid": "prometheus-ds", "type": "prometheus" },
+      "gridPos": { "x": 0, "y": 5, "w": 12, "h": 9 },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.50, sum(rate(temporal_workflow_endtoend_latency_bucket[5m])) by (le, workflow_type))",
+          "legendFormat": "{{workflow_type}} p50"
+        },
+        {
+          "expr": "histogram_quantile(0.95, sum(rate(temporal_workflow_endtoend_latency_bucket[5m])) by (le, workflow_type))",
+          "legendFormat": "{{workflow_type}} p95"
+        }
+      ],
+      "fieldConfig": { "defaults": { "unit": "ms" } }
+    },
+    {
+      "id": 6,
+      "title": "Activity Execution Time Over Time",
+      "type": "timeseries",
+      "datasource": { "uid": "prometheus-ds", "type": "prometheus" },
+      "gridPos": { "x": 12, "y": 5, "w": 12, "h": 9 },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.50, sum(rate(temporal_activity_execution_latency_bucket[5m])) by (le, activity_type))",
+          "legendFormat": "{{activity_type}} p50"
+        },
+        {
+          "expr": "histogram_quantile(0.95, sum(rate(temporal_activity_execution_latency_bucket[5m])) by (le, activity_type))",
+          "legendFormat": "{{activity_type}} p95"
+        }
+      ],
+      "fieldConfig": { "defaults": { "unit": "ms" } }
+    }
+  ]
+}

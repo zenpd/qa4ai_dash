@@ -112,9 +112,52 @@ class AzureMonitorCollector:
 
     # ── Token helpers ─────────────────────────────────────────────────────────
     def _get_token(self) -> str | None:
+        # 1. Explicit env var (CI / local override)
         token = os.environ.get("AZURE_ACCESS_TOKEN", "").strip()
         if token:
             return token
+
+        # 2. Client-credentials flow (SP: AZURE_CLIENT_ID + AZURE_CLIENT_SECRET)
+        client_id = os.environ.get("AZURE_CLIENT_ID", "").strip()
+        client_secret = os.environ.get("AZURE_CLIENT_SECRET", "").strip()
+        tenant_id = os.environ.get("AZURE_TENANT_ID", "").strip()
+        if client_id and client_secret and tenant_id:
+            try:
+                import urllib.request
+                import urllib.parse
+                payload = urllib.parse.urlencode({
+                    "grant_type": "client_credentials",
+                    "client_id": client_id,
+                    "client_secret": client_secret,
+                    "scope": "https://management.azure.com/.default",
+                }).encode()
+                req = urllib.request.Request(
+                    f"https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/token",
+                    data=payload,
+                    method="POST",
+                )
+                with urllib.request.urlopen(req, timeout=10) as resp:
+                    import json as _json
+                    return _json.loads(resp.read())["access_token"]
+            except Exception as exc:
+                logger.warning("Azure: client-credentials token fetch failed: %s", exc)
+
+        # 3. Managed Identity (ACA / VM / pod with workload identity)
+        try:
+            import urllib.request
+            imds_url = (
+                "http://169.254.169.254/metadata/identity/oauth2/token"
+                "?api-version=2018-02-01&resource=https://management.azure.com/"
+            )
+            req = urllib.request.Request(imds_url)
+            req.add_header("Metadata", "true")
+            with urllib.request.urlopen(req, timeout=3) as resp:
+                import json as _json
+                return _json.loads(resp.read())["access_token"]
+        except Exception:
+            pass  # Not running on Azure with managed identity
+
+        # 4. Token file (local dev)
         try:
             with open(self._token_file) as fobj:
                 data = fobj.read().strip()

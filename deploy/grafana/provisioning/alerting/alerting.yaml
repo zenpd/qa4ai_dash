@@ -1,0 +1,118 @@
+apiVersion: 1
+
+contactPoints:
+  - orgId: 1
+    name: default-alerts
+    receivers:
+      - uid: default-receiver
+        type: email
+        settings:
+          addresses: "admin@localhost"
+          singleEmail: false
+        disableResolveMessage: false
+
+policies:
+  - orgId: 1
+    receiver: default-alerts
+    group_by: ["alertname"]
+    group_wait: 30s
+    group_interval: 5m
+    repeat_interval: 4h
+
+rules:
+  - orgId: 1
+    name: poc-alert-rules
+    folder: POC Alerts
+    interval: 1m
+    rules:
+      - uid: drift-alert
+        title: Model Drift High
+        condition: C
+        data:
+          - refId: A
+            datasourceUid: prometheus-ds
+            model:
+              expr: max(phoenix_model_drift_score) by (model_name)
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              type: threshold
+              conditions:
+                - evaluator: { type: gt, params: [0.05] }
+                  query: { params: [A] }
+        noDataState: NoData
+        execErrState: Error
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Model drift exceeded 5%"
+
+      - uid: error-rate-alert
+        title: Error Rate High
+        condition: C
+        data:
+          - refId: A
+            datasourceUid: prometheus-ds
+            model:
+              expr: azure_error_rate_percent
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              type: threshold
+              conditions:
+                - evaluator: { type: gt, params: [1] }
+                  query: { params: [A] }
+        noDataState: NoData
+        execErrState: Error
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Error rate exceeded 1%"
+
+      - uid: workflow-failure-alert
+        title: Workflow Failure Rate High
+        condition: C
+        data:
+          - refId: A
+            datasourceUid: prometheus-ds
+            model:
+              expr: sum(rate(temporal_workflow_failed_total[5m])) / sum(rate(temporal_workflow_completed_total[5m])) * 100
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              type: threshold
+              conditions:
+                - evaluator: { type: gt, params: [10] }
+                  query: { params: [A] }
+        noDataState: NoData
+        execErrState: Error
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Workflow failure rate exceeded 10%"
+
+      - uid: cpu-alert
+        title: CPU Usage High
+        condition: C
+        data:
+          - refId: A
+            datasourceUid: prometheus-ds
+            model:
+              expr: azure_cpu_usage_percent
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              type: threshold
+              conditions:
+                - evaluator: { type: gt, params: [85] }
+                  query: { params: [A] }
+        noDataState: NoData
+        execErrState: Error
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "CPU usage exceeded 85%"

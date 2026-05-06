@@ -1,0 +1,13 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: poc_app_metrics
+    scheme: https
+    tls_config:
+      insecure_skip_verify: true
+    static_configs:
+      - targets:
+          - unified-dash-app.internal.bravesky-d9f9eeb7.eastus2.azurecontainerapps.io
+    metrics_path: /metrics

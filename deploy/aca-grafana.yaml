@@ -1,0 +1,40 @@
+location: eastus2
+resourceGroup: Zenlabs-Agent-Foundry
+type: Microsoft.App/containerApps
+name: unified-dash-grafana
+properties:
+  environmentId: /subscriptions/bc978289-ba91-4be9-8eee-82dc18f9cde9/resourceGroups/Zenlabs-Agent-Foundry/providers/Microsoft.App/managedEnvironments/zaf-aca-pvt-env
+  configuration:
+    activeRevisionsMode: Single
+    ingress:
+      external: true
+      targetPort: 3000
+      transport: http
+    registries:
+      - server: zafacr-gqfyc3h8eya2djey.azurecr.io
+        username: zafacr
+        passwordSecretRef: acr-password
+    secrets:
+      - name: acr-password
+        value: "FKZSP1v13KwyQk4qPIJSJaIZ1Sx1xkASfp1ZnBwN5YmzAdmtHzskJQQJ99CBACHYHv6Eqg7NAAACAZCRoXHy"
+  template:
+    replicas:
+      min: 1
+      max: 1
+    containers:
+      - name: grafana
+        image: zafacr-gqfyc3h8eya2djey.azurecr.io/unified-dash/grafana:latest
+        resources:
+          cpu: 0.5
+          memory: 1Gi
+        env:
+          - name: GF_SECURITY_ADMIN_USER
+            value: "admin"
+          - name: GF_SECURITY_ADMIN_PASSWORD
+            value: "ZenLabs@2025!"
+          - name: GF_INSTALL_PLUGINS
+            value: "yesoreyeram-infinity-datasource"
+          - name: GF_FEATURE_TOGGLES_ENABLE
+            value: "publicDashboards"
+          - name: GF_SERVER_ROOT_URL
+            value: "https://unified-dash-grafana.bravesky-d9f9eeb7.eastus2.azurecontainerapps.io"

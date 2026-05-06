@@ -1,0 +1,48 @@
+location: eastus2
+resourceGroup: Zenlabs-Agent-Foundry
+type: Microsoft.App/containerApps
+name: unified-dash-app
+properties:
+  environmentId: /subscriptions/bc978289-ba91-4be9-8eee-82dc18f9cde9/resourceGroups/Zenlabs-Agent-Foundry/providers/Microsoft.App/managedEnvironments/zaf-aca-pvt-env
+  configuration:
+    activeRevisionsMode: Single
+    ingress:
+      external: false
+      targetPort: 8001
+      transport: http
+    registries:
+      - server: zafacr-gqfyc3h8eya2djey.azurecr.io
+        username: zafacr
+        passwordSecretRef: acr-password
+    secrets:
+      - name: acr-password
+        value: "FKZSP1v13KwyQk4qPIJSJaIZ1Sx1xkASfp1ZnBwN5YmzAdmtHzskJQQJ99CBACHYHv6Eqg7NAAACAZCRoXHy"
+      - name: phoenix-api-key
+        value: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJBcGlLZXk6MSJ9.PW-Dq35UwThFYSElOJnJuz7tG6Ta709yQpOJOrp0MTA"
+  template:
+    replicas:
+      min: 1
+      max: 1
+    containers:
+      - name: app
+        image: zafacr-gqfyc3h8eya2djey.azurecr.io/unified-dash/app:latest
+        resources:
+          cpu: 0.5
+          memory: 1Gi
+        env:
+          - name: PHOENIX_BASE_URL
+            value: "https://zaf-phoenix.bravesky-d9f9eeb7.eastus2.azurecontainerapps.io"
+          - name: PHOENIX_API_KEY
+            secretRef: phoenix-api-key
+          - name: TEMPORAL_BASE_URL
+            value: "https://temporal-ui.bravesky-d9f9eeb7.eastus2.azurecontainerapps.io"
+          - name: TEMPORAL_NAMESPACE
+            value: "zenarc"
+          - name: AZURE_SUBSCRIPTION_ID
+            value: "bc978289-ba91-4be9-8eee-82dc18f9cde9"
+          - name: AZURE_RESOURCE_GROUP
+            value: "Zenlabs-Agent-Foundry"
+          - name: AZURE_TENANT_ID
+            value: "207c3e32-7115-4ed3-8a55-22f7edb77dc9"
+          - name: METRICS_PORT
+            value: "8001"

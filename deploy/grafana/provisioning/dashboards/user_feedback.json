@@ -1,0 +1,135 @@
+{
+  "uid": "user-feedback",
+  "title": "User Feedback (Phoenix)",
+  "tags": ["phoenix", "feedback", "annotations"],
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "5m",
+  "time": { "from": "now-24h", "to": "now" },
+  "templating": {
+    "list": [
+      {
+        "name": "model_name",
+        "label": "Model",
+        "type": "query",
+        "datasource": { "uid": "prometheus-ds", "type": "prometheus" },
+        "query": "label_values(phoenix_positive_feedback_count, model_name)",
+        "refresh": 2,
+        "multi": false,
+        "includeAll": true
+      }
+    ]
+  },
+  "panels": [
+    {
+      "id": 1,
+      "title": "Positive vs Negative Feedback",
+      "type": "piechart",
+      "datasource": { "uid": "prometheus-ds", "type": "prometheus" },
+      "gridPos": { "x": 0, "y": 0, "w": 8, "h": 10 },
+      "targets": [
+        {
+          "expr": "sum(phoenix_positive_feedback_count{model_name=~\"$model_name\"})",
+          "legendFormat": "Positive"
+        },
+        {
+          "expr": "sum(phoenix_negative_feedback_count{model_name=~\"$model_name\"})",
+          "legendFormat": "Negative"
+        }
+      ],
+      "options": { "pieType": "donut" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "fixed" }
+        },
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "Positive" }, "properties": [{ "id": "color", "value": { "mode": "fixed", "fixedColor": "green" } }] },
+          { "matcher": { "id": "byName", "options": "Negative" }, "properties": [{ "id": "color", "value": { "mode": "fixed", "fixedColor": "red" } }] }
+        ]
+      }
+    },
+    {
+      "id": 2,
+      "title": "Annotation Count",
+      "type": "stat",
+      "datasource": { "uid": "prometheus-ds", "type": "prometheus" },
+      "gridPos": { "x": 8, "y": 0, "w": 8, "h": 5 },
+      "targets": [
+        {
+          "expr": "sum(phoenix_annotation_count{model_name=~\"$model_name\"})",
+          "legendFormat": "Annotations"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": { "unit": "short", "color": { "mode": "fixed", "fixedColor": "blue" } }
+      }
+    },
+    {
+      "id": 3,
+      "title": "Retraining Triggers",
+      "type": "stat",
+      "datasource": { "uid": "prometheus-ds", "type": "prometheus" },
+      "gridPos": { "x": 8, "y": 5, "w": 8, "h": 5 },
+      "targets": [
+        {
+          "expr": "sum(phoenix_retraining_trigger_count{model_name=~\"$model_name\"})",
+          "legendFormat": "Triggers"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 1 },
+              { "color": "red", "value": 5 }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": 4,
+      "title": "Feedback Trend Over Time",
+      "type": "timeseries",
+      "datasource": { "uid": "prometheus-ds", "type": "prometheus" },
+      "gridPos": { "x": 16, "y": 0, "w": 8, "h": 10 },
+      "targets": [
+        {
+          "expr": "phoenix_positive_feedback_count{model_name=~\"$model_name\"}",
+          "legendFormat": "Positive — {{model_name}}"
+        },
+        {
+          "expr": "phoenix_negative_feedback_count{model_name=~\"$model_name\"}",
+          "legendFormat": "Negative — {{model_name}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": { "unit": "short" },
+        "overrides": [
+          { "matcher": { "id": "byRegexp", "options": "Positive.*" }, "properties": [{ "id": "color", "value": { "mode": "fixed", "fixedColor": "green" } }] },
+          { "matcher": { "id": "byRegexp", "options": "Negative.*" }, "properties": [{ "id": "color", "value": { "mode": "fixed", "fixedColor": "red" } }] }
+        ]
+      }
+    },
+    {
+      "id": 5,
+      "title": "Retraining Triggers Over Time",
+      "type": "timeseries",
+      "datasource": { "uid": "prometheus-ds", "type": "prometheus" },
+      "gridPos": { "x": 0, "y": 10, "w": 24, "h": 8 },
+      "targets": [
+        {
+          "expr": "phoenix_retraining_trigger_count{model_name=~\"$model_name\"}",
+          "legendFormat": "{{model_name}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": { "unit": "short", "color": { "mode": "palette-classic" } }
+      }
+    }
+  ]
+}
