@@ -61,6 +61,7 @@ services:
       - GF_INSTALL_PLUGINS=yesoreyeram-infinity-datasource
       - GF_FEATURE_TOGGLES_ENABLE=publicDashboards
       - GF_UNIFIED_ALERTING_ENABLED=true
+      - GF_PANELS_DISABLE_SANITIZE_HTML=true
       - SLACK_WEBHOOK_URL=${SLACK_WEBHOOK_URL:-}
       - TEAMS_WEBHOOK_URL=${TEAMS_WEBHOOK_URL:-}
     volumes:

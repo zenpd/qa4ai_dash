@@ -1,0 +1,608 @@
+﻿{
+    "uid":  "qe-correctness",
+    "title":  "QE for AI â€” Correctness \u0026 Evaluation",
+    "tags":  [
+                 "qe-pillar",
+                 "qe",
+                 "quality"
+             ],
+    "timezone":  "browser",
+    "schemaVersion":  39,
+    "version":  1,
+    "refresh":  "30s",
+    "time":  {
+                 "from":  "now-24h",
+                 "to":  "now"
+             },
+    "style":  "dark",
+    "description":  "ZenLabs Foundry Â· Correctness \u0026 Evaluation",
+    "annotations":  {
+                        "list":  [
+                                     {
+                                         "builtIn":  1,
+                                         "datasource":  "-- Grafana --",
+                                         "enable":  true,
+                                         "hide":  true,
+                                         "iconColor":  "rgba(0, 211, 255, 1)",
+                                         "name":  "Annotations \u0026 Alerts",
+                                         "type":  "dashboard"
+                                     }
+                                 ]
+                    },
+    "links":  [
+                  {
+                      "asDropdown":  true,
+                      "icon":  "dashboard",
+                      "includeVars":  true,
+                      "keepTime":  true,
+                      "tags":  [
+                                   "qe-pillar"
+                               ],
+                      "title":  "Pillar Navigation",
+                      "tooltip":  "Switch between pillars",
+                      "type":  "dashboards",
+                      "url":  ""
+                  }
+              ],
+    "templating":  {
+                       "list":  [
+                                    {
+                                        "name":  "project",
+                                        "label":  "Project",
+                                        "type":  "query",
+                                        "datasource":  "Prometheus",
+                                        "query":  "label_values(phoenix_project_present, project_name)",
+                                        "refresh":  1,
+                                        "includeAll":  true,
+                                        "allValue":  ".*",
+                                        "multi":  false,
+                                        "sort":  1,
+                                        "current":  {
+
+                                                    }
+                                    },
+                                    {
+                                        "name":  "namespace",
+                                        "label":  "Namespace",
+                                        "type":  "query",
+                                        "datasource":  "Prometheus",
+                                        "query":  "label_values(temporal_workflow_active, namespace)",
+                                        "refresh":  1,
+                                        "includeAll":  true,
+                                        "allValue":  ".*",
+                                        "multi":  false,
+                                        "sort":  1,
+                                        "current":  {
+
+                                                    }
+                                    }
+                                ]
+                   },
+    "panels":  [
+                   {
+                       "id":  1,
+                       "type":  "stat",
+                       "title":  "Avg Eval Score",
+                       "gridPos":  {
+                                       "x":  0,
+                                       "y":  0,
+                                       "w":  4,
+                                       "h":  4
+                                   },
+                       "datasource":  "Prometheus",
+                       "targets":  [
+                                       {
+                                           "expr":  "avg(phoenix_evaluator_score{project_name=~\"$project\"}) * 100",
+                                           "legendFormat":  "",
+                                           "instant":  true,
+                                           "refId":  "A"
+                                       }
+                                   ],
+                       "fieldConfig":  {
+                                           "defaults":  {
+                                                            "unit":  "percent",
+                                                            "decimals":  0,
+                                                            "thresholds":  {
+                                                                               "mode":  "absolute",
+                                                                               "steps":  [
+                                                                                             {
+                                                                                                 "color":  "#E24B4A",
+                                                                                                 "value":  null
+                                                                                             },
+                                                                                             {
+                                                                                                 "color":  "#EF9F27",
+                                                                                                 "value":  70
+                                                                                             },
+                                                                                             {
+                                                                                                 "color":  "#1D9E75",
+                                                                                                 "value":  85
+                                                                                             }
+                                                                                         ]
+                                                                           },
+                                                            "color":  {
+                                                                          "mode":  "thresholds"
+                                                                      }
+                                                        }
+                                       },
+                       "options":  {
+                                       "reduceOptions":  {
+                                                             "calcs":  [
+                                                                           "lastNotNull"
+                                                                       ]
+                                                         },
+                                       "colorMode":  "value",
+                                       "graphMode":  "none",
+                                       "textMode":  "value_and_name"
+                                   }
+                   },
+                   {
+                       "id":  2,
+                       "type":  "stat",
+                       "title":  "LLM Trace Coverage",
+                       "gridPos":  {
+                                       "x":  4,
+                                       "y":  0,
+                                       "w":  4,
+                                       "h":  4
+                                   },
+                       "datasource":  "Prometheus",
+                       "targets":  [
+                                       {
+                                           "expr":  "clamp_max(count(phoenix_trace_count{project_name=~\"$project\"} \u003e 0) / count(phoenix_trace_count{project_name=~\"$project\"}) * 100, 100)",
+                                           "legendFormat":  "",
+                                           "instant":  true,
+                                           "refId":  "A"
+                                       }
+                                   ],
+                       "fieldConfig":  {
+                                           "defaults":  {
+                                                            "unit":  "percent",
+                                                            "decimals":  0,
+                                                            "thresholds":  {
+                                                                               "mode":  "absolute",
+                                                                               "steps":  [
+                                                                                             {
+                                                                                                 "color":  "#E24B4A",
+                                                                                                 "value":  null
+                                                                                             },
+                                                                                             {
+                                                                                                 "color":  "#EF9F27",
+                                                                                                 "value":  50
+                                                                                             },
+                                                                                             {
+                                                                                                 "color":  "#1D9E75",
+                                                                                                 "value":  90
+                                                                                             }
+                                                                                         ]
+                                                                           },
+                                                            "color":  {
+                                                                          "mode":  "thresholds"
+                                                                      }
+                                                        }
+                                       },
+                       "options":  {
+                                       "reduceOptions":  {
+                                                             "calcs":  [
+                                                                           "lastNotNull"
+                                                                       ]
+                                                         },
+                                       "colorMode":  "value",
+                                       "graphMode":  "none",
+                                       "textMode":  "value_and_name"
+                                   }
+                   },
+                   {
+                       "id":  3,
+                       "type":  "stat",
+                       "title":  "Hallucination Rate",
+                       "gridPos":  {
+                                       "x":  8,
+                                       "y":  0,
+                                       "w":  4,
+                                       "h":  4
+                                   },
+                       "datasource":  "Prometheus",
+                       "targets":  [
+                                       {
+                                           "expr":  "(1 - avg(phoenix_evaluator_score{project_name=~\"$project\", evaluator_name=~\".*factual.*|.*grounding.*\"})) * 100",
+                                           "legendFormat":  "",
+                                           "instant":  true,
+                                           "refId":  "A"
+                                       }
+                                   ],
+                       "fieldConfig":  {
+                                           "defaults":  {
+                                                            "unit":  "percent",
+                                                            "decimals":  1,
+                                                            "thresholds":  {
+                                                                               "mode":  "absolute",
+                                                                               "steps":  [
+                                                                                             {
+                                                                                                 "color":  "#1D9E75",
+                                                                                                 "value":  null
+                                                                                             },
+                                                                                             {
+                                                                                                 "color":  "#EF9F27",
+                                                                                                 "value":  5
+                                                                                             },
+                                                                                             {
+                                                                                                 "color":  "#E24B4A",
+                                                                                                 "value":  10
+                                                                                             }
+                                                                                         ]
+                                                                           },
+                                                            "color":  {
+                                                                          "mode":  "thresholds"
+                                                                      }
+                                                        }
+                                       },
+                       "options":  {
+                                       "reduceOptions":  {
+                                                             "calcs":  [
+                                                                           "lastNotNull"
+                                                                       ]
+                                                         },
+                                       "colorMode":  "value",
+                                       "graphMode":  "none",
+                                       "textMode":  "value_and_name"
+                                   }
+                   },
+                   {
+                       "id":  4,
+                       "type":  "stat",
+                       "title":  "Cost / Analysis",
+                       "gridPos":  {
+                                       "x":  12,
+                                       "y":  0,
+                                       "w":  4,
+                                       "h":  4
+                                   },
+                       "datasource":  "Prometheus",
+                       "targets":  [
+                                       {
+                                           "expr":  "(sum(phoenix_token_count_prompt{project_name=~\"$project\"}) * 2.5 + sum(phoenix_token_count_completion{project_name=~\"$project\"}) * 10) / 1000000 / clamp_min(sum(phoenix_trace_count{project_name=~\"$project\"}), 1)",
+                                           "legendFormat":  "",
+                                           "instant":  true,
+                                           "refId":  "A"
+                                       }
+                                   ],
+                       "fieldConfig":  {
+                                           "defaults":  {
+                                                            "unit":  "currencyUSD",
+                                                            "decimals":  2,
+                                                            "thresholds":  {
+                                                                               "mode":  "absolute",
+                                                                               "steps":  [
+                                                                                             {
+                                                                                                 "color":  "#1D9E75",
+                                                                                                 "value":  null
+                                                                                             },
+                                                                                             {
+                                                                                                 "color":  "#EF9F27",
+                                                                                                 "value":  10
+                                                                                             },
+                                                                                             {
+                                                                                                 "color":  "#E24B4A",
+                                                                                                 "value":  50
+                                                                                             }
+                                                                                         ]
+                                                                           },
+                                                            "color":  {
+                                                                          "mode":  "thresholds"
+                                                                      }
+                                                        }
+                                       },
+                       "options":  {
+                                       "reduceOptions":  {
+                                                             "calcs":  [
+                                                                           "lastNotNull"
+                                                                       ]
+                                                         },
+                                       "colorMode":  "value",
+                                       "graphMode":  "none",
+                                       "textMode":  "value_and_name"
+                                   }
+                   },
+                   {
+                       "id":  5,
+                       "type":  "stat",
+                       "title":  "PEP False-Positive",
+                       "gridPos":  {
+                                       "x":  16,
+                                       "y":  0,
+                                       "w":  4,
+                                       "h":  4
+                                   },
+                       "datasource":  "Prometheus",
+                       "targets":  [
+                                       {
+                                           "expr":  "(1 - avg(phoenix_evaluator_score{project_name=~\"$project\", evaluator_name=~\".*pep.*\"})) * 100",
+                                           "legendFormat":  "",
+                                           "instant":  true,
+                                           "refId":  "A"
+                                       }
+                                   ],
+                       "fieldConfig":  {
+                                           "defaults":  {
+                                                            "unit":  "percent",
+                                                            "decimals":  0,
+                                                            "thresholds":  {
+                                                                               "mode":  "absolute",
+                                                                               "steps":  [
+                                                                                             {
+                                                                                                 "color":  "#1D9E75",
+                                                                                                 "value":  null
+                                                                                             },
+                                                                                             {
+                                                                                                 "color":  "#EF9F27",
+                                                                                                 "value":  5
+                                                                                             },
+                                                                                             {
+                                                                                                 "color":  "#E24B4A",
+                                                                                                 "value":  15
+                                                                                             }
+                                                                                         ]
+                                                                           },
+                                                            "color":  {
+                                                                          "mode":  "thresholds"
+                                                                      }
+                                                        }
+                                       },
+                       "options":  {
+                                       "reduceOptions":  {
+                                                             "calcs":  [
+                                                                           "lastNotNull"
+                                                                       ]
+                                                         },
+                                       "colorMode":  "value",
+                                       "graphMode":  "none",
+                                       "textMode":  "value_and_name"
+                                   }
+                   },
+                   {
+                       "id":  6,
+                       "type":  "stat",
+                       "title":  "Workflow Durability",
+                       "gridPos":  {
+                                       "x":  20,
+                                       "y":  0,
+                                       "w":  4,
+                                       "h":  4
+                                   },
+                       "datasource":  "Prometheus",
+                       "targets":  [
+                                       {
+                                           "expr":  "sum(temporal_workflow_completed_total{namespace=~\"$namespace\"}) / clamp_min(sum(temporal_workflow_completed_total{namespace=~\"$namespace\"}) + sum(temporal_workflow_failed_total{namespace=~\"$namespace\"}) + sum(temporal_workflow_timed_out_total{namespace=~\"$namespace\"}), 1) * 100",
+                                           "legendFormat":  "",
+                                           "instant":  true,
+                                           "refId":  "A"
+                                       }
+                                   ],
+                       "fieldConfig":  {
+                                           "defaults":  {
+                                                            "unit":  "percent",
+                                                            "decimals":  0,
+                                                            "thresholds":  {
+                                                                               "mode":  "absolute",
+                                                                               "steps":  [
+                                                                                             {
+                                                                                                 "color":  "#E24B4A",
+                                                                                                 "value":  null
+                                                                                             },
+                                                                                             {
+                                                                                                 "color":  "#EF9F27",
+                                                                                                 "value":  80
+                                                                                             },
+                                                                                             {
+                                                                                                 "color":  "#1D9E75",
+                                                                                                 "value":  95
+                                                                                             }
+                                                                                         ]
+                                                                           },
+                                                            "color":  {
+                                                                          "mode":  "thresholds"
+                                                                      }
+                                                        }
+                                       },
+                       "options":  {
+                                       "reduceOptions":  {
+                                                             "calcs":  [
+                                                                           "lastNotNull"
+                                                                       ]
+                                                         },
+                                       "colorMode":  "value",
+                                       "graphMode":  "none",
+                                       "textMode":  "value_and_name"
+                                   }
+                   },
+                   {
+                       "id":  10,
+                       "type":  "row",
+                       "title":  "01 Â· Correctness \u0026 Evaluation â€” LLM-as-judge scores across 9 evaluators",
+                       "gridPos":  {
+                                       "x":  0,
+                                       "y":  4,
+                                       "w":  24,
+                                       "h":  1
+                                   },
+                       "collapsed":  false
+                   },
+                   {
+                       "id":  11,
+                       "type":  "barchart",
+                       "title":  "Evaluator Scores â€” Current",
+                       "description":  "Phoenix LLM-as-judge evaluator scores (0â€“1 scale). Bars colored green when passing threshold, red when below.",
+                       "gridPos":  {
+                                       "x":  0,
+                                       "y":  5,
+                                       "w":  12,
+                                       "h":  12
+                                   },
+                       "datasource":  "Prometheus",
+                       "targets":  [
+                                       {
+                                           "expr":  "phoenix_evaluator_score{project_name=~\"$project\"}",
+                                           "legendFormat":  "{{evaluator_name}}",
+                                           "instant":  true,
+                                           "refId":  "A"
+                                       }
+                                   ],
+                       "fieldConfig":  {
+                                           "defaults":  {
+                                                            "unit":  "short",
+                                                            "min":  0,
+                                                            "max":  1,
+                                                            "decimals":  2,
+                                                            "thresholds":  {
+                                                                               "mode":  "absolute",
+                                                                               "steps":  [
+                                                                                             {
+                                                                                                 "color":  "#E24B4A",
+                                                                                                 "value":  null
+                                                                                             },
+                                                                                             {
+                                                                                                 "color":  "#EF9F27",
+                                                                                                 "value":  0.80
+                                                                                             },
+                                                                                             {
+                                                                                                 "color":  "#1D9E75",
+                                                                                                 "value":  0.85
+                                                                                             }
+                                                                                         ]
+                                                                           },
+                                                            "color":  {
+                                                                          "mode":  "thresholds"
+                                                                      }
+                                                        }
+                                       },
+                       "options":  {
+                                       "orientation":  "horizontal",
+                                       "showValue":  "always",
+                                       "barWidth":  0.7,
+                                       "groupWidth":  0.7,
+                                       "stacking":  "none",
+                                       "legend":  {
+                                                      "displayMode":  "list",
+                                                      "placement":  "bottom"
+                                                  },
+                                       "tooltip":  {
+                                                       "mode":  "single"
+                                                   }
+                                   },
+                       "transformations":  [
+                                               {
+                                                   "id":  "reduce",
+                                                   "options":  {
+                                                                   "reducers":  [
+                                                                                    "lastNotNull"
+                                                                                ]
+                                                               }
+                                               }
+                                           ]
+                   },
+                   {
+                       "id":  12,
+                       "type":  "timeseries",
+                       "title":  "Evaluator Score Trend",
+                       "description":  "Score trend over time for all evaluators â€” tracks improvement across model versions.",
+                       "gridPos":  {
+                                       "x":  12,
+                                       "y":  5,
+                                       "w":  12,
+                                       "h":  12
+                                   },
+                       "datasource":  "Prometheus",
+                       "targets":  [
+                                       {
+                                           "expr":  "phoenix_evaluator_score{project_name=~\"$project\", evaluator_name=~\".*pep.*\"}",
+                                           "legendFormat":  "pep_accuracy",
+                                           "refId":  "A"
+                                       },
+                                       {
+                                           "expr":  "phoenix_evaluator_score{project_name=~\"$project\", evaluator_name=~\".*fatca.*\"}",
+                                           "legendFormat":  "fatca_accuracy",
+                                           "refId":  "B"
+                                       },
+                                       {
+                                           "expr":  "phoenix_evaluator_score{project_name=~\"$project\", evaluator_name=~\".*aml.*\"}",
+                                           "legendFormat":  "aml_decision_quality",
+                                           "refId":  "C"
+                                       },
+                                       {
+                                           "expr":  "phoenix_evaluator_score{project_name=~\"$project\", evaluator_name=~\".*kyc.*\"}",
+                                           "legendFormat":  "kyc_quality",
+                                           "refId":  "D"
+                                       },
+                                       {
+                                           "expr":  "phoenix_evaluator_score{project_name=~\"$project\", evaluator_name=~\".*factual.*|.*grounding.*\"}",
+                                           "legendFormat":  "factual_grounding",
+                                           "refId":  "E"
+                                       },
+                                       {
+                                           "expr":  "phoenix_evaluator_score{project_name=~\"$project\", evaluator_name=~\".*escalation.*\"}",
+                                           "legendFormat":  "escalation_quality",
+                                           "refId":  "F"
+                                       },
+                                       {
+                                           "expr":  "phoenix_evaluator_score{project_name=~\"$project\", evaluator_name=~\".*step.*\"}",
+                                           "legendFormat":  "step_completion",
+                                           "refId":  "G"
+                                       },
+                                       {
+                                           "expr":  "phoenix_evaluator_score{project_name=~\"$project\", evaluator_name=~\".*response.*\"}",
+                                           "legendFormat":  "response_quality",
+                                           "refId":  "H"
+                                       },
+                                       {
+                                           "expr":  "phoenix_evaluator_score{project_name=~\"$project\", evaluator_name=~\".*doc.*|.*verification.*\"}",
+                                           "legendFormat":  "doc_verification",
+                                           "refId":  "I"
+                                       }
+                                   ],
+                       "fieldConfig":  {
+                                           "defaults":  {
+                                                            "unit":  "short",
+                                                            "min":  0.5,
+                                                            "max":  1.0,
+                                                            "decimals":  2,
+                                                            "color":  {
+                                                                          "mode":  "palette-classic"
+                                                                      },
+                                                            "custom":  {
+                                                                           "lineWidth":  2,
+                                                                           "pointSize":  5,
+                                                                           "showPoints":  "auto",
+                                                                           "spanNulls":  true,
+                                                                           "fillOpacity":  5
+                                                                       }
+                                                        }
+                                       },
+                       "options":  {
+                                       "legend":  {
+                                                      "displayMode":  "list",
+                                                      "placement":  "bottom"
+                                                  },
+                                       "tooltip":  {
+                                                       "mode":  "multi",
+                                                       "sort":  "desc"
+                                                   }
+                                   }
+                   },
+                   {
+                       "id":  13,
+                       "type":  "text",
+                       "title":  "CI Gate Thresholds \u0026 Current Status",
+                       "description":  "Reference table: evaluator thresholds, gate levels, and pass/fail status.",
+                       "gridPos":  {
+                                       "x":  0,
+                                       "y":  17,
+                                       "w":  24,
+                                       "h":  9
+                                   },
+                       "options":  {
+                                       "mode":  "html",
+                                       "content":  "\u003ctable class=\u0027gt\u0027\u003e\u003cthead\u003e\u003ctr\u003e\u003cth\u003eEvaluator\u003c/th\u003e\u003cth\u003eMin Threshold\u003c/th\u003e\u003cth\u003eGate\u003c/th\u003e\u003cth\u003eDescription\u003c/th\u003e\u003c/tr\u003e\u003c/thead\u003e\u003ctbody\u003e\u003ctr\u003e\u003ctd\u003eeval.pep_accuracy\u003c/td\u003e\u003ctd\u003e0.95\u003c/td\u003e\u003ctd\u003e\u003cspan class=\u0027bd bbl\u0027\u003eBlock\u003c/span\u003e\u003c/td\u003e\u003ctd\u003ePEP screening accuracy â€” false positives must be minimised\u003c/td\u003e\u003c/tr\u003e\u003ctr\u003e\u003ctd\u003eeval.fatca_accuracy\u003c/td\u003e\u003ctd\u003e0.95\u003c/td\u003e\u003ctd\u003e\u003cspan class=\u0027bd bbl\u0027\u003eBlock\u003c/span\u003e\u003c/td\u003e\u003ctd\u003eFATCA classification accuracy for US tax compliance\u003c/td\u003e\u003c/tr\u003e\u003ctr\u003e\u003ctd\u003eeval.aml_decision_quality\u003c/td\u003e\u003ctd\u003e0.90\u003c/td\u003e\u003ctd\u003e\u003cspan class=\u0027bd bbl\u0027\u003eBlock\u003c/span\u003e\u003c/td\u003e\u003ctd\u003eAML decision quality â€” must not miss suspicious activity\u003c/td\u003e\u003c/tr\u003e\u003ctr\u003e\u003ctd\u003eeval.escalation_quality\u003c/td\u003e\u003ctd\u003e0.88\u003c/td\u003e\u003ctd\u003e\u003cspan class=\u0027bd bbl\u0027\u003eBlock\u003c/span\u003e\u003c/td\u003e\u003ctd\u003eCorrect escalation routing and priority assignment\u003c/td\u003e\u003c/tr\u003e\u003ctr\u003e\u003ctd\u003eeval.factual_grounding\u003c/td\u003e\u003ctd\u003e0.85\u003c/td\u003e\u003ctd\u003e\u003cspan class=\u0027bd bbl\u0027\u003eBlock\u003c/span\u003e\u003c/td\u003e\u003ctd\u003eLLM output grounded in source data â€” anti-hallucination\u003c/td\u003e\u003c/tr\u003e\u003ctr\u003e\u003ctd\u003eeval.kyc_quality\u003c/td\u003e\u003ctd\u003e0.85\u003c/td\u003e\u003ctd\u003e\u003cspan class=\u0027bd bwa\u0027\u003eWarn\u003c/span\u003e\u003c/td\u003e\u003ctd\u003eKYC data extraction and verification quality\u003c/td\u003e\u003c/tr\u003e\u003ctr\u003e\u003ctd\u003eeval.document_verification\u003c/td\u003e\u003ctd\u003e0.85\u003c/td\u003e\u003ctd\u003e\u003cspan class=\u0027bd bwa\u0027\u003eWarn\u003c/span\u003e\u003c/td\u003e\u003ctd\u003eDocument authenticity and data extraction accuracy\u003c/td\u003e\u003c/tr\u003e\u003ctr\u003e\u003ctd\u003eeval.step_completion\u003c/td\u003e\u003ctd\u003e0.80\u003c/td\u003e\u003ctd\u003e\u003cspan class=\u0027bd bwa\u0027\u003eWarn\u003c/span\u003e\u003c/td\u003e\u003ctd\u003eWorkflow step completion and ordering correctness\u003c/td\u003e\u003c/tr\u003e\u003ctr\u003e\u003ctd\u003eeval.response_quality\u003c/td\u003e\u003ctd\u003e0.75\u003c/td\u003e\u003ctd\u003e\u003cspan class=\u0027bd bin\u0027\u003eInfo\u003c/span\u003e\u003c/td\u003e\u003ctd\u003eOverall LLM response quality and coherence\u003c/td\u003e\u003c/tr\u003e\u003c/tbody\u003e\u003c/table\u003e"
+                                   }
+                   }
+               ]
+}

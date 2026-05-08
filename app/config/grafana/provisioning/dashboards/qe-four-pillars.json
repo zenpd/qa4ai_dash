@@ -1,0 +1,846 @@
+{
+    "uid":  "qe-four-pillars",
+    "title":  "QE for AI — Overview",
+    "tags":  [
+                 "qe-pillar",
+                 "qe",
+                 "quality"
+             ],
+    "timezone":  "browser",
+    "schemaVersion":  39,
+    "version":  1,
+    "refresh":  "30s",
+    "time":  {
+                 "from":  "now-24h",
+                 "to":  "now"
+             },
+    "style":  "dark",
+    "description":  "ZenLabs Foundry · Overview — use Pillar Navigation dropdown (top right) to drill into each pillar",
+    "annotations":  {
+                        "list":  [
+                                     {
+                                         "builtIn":  1,
+                                         "datasource":  "-- Grafana --",
+                                         "enable":  true,
+                                         "hide":  true,
+                                         "iconColor":  "rgba(0, 211, 255, 1)",
+                                         "name":  "Annotations \u0026 Alerts",
+                                         "type":  "dashboard"
+                                     }
+                                 ]
+                    },
+    "links":  [
+                  {
+                      "asDropdown":  true,
+                      "icon":  "dashboard",
+                      "includeVars":  true,
+                      "keepTime":  true,
+                      "tags":  [
+                                   "qe-pillar"
+                               ],
+                      "title":  "Pillar Navigation",
+                      "tooltip":  "Switch between pillars",
+                      "type":  "dashboards",
+                      "url":  ""
+                  }
+              ],
+    "templating":  {
+                       "list":  [
+                                    {
+                                        "name":  "project",
+                                        "label":  "Project",
+                                        "type":  "query",
+                                        "datasource":  "Prometheus",
+                                        "query":  "label_values(phoenix_project_present, project_name)",
+                                        "refresh":  1,
+                                        "includeAll":  true,
+                                        "allValue":  ".*",
+                                        "multi":  false,
+                                        "sort":  1,
+                                        "current":  {
+
+                                                    }
+                                    },
+                                    {
+                                        "name":  "namespace",
+                                        "label":  "Namespace",
+                                        "type":  "query",
+                                        "datasource":  "Prometheus",
+                                        "query":  "label_values(temporal_workflow_active, namespace)",
+                                        "refresh":  1,
+                                        "includeAll":  true,
+                                        "allValue":  ".*",
+                                        "multi":  false,
+                                        "sort":  1,
+                                        "current":  {
+
+                                                    }
+                                    }
+                                ]
+                   },
+    "panels":  [
+                   {
+                       "id":  1,
+                       "type":  "stat",
+                       "title":  "Avg Eval Score",
+                       "gridPos":  {
+                                       "x":  0,
+                                       "y":  0,
+                                       "w":  4,
+                                       "h":  4
+                                   },
+                       "datasource":  "Prometheus",
+                       "targets":  [
+                                       {
+                                           "expr":  "avg(phoenix_evaluator_score{project_name=~\"$project\"}) * 100",
+                                           "legendFormat":  "",
+                                           "instant":  true,
+                                           "refId":  "A"
+                                       }
+                                   ],
+                       "fieldConfig":  {
+                                           "defaults":  {
+                                                            "unit":  "percent",
+                                                            "decimals":  0,
+                                                            "thresholds":  {
+                                                                               "mode":  "absolute",
+                                                                               "steps":  [
+                                                                                             {
+                                                                                                 "color":  "#E24B4A",
+                                                                                                 "value":  null
+                                                                                             },
+                                                                                             {
+                                                                                                 "color":  "#EF9F27",
+                                                                                                 "value":  70
+                                                                                             },
+                                                                                             {
+                                                                                                 "color":  "#1D9E75",
+                                                                                                 "value":  85
+                                                                                             }
+                                                                                         ]
+                                                                           },
+                                                            "color":  {
+                                                                          "mode":  "thresholds"
+                                                                      }
+                                                        }
+                                       },
+                       "options":  {
+                                       "reduceOptions":  {
+                                                             "calcs":  [
+                                                                           "lastNotNull"
+                                                                       ]
+                                                         },
+                                       "colorMode":  "value",
+                                       "graphMode":  "none",
+                                       "textMode":  "value_and_name"
+                                   }
+                   },
+                   {
+                       "id":  2,
+                       "type":  "stat",
+                       "title":  "LLM Trace Coverage",
+                       "gridPos":  {
+                                       "x":  4,
+                                       "y":  0,
+                                       "w":  4,
+                                       "h":  4
+                                   },
+                       "datasource":  "Prometheus",
+                       "targets":  [
+                                       {
+                                           "expr":  "clamp_max(count(phoenix_trace_count{project_name=~\"$project\"} \u003e 0) / count(phoenix_trace_count{project_name=~\"$project\"}) * 100, 100)",
+                                           "legendFormat":  "",
+                                           "instant":  true,
+                                           "refId":  "A"
+                                       }
+                                   ],
+                       "fieldConfig":  {
+                                           "defaults":  {
+                                                            "unit":  "percent",
+                                                            "decimals":  0,
+                                                            "thresholds":  {
+                                                                               "mode":  "absolute",
+                                                                               "steps":  [
+                                                                                             {
+                                                                                                 "color":  "#E24B4A",
+                                                                                                 "value":  null
+                                                                                             },
+                                                                                             {
+                                                                                                 "color":  "#EF9F27",
+                                                                                                 "value":  50
+                                                                                             },
+                                                                                             {
+                                                                                                 "color":  "#1D9E75",
+                                                                                                 "value":  90
+                                                                                             }
+                                                                                         ]
+                                                                           },
+                                                            "color":  {
+                                                                          "mode":  "thresholds"
+                                                                      }
+                                                        }
+                                       },
+                       "options":  {
+                                       "reduceOptions":  {
+                                                             "calcs":  [
+                                                                           "lastNotNull"
+                                                                       ]
+                                                         },
+                                       "colorMode":  "value",
+                                       "graphMode":  "none",
+                                       "textMode":  "value_and_name"
+                                   }
+                   },
+                   {
+                       "id":  3,
+                       "type":  "stat",
+                       "title":  "Hallucination Rate",
+                       "gridPos":  {
+                                       "x":  8,
+                                       "y":  0,
+                                       "w":  4,
+                                       "h":  4
+                                   },
+                       "datasource":  "Prometheus",
+                       "targets":  [
+                                       {
+                                           "expr":  "(1 - avg(phoenix_evaluator_score{project_name=~\"$project\", evaluator_name=~\".*factual.*|.*grounding.*\"})) * 100",
+                                           "legendFormat":  "",
+                                           "instant":  true,
+                                           "refId":  "A"
+                                       }
+                                   ],
+                       "fieldConfig":  {
+                                           "defaults":  {
+                                                            "unit":  "percent",
+                                                            "decimals":  1,
+                                                            "thresholds":  {
+                                                                               "mode":  "absolute",
+                                                                               "steps":  [
+                                                                                             {
+                                                                                                 "color":  "#1D9E75",
+                                                                                                 "value":  null
+                                                                                             },
+                                                                                             {
+                                                                                                 "color":  "#EF9F27",
+                                                                                                 "value":  5
+                                                                                             },
+                                                                                             {
+                                                                                                 "color":  "#E24B4A",
+                                                                                                 "value":  10
+                                                                                             }
+                                                                                         ]
+                                                                           },
+                                                            "color":  {
+                                                                          "mode":  "thresholds"
+                                                                      }
+                                                        }
+                                       },
+                       "options":  {
+                                       "reduceOptions":  {
+                                                             "calcs":  [
+                                                                           "lastNotNull"
+                                                                       ]
+                                                         },
+                                       "colorMode":  "value",
+                                       "graphMode":  "none",
+                                       "textMode":  "value_and_name"
+                                   }
+                   },
+                   {
+                       "id":  4,
+                       "type":  "stat",
+                       "title":  "Cost / Analysis",
+                       "gridPos":  {
+                                       "x":  12,
+                                       "y":  0,
+                                       "w":  4,
+                                       "h":  4
+                                   },
+                       "datasource":  "Prometheus",
+                       "targets":  [
+                                       {
+                                           "expr":  "(sum(phoenix_token_count_prompt{project_name=~\"$project\"}) * 2.5 + sum(phoenix_token_count_completion{project_name=~\"$project\"}) * 10) / 1000000 / clamp_min(sum(phoenix_trace_count{project_name=~\"$project\"}), 1)",
+                                           "legendFormat":  "",
+                                           "instant":  true,
+                                           "refId":  "A"
+                                       }
+                                   ],
+                       "fieldConfig":  {
+                                           "defaults":  {
+                                                            "unit":  "currencyUSD",
+                                                            "decimals":  2,
+                                                            "thresholds":  {
+                                                                               "mode":  "absolute",
+                                                                               "steps":  [
+                                                                                             {
+                                                                                                 "color":  "#1D9E75",
+                                                                                                 "value":  null
+                                                                                             },
+                                                                                             {
+                                                                                                 "color":  "#EF9F27",
+                                                                                                 "value":  10
+                                                                                             },
+                                                                                             {
+                                                                                                 "color":  "#E24B4A",
+                                                                                                 "value":  50
+                                                                                             }
+                                                                                         ]
+                                                                           },
+                                                            "color":  {
+                                                                          "mode":  "thresholds"
+                                                                      }
+                                                        }
+                                       },
+                       "options":  {
+                                       "reduceOptions":  {
+                                                             "calcs":  [
+                                                                           "lastNotNull"
+                                                                       ]
+                                                         },
+                                       "colorMode":  "value",
+                                       "graphMode":  "none",
+                                       "textMode":  "value_and_name"
+                                   }
+                   },
+                   {
+                       "id":  5,
+                       "type":  "stat",
+                       "title":  "PEP False-Positive",
+                       "gridPos":  {
+                                       "x":  16,
+                                       "y":  0,
+                                       "w":  4,
+                                       "h":  4
+                                   },
+                       "datasource":  "Prometheus",
+                       "targets":  [
+                                       {
+                                           "expr":  "(1 - avg(phoenix_evaluator_score{project_name=~\"$project\", evaluator_name=~\".*pep.*\"})) * 100",
+                                           "legendFormat":  "",
+                                           "instant":  true,
+                                           "refId":  "A"
+                                       }
+                                   ],
+                       "fieldConfig":  {
+                                           "defaults":  {
+                                                            "unit":  "percent",
+                                                            "decimals":  0,
+                                                            "thresholds":  {
+                                                                               "mode":  "absolute",
+                                                                               "steps":  [
+                                                                                             {
+                                                                                                 "color":  "#1D9E75",
+                                                                                                 "value":  null
+                                                                                             },
+                                                                                             {
+                                                                                                 "color":  "#EF9F27",
+                                                                                                 "value":  5
+                                                                                             },
+                                                                                             {
+                                                                                                 "color":  "#E24B4A",
+                                                                                                 "value":  15
+                                                                                             }
+                                                                                         ]
+                                                                           },
+                                                            "color":  {
+                                                                          "mode":  "thresholds"
+                                                                      }
+                                                        }
+                                       },
+                       "options":  {
+                                       "reduceOptions":  {
+                                                             "calcs":  [
+                                                                           "lastNotNull"
+                                                                       ]
+                                                         },
+                                       "colorMode":  "value",
+                                       "graphMode":  "none",
+                                       "textMode":  "value_and_name"
+                                   }
+                   },
+                   {
+                       "id":  6,
+                       "type":  "stat",
+                       "title":  "Workflow Durability",
+                       "gridPos":  {
+                                       "x":  20,
+                                       "y":  0,
+                                       "w":  4,
+                                       "h":  4
+                                   },
+                       "datasource":  "Prometheus",
+                       "targets":  [
+                                       {
+                                           "expr":  "sum(temporal_workflow_completed_total{namespace=~\"$namespace\"}) / clamp_min(sum(temporal_workflow_completed_total{namespace=~\"$namespace\"}) + sum(temporal_workflow_failed_total{namespace=~\"$namespace\"}) + sum(temporal_workflow_timed_out_total{namespace=~\"$namespace\"}), 1) * 100",
+                                           "legendFormat":  "",
+                                           "instant":  true,
+                                           "refId":  "A"
+                                       }
+                                   ],
+                       "fieldConfig":  {
+                                           "defaults":  {
+                                                            "unit":  "percent",
+                                                            "decimals":  0,
+                                                            "thresholds":  {
+                                                                               "mode":  "absolute",
+                                                                               "steps":  [
+                                                                                             {
+                                                                                                 "color":  "#E24B4A",
+                                                                                                 "value":  null
+                                                                                             },
+                                                                                             {
+                                                                                                 "color":  "#EF9F27",
+                                                                                                 "value":  80
+                                                                                             },
+                                                                                             {
+                                                                                                 "color":  "#1D9E75",
+                                                                                                 "value":  95
+                                                                                             }
+                                                                                         ]
+                                                                           },
+                                                            "color":  {
+                                                                          "mode":  "thresholds"
+                                                                      }
+                                                        }
+                                       },
+                       "options":  {
+                                       "reduceOptions":  {
+                                                             "calcs":  [
+                                                                           "lastNotNull"
+                                                                       ]
+                                                         },
+                                       "colorMode":  "value",
+                                       "graphMode":  "none",
+                                       "textMode":  "value_and_name"
+                                   }
+                   },
+                   {
+                       "id":  60,
+                       "type":  "row",
+                       "title":  "Live Token \u0026 Cost Metrics",
+                       "gridPos":  {
+                                       "x":  0,
+                                       "y":  82,
+                                       "w":  24,
+                                       "h":  1
+                                   },
+                       "collapsed":  false
+                   },
+                   {
+                       "id":  61,
+                       "type":  "timeseries",
+                       "title":  "Token Usage Over Time",
+                       "description":  "Prompt and completion token usage trends across projects.",
+                       "gridPos":  {
+                                       "x":  0,
+                                       "y":  83,
+                                       "w":  12,
+                                       "h":  8
+                                   },
+                       "datasource":  "Prometheus",
+                       "targets":  [
+                                       {
+                                           "expr":  "sum(phoenix_token_count_prompt{project_name=~\"$project\"})",
+                                           "legendFormat":  "Prompt tokens",
+                                           "refId":  "A"
+                                       },
+                                       {
+                                           "expr":  "sum(phoenix_token_count_completion{project_name=~\"$project\"})",
+                                           "legendFormat":  "Completion tokens",
+                                           "refId":  "B"
+                                       },
+                                       {
+                                           "expr":  "sum(phoenix_token_count_total{project_name=~\"$project\"})",
+                                           "legendFormat":  "Total tokens",
+                                           "refId":  "C"
+                                       }
+                                   ],
+                       "fieldConfig":  {
+                                           "defaults":  {
+                                                            "unit":  "short",
+                                                            "color":  {
+                                                                          "mode":  "palette-classic"
+                                                                      },
+                                                            "custom":  {
+                                                                           "lineWidth":  2,
+                                                                           "fillOpacity":  10,
+                                                                           "showPoints":  "never",
+                                                                           "spanNulls":  true
+                                                                       }
+                                                        }
+                                       },
+                       "options":  {
+                                       "legend":  {
+                                                      "displayMode":  "list",
+                                                      "placement":  "bottom"
+                                                  },
+                                       "tooltip":  {
+                                                       "mode":  "multi",
+                                                       "sort":  "desc"
+                                                   }
+                                   }
+                   },
+                   {
+                       "id":  62,
+                       "type":  "timeseries",
+                       "title":  "Estimated Cost Over Time (USD)",
+                       "description":  "Estimated LLM API cost based on GPT-4o pricing ($2.50/1M input, $10/1M output tokens).",
+                       "gridPos":  {
+                                       "x":  12,
+                                       "y":  83,
+                                       "w":  12,
+                                       "h":  8
+                                   },
+                       "datasource":  "Prometheus",
+                       "targets":  [
+                                       {
+                                           "expr":  "(sum(phoenix_token_count_prompt{project_name=~\"$project\"}) * 2.5 + sum(phoenix_token_count_completion{project_name=~\"$project\"}) * 10) / 1000000",
+                                           "legendFormat":  "Total estimated cost ($)",
+                                           "refId":  "A"
+                                       }
+                                   ],
+                       "fieldConfig":  {
+                                           "defaults":  {
+                                                            "unit":  "currencyUSD",
+                                                            "decimals":  2,
+                                                            "color":  {
+                                                                          "fixedColor":  "#EF9F27",
+                                                                          "mode":  "fixed"
+                                                                      },
+                                                            "custom":  {
+                                                                           "lineWidth":  2,
+                                                                           "fillOpacity":  15,
+                                                                           "showPoints":  "never",
+                                                                           "spanNulls":  true
+                                                                       }
+                                                        }
+                                       },
+                       "options":  {
+                                       "legend":  {
+                                                      "displayMode":  "list",
+                                                      "placement":  "bottom"
+                                                  },
+                                       "tooltip":  {
+                                                       "mode":  "single"
+                                                   }
+                                   }
+                   },
+                   {
+                       "id":  63,
+                       "type":  "table",
+                       "title":  "Per-Project Metrics Summary",
+                       "description":  "Summary of traces, tokens, latency, and evaluator scores per Phoenix project.",
+                       "gridPos":  {
+                                       "x":  0,
+                                       "y":  91,
+                                       "w":  24,
+                                       "h":  8
+                                   },
+                       "datasource":  "Prometheus",
+                       "targets":  [
+                                       {
+                                           "expr":  "phoenix_trace_count{project_name=~\"$project\"}",
+                                           "legendFormat":  "{{project_name}}",
+                                           "instant":  true,
+                                           "refId":  "traces",
+                                           "format":  "table"
+                                       },
+                                       {
+                                           "expr":  "phoenix_token_count_total{project_name=~\"$project\"}",
+                                           "legendFormat":  "{{project_name}}",
+                                           "instant":  true,
+                                           "refId":  "tokens",
+                                           "format":  "table"
+                                       },
+                                       {
+                                           "expr":  "phoenix_latency_ms_p50{project_name=~\"$project\"}",
+                                           "legendFormat":  "{{project_name}}",
+                                           "instant":  true,
+                                           "refId":  "latency",
+                                           "format":  "table"
+                                       }
+                                   ],
+                       "fieldConfig":  {
+                                           "defaults":  {
+                                                            "color":  {
+                                                                          "mode":  "thresholds"
+                                                                      },
+                                                            "custom":  {
+                                                                           "align":  "auto",
+                                                                           "displayMode":  "auto"
+                                                                       }
+                                                        },
+                                           "overrides":  [
+                                                             {
+                                                                 "matcher":  {
+                                                                                 "id":  "byName",
+                                                                                 "options":  "project_name"
+                                                                             },
+                                                                 "properties":  [
+                                                                                    {
+                                                                                        "id":  "displayName",
+                                                                                        "value":  "Project"
+                                                                                    }
+                                                                                ]
+                                                             },
+                                                             {
+                                                                 "matcher":  {
+                                                                                 "id":  "byName",
+                                                                                 "options":  "Value #traces"
+                                                                             },
+                                                                 "properties":  [
+                                                                                    {
+                                                                                        "id":  "displayName",
+                                                                                        "value":  "Traces"
+                                                                                    },
+                                                                                    {
+                                                                                        "id":  "unit",
+                                                                                        "value":  "short"
+                                                                                    }
+                                                                                ]
+                                                             },
+                                                             {
+                                                                 "matcher":  {
+                                                                                 "id":  "byName",
+                                                                                 "options":  "Value #tokens"
+                                                                             },
+                                                                 "properties":  [
+                                                                                    {
+                                                                                        "id":  "displayName",
+                                                                                        "value":  "Tokens"
+                                                                                    },
+                                                                                    {
+                                                                                        "id":  "unit",
+                                                                                        "value":  "short"
+                                                                                    }
+                                                                                ]
+                                                             },
+                                                             {
+                                                                 "matcher":  {
+                                                                                 "id":  "byName",
+                                                                                 "options":  "Value #latency"
+                                                                             },
+                                                                 "properties":  [
+                                                                                    {
+                                                                                        "id":  "displayName",
+                                                                                        "value":  "Latency P50 (ms)"
+                                                                                    },
+                                                                                    {
+                                                                                        "id":  "unit",
+                                                                                        "value":  "ms"
+                                                                                    }
+                                                                                ]
+                                                             }
+                                                         ]
+                                       },
+                       "options":  {
+                                       "showHeader":  true,
+                                       "sortBy":  [
+                                                      {
+                                                          "displayName":  "Traces",
+                                                          "desc":  true
+                                                      }
+                                                  ]
+                                   },
+                       "transformations":  [
+                                               {
+                                                   "id":  "merge",
+                                                   "options":  {
+
+                                                               }
+                                               },
+                                               {
+                                                   "id":  "organize",
+                                                   "options":  {
+                                                                   "excludeByName":  {
+                                                                                         "Time":  true,
+                                                                                         "__name__":  true,
+                                                                                         "app":  true,
+                                                                                         "instance":  true,
+                                                                                         "job":  true
+                                                                                     },
+                                                                   "renameByName":  {
+
+                                                                                    }
+                                                               }
+                                               }
+                                           ]
+                   },
+                   {
+                       "id":  64,
+                       "type":  "table",
+                       "title":  "Workflow Execution Summary per Namespace",
+                       "description":  "Temporal workflow execution counts by status per namespace.",
+                       "gridPos":  {
+                                       "x":  0,
+                                       "y":  99,
+                                       "w":  24,
+                                       "h":  7
+                                   },
+                       "datasource":  "Prometheus",
+                       "targets":  [
+                                       {
+                                           "expr":  "temporal_workflow_active{namespace=~\"$namespace\"}",
+                                           "legendFormat":  "{{namespace}}",
+                                           "instant":  true,
+                                           "refId":  "active",
+                                           "format":  "table"
+                                       },
+                                       {
+                                           "expr":  "temporal_workflow_completed_total{namespace=~\"$namespace\"}",
+                                           "legendFormat":  "{{namespace}}",
+                                           "instant":  true,
+                                           "refId":  "completed",
+                                           "format":  "table"
+                                       },
+                                       {
+                                           "expr":  "temporal_workflow_failed_total{namespace=~\"$namespace\"}",
+                                           "legendFormat":  "{{namespace}}",
+                                           "instant":  true,
+                                           "refId":  "failed",
+                                           "format":  "table"
+                                       },
+                                       {
+                                           "expr":  "temporal_workflow_timed_out_total{namespace=~\"$namespace\"}",
+                                           "legendFormat":  "{{namespace}}",
+                                           "instant":  true,
+                                           "refId":  "timedout",
+                                           "format":  "table"
+                                       }
+                                   ],
+                       "fieldConfig":  {
+                                           "defaults":  {
+                                                            "color":  {
+                                                                          "mode":  "thresholds"
+                                                                      },
+                                                            "custom":  {
+                                                                           "align":  "auto",
+                                                                           "displayMode":  "auto"
+                                                                       }
+                                                        },
+                                           "overrides":  [
+                                                             {
+                                                                 "matcher":  {
+                                                                                 "id":  "byName",
+                                                                                 "options":  "namespace"
+                                                                             },
+                                                                 "properties":  [
+                                                                                    {
+                                                                                        "id":  "displayName",
+                                                                                        "value":  "Namespace"
+                                                                                    }
+                                                                                ]
+                                                             },
+                                                             {
+                                                                 "matcher":  {
+                                                                                 "id":  "byName",
+                                                                                 "options":  "Value #active"
+                                                                             },
+                                                                 "properties":  [
+                                                                                    {
+                                                                                        "id":  "displayName",
+                                                                                        "value":  "Running"
+                                                                                    },
+                                                                                    {
+                                                                                        "id":  "color",
+                                                                                        "value":  {
+                                                                                                      "fixedColor":  "#378ADD",
+                                                                                                      "mode":  "fixed"
+                                                                                                  }
+                                                                                    }
+                                                                                ]
+                                                             },
+                                                             {
+                                                                 "matcher":  {
+                                                                                 "id":  "byName",
+                                                                                 "options":  "Value #completed"
+                                                                             },
+                                                                 "properties":  [
+                                                                                    {
+                                                                                        "id":  "displayName",
+                                                                                        "value":  "Completed"
+                                                                                    },
+                                                                                    {
+                                                                                        "id":  "color",
+                                                                                        "value":  {
+                                                                                                      "fixedColor":  "#1D9E75",
+                                                                                                      "mode":  "fixed"
+                                                                                                  }
+                                                                                    }
+                                                                                ]
+                                                             },
+                                                             {
+                                                                 "matcher":  {
+                                                                                 "id":  "byName",
+                                                                                 "options":  "Value #failed"
+                                                                             },
+                                                                 "properties":  [
+                                                                                    {
+                                                                                        "id":  "displayName",
+                                                                                        "value":  "Failed"
+                                                                                    },
+                                                                                    {
+                                                                                        "id":  "color",
+                                                                                        "value":  {
+                                                                                                      "fixedColor":  "#E24B4A",
+                                                                                                      "mode":  "fixed"
+                                                                                                  }
+                                                                                    }
+                                                                                ]
+                                                             },
+                                                             {
+                                                                 "matcher":  {
+                                                                                 "id":  "byName",
+                                                                                 "options":  "Value #timedout"
+                                                                             },
+                                                                 "properties":  [
+                                                                                    {
+                                                                                        "id":  "displayName",
+                                                                                        "value":  "Timed Out"
+                                                                                    },
+                                                                                    {
+                                                                                        "id":  "color",
+                                                                                        "value":  {
+                                                                                                      "fixedColor":  "#EF9F27",
+                                                                                                      "mode":  "fixed"
+                                                                                                  }
+                                                                                    }
+                                                                                ]
+                                                             }
+                                                         ]
+                                       },
+                       "options":  {
+                                       "showHeader":  true,
+                                       "sortBy":  [
+                                                      {
+                                                          "displayName":  "Completed",
+                                                          "desc":  true
+                                                      }
+                                                  ]
+                                   },
+                       "transformations":  [
+                                               {
+                                                   "id":  "merge",
+                                                   "options":  {
+
+                                                               }
+                                               },
+                                               {
+                                                   "id":  "organize",
+                                                   "options":  {
+                                                                   "excludeByName":  {
+                                                                                         "Time":  true,
+                                                                                         "__name__":  true,
+                                                                                         "instance":  true,
+                                                                                         "job":  true
+                                                                                     },
+                                                                   "renameByName":  {
+
+                                                                                    }
+                                                               }
+                                               }
+                                           ]
+                   }
+               ]
+}
