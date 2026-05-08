@@ -15,7 +15,7 @@
     "to": "now"
   },
   "style": "dark",
-  "description": "ZenLabs Foundry Â· Observability & Tracing",
+  "description": "ZenLabs Foundry · Observability & Tracing",
   "annotations": {
     "list": [
       {
@@ -117,7 +117,8 @@
           },
           "color": {
             "mode": "thresholds"
-          }
+          },
+          "noValue": "0"
         }
       },
       "options": {
@@ -144,7 +145,7 @@
       "datasource": "Prometheus",
       "targets": [
         {
-          "expr": "clamp_max(count(phoenix_trace_count{project_name=~\"$project\"} > 0) / count(phoenix_trace_count{project_name=~\"$project\"}) * 100, 100)",
+          "expr": "(clamp_max(count(phoenix_trace_count{project_name=~\"$project\"} > 0) / count(phoenix_trace_count{project_name=~\"$project\"}) * 100, 100)) or vector(0)",
           "legendFormat": "",
           "instant": true,
           "refId": "A"
@@ -173,7 +174,8 @@
           },
           "color": {
             "mode": "thresholds"
-          }
+          },
+          "noValue": "0"
         }
       },
       "options": {
@@ -229,7 +231,8 @@
           },
           "color": {
             "mode": "thresholds"
-          }
+          },
+          "noValue": "0"
         }
       },
       "options": {
@@ -256,7 +259,7 @@
       "datasource": "Prometheus",
       "targets": [
         {
-          "expr": "(sum(phoenix_token_count_prompt{project_name=~\"$project\"}) * 2.5 + sum(phoenix_token_count_completion{project_name=~\"$project\"}) * 10) / 1000000 / clamp_min(sum(phoenix_trace_count{project_name=~\"$project\"}), 1)",
+          "expr": "((sum(phoenix_token_count_prompt{project_name=~\"$project\"}) * 2.5 + sum(phoenix_token_count_completion{project_name=~\"$project\"}) * 10) / 1000000 / clamp_min(sum(phoenix_trace_count{project_name=~\"$project\"}), 1)) or vector(0)",
           "legendFormat": "",
           "instant": true,
           "refId": "A"
@@ -285,7 +288,8 @@
           },
           "color": {
             "mode": "thresholds"
-          }
+          },
+          "noValue": "0"
         }
       },
       "options": {
@@ -341,7 +345,8 @@
           },
           "color": {
             "mode": "thresholds"
-          }
+          },
+          "noValue": "0"
         }
       },
       "options": {
@@ -368,7 +373,7 @@
       "datasource": "Prometheus",
       "targets": [
         {
-          "expr": "sum(temporal_workflow_completed_total{namespace=~\"$namespace\"}) / clamp_min(sum(temporal_workflow_completed_total{namespace=~\"$namespace\"}) + sum(temporal_workflow_failed_total{namespace=~\"$namespace\"}) + sum(temporal_workflow_timed_out_total{namespace=~\"$namespace\"}), 1) * 100",
+          "expr": "(sum(temporal_workflow_completed_total{namespace=~\"$namespace\"}) / clamp_min(sum(temporal_workflow_completed_total{namespace=~\"$namespace\"}) + sum(temporal_workflow_failed_total{namespace=~\"$namespace\"}) + sum(temporal_workflow_timed_out_total{namespace=~\"$namespace\"}), 1) * 100) or vector(0)",
           "legendFormat": "",
           "instant": true,
           "refId": "A"
@@ -397,7 +402,8 @@
           },
           "color": {
             "mode": "thresholds"
-          }
+          },
+          "noValue": "0"
         }
       },
       "options": {
@@ -414,7 +420,7 @@
     {
       "id": 30,
       "type": "row",
-      "title": "03 Â· Observability & Tracing — Span coverage, hallucination detection, latency",
+      "title": "03 · Observability & Tracing — Span coverage, hallucination detection, latency",
       "gridPos": {
         "x": 0,
         "y": 48,
@@ -590,7 +596,7 @@
       "datasource": "Prometheus",
       "targets": [
         {
-          "expr": "clamp_max(count(phoenix_trace_count{project_name=~\"$project\"} > 0) / count(phoenix_trace_count{project_name=~\"$project\"}) * 100, 100)",
+          "expr": "(clamp_max(count(phoenix_trace_count{project_name=~\"$project\"} > 0) / count(phoenix_trace_count{project_name=~\"$project\"}) * 100, 100)) or vector(0)",
           "legendFormat": "",
           "instant": true,
           "refId": "A"
@@ -611,7 +617,8 @@
           },
           "color": {
             "mode": "thresholds"
-          }
+          },
+          "noValue": "0"
         }
       },
       "options": {
@@ -658,7 +665,8 @@
           },
           "color": {
             "mode": "thresholds"
-          }
+          },
+          "noValue": "0"
         }
       },
       "options": {
@@ -714,7 +722,8 @@
           },
           "color": {
             "mode": "thresholds"
-          }
+          },
+          "noValue": "0"
         }
       },
       "options": {
@@ -770,7 +779,8 @@
           },
           "color": {
             "mode": "thresholds"
-          }
+          },
+          "noValue": "0"
         }
       },
       "options": {
@@ -817,7 +827,8 @@
           },
           "color": {
             "mode": "thresholds"
-          }
+          },
+          "noValue": "0"
         }
       },
       "options": {
@@ -864,7 +875,8 @@
           },
           "color": {
             "mode": "thresholds"
-          }
+          },
+          "noValue": "0"
         }
       },
       "options": {
@@ -911,7 +923,8 @@
           },
           "color": {
             "mode": "thresholds"
-          }
+          },
+          "noValue": "0"
         }
       },
       "options": {
@@ -959,7 +972,8 @@
           "color": {
             "mode": "thresholds"
           },
-          "displayName": "evaluators"
+          "displayName": "evaluators",
+          "noValue": "0"
         }
       },
       "options": {
@@ -987,7 +1001,7 @@
       "datasource": "Prometheus",
       "targets": [
         {
-          "expr": "14",
+          "expr": "vector(14)",
           "legendFormat": "",
           "instant": true,
           "refId": "A"
@@ -1009,7 +1023,8 @@
           },
           "color": {
             "mode": "thresholds"
-          }
+          },
+          "noValue": "0"
         }
       },
       "options": {
@@ -1067,7 +1082,8 @@
           },
           "color": {
             "mode": "thresholds"
-          }
+          },
+          "noValue": "0"
         }
       },
       "options": {

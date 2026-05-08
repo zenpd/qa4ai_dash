@@ -15,7 +15,7 @@
     "to": "now"
   },
   "style": "dark",
-  "description": "ZenLabs Foundry Â· Reliability & Durability",
+  "description": "ZenLabs Foundry · Reliability & Durability",
   "annotations": {
     "list": [
       {
@@ -117,7 +117,8 @@
           },
           "color": {
             "mode": "thresholds"
-          }
+          },
+          "noValue": "0"
         }
       },
       "options": {
@@ -144,7 +145,7 @@
       "datasource": "Prometheus",
       "targets": [
         {
-          "expr": "clamp_max(count(phoenix_trace_count{project_name=~\"$project\"} > 0) / count(phoenix_trace_count{project_name=~\"$project\"}) * 100, 100)",
+          "expr": "(clamp_max(count(phoenix_trace_count{project_name=~\"$project\"} > 0) / count(phoenix_trace_count{project_name=~\"$project\"}) * 100, 100)) or vector(0)",
           "legendFormat": "",
           "instant": true,
           "refId": "A"
@@ -173,7 +174,8 @@
           },
           "color": {
             "mode": "thresholds"
-          }
+          },
+          "noValue": "0"
         }
       },
       "options": {
@@ -229,7 +231,8 @@
           },
           "color": {
             "mode": "thresholds"
-          }
+          },
+          "noValue": "0"
         }
       },
       "options": {
@@ -256,7 +259,7 @@
       "datasource": "Prometheus",
       "targets": [
         {
-          "expr": "(sum(phoenix_token_count_prompt{project_name=~\"$project\"}) * 2.5 + sum(phoenix_token_count_completion{project_name=~\"$project\"}) * 10) / 1000000 / clamp_min(sum(phoenix_trace_count{project_name=~\"$project\"}), 1)",
+          "expr": "((sum(phoenix_token_count_prompt{project_name=~\"$project\"}) * 2.5 + sum(phoenix_token_count_completion{project_name=~\"$project\"}) * 10) / 1000000 / clamp_min(sum(phoenix_trace_count{project_name=~\"$project\"}), 1)) or vector(0)",
           "legendFormat": "",
           "instant": true,
           "refId": "A"
@@ -285,7 +288,8 @@
           },
           "color": {
             "mode": "thresholds"
-          }
+          },
+          "noValue": "0"
         }
       },
       "options": {
@@ -341,7 +345,8 @@
           },
           "color": {
             "mode": "thresholds"
-          }
+          },
+          "noValue": "0"
         }
       },
       "options": {
@@ -368,7 +373,7 @@
       "datasource": "Prometheus",
       "targets": [
         {
-          "expr": "sum(temporal_workflow_completed_total{namespace=~\"$namespace\"}) / clamp_min(sum(temporal_workflow_completed_total{namespace=~\"$namespace\"}) + sum(temporal_workflow_failed_total{namespace=~\"$namespace\"}) + sum(temporal_workflow_timed_out_total{namespace=~\"$namespace\"}), 1) * 100",
+          "expr": "(sum(temporal_workflow_completed_total{namespace=~\"$namespace\"}) / clamp_min(sum(temporal_workflow_completed_total{namespace=~\"$namespace\"}) + sum(temporal_workflow_failed_total{namespace=~\"$namespace\"}) + sum(temporal_workflow_timed_out_total{namespace=~\"$namespace\"}), 1) * 100) or vector(0)",
           "legendFormat": "",
           "instant": true,
           "refId": "A"
@@ -397,7 +402,8 @@
           },
           "color": {
             "mode": "thresholds"
-          }
+          },
+          "noValue": "0"
         }
       },
       "options": {
@@ -414,7 +420,7 @@
     {
       "id": 20,
       "type": "row",
-      "title": "02 Â· Reliability & Durability — Workflow resilience, fault injection, coverage",
+      "title": "02 · Reliability & Durability — Workflow resilience, fault injection, coverage",
       "gridPos": {
         "x": 0,
         "y": 26,
@@ -608,7 +614,7 @@
       "datasource": "Prometheus",
       "targets": [
         {
-          "expr": "3",
+          "expr": "vector(3)",
           "legendFormat": "",
           "instant": true,
           "refId": "A"
@@ -629,7 +635,8 @@
           "color": {
             "mode": "thresholds"
           },
-          "displayName": "max retries (coeff 2.0, init 2s)"
+          "displayName": "max retries (coeff 2.0, init 2s)",
+          "noValue": "0"
         }
       },
       "options": {
@@ -656,7 +663,7 @@
       "datasource": "Prometheus",
       "targets": [
         {
-          "expr": "10",
+          "expr": "vector(10)",
           "legendFormat": "",
           "instant": true,
           "refId": "A"
@@ -677,7 +684,8 @@
           "color": {
             "mode": "thresholds"
           },
-          "displayName": "minutes (schedule-to-close)"
+          "displayName": "minutes (schedule-to-close)",
+          "noValue": "0"
         }
       },
       "options": {
@@ -704,7 +712,7 @@
       "datasource": "Prometheus",
       "targets": [
         {
-          "expr": "sum(temporal_workflow_completed_total{namespace=~\"$namespace\"}) / clamp_min(sum(temporal_workflow_completed_total{namespace=~\"$namespace\"}) + sum(temporal_workflow_failed_total{namespace=~\"$namespace\"}) + sum(temporal_workflow_timed_out_total{namespace=~\"$namespace\"}), 1) * 100",
+          "expr": "(sum(temporal_workflow_completed_total{namespace=~\"$namespace\"}) / clamp_min(sum(temporal_workflow_completed_total{namespace=~\"$namespace\"}) + sum(temporal_workflow_failed_total{namespace=~\"$namespace\"}) + sum(temporal_workflow_timed_out_total{namespace=~\"$namespace\"}), 1) * 100) or vector(0)",
           "legendFormat": "",
           "instant": true,
           "refId": "A"
@@ -726,7 +734,8 @@
           "color": {
             "mode": "thresholds"
           },
-          "displayName": "deterministic replay"
+          "displayName": "deterministic replay",
+          "noValue": "0"
         }
       },
       "options": {
@@ -754,7 +763,7 @@
       "datasource": "Prometheus",
       "targets": [
         {
-          "expr": "52",
+          "expr": "vector(52)",
           "legendFormat": "",
           "instant": true,
           "refId": "A"
@@ -835,7 +844,8 @@
           },
           "color": {
             "mode": "thresholds"
-          }
+          },
+          "noValue": "0"
         }
       },
       "options": {
@@ -893,7 +903,8 @@
           },
           "color": {
             "mode": "thresholds"
-          }
+          },
+          "noValue": "0"
         }
       },
       "options": {
@@ -921,7 +932,7 @@
       "datasource": "Prometheus",
       "targets": [
         {
-          "expr": "sum(temporal_workflow_completed_total{namespace=~\"$namespace\"}) / clamp_min(sum(temporal_workflow_completed_total{namespace=~\"$namespace\"}) + sum(temporal_workflow_failed_total{namespace=~\"$namespace\"}) + sum(temporal_workflow_timed_out_total{namespace=~\"$namespace\"}), 1) * 100",
+          "expr": "(sum(temporal_workflow_completed_total{namespace=~\"$namespace\"}) / clamp_min(sum(temporal_workflow_completed_total{namespace=~\"$namespace\"}) + sum(temporal_workflow_failed_total{namespace=~\"$namespace\"}) + sum(temporal_workflow_timed_out_total{namespace=~\"$namespace\"}), 1) * 100) or vector(0)",
           "legendFormat": "",
           "instant": true,
           "refId": "A"
@@ -951,7 +962,8 @@
           },
           "color": {
             "mode": "thresholds"
-          }
+          },
+          "noValue": "0"
         }
       },
       "options": {
