@@ -88,7 +88,7 @@
       "datasource": "Prometheus",
       "targets": [
         {
-          "expr": "avg(phoenix_evaluator_score{project_name=~\"$project\"}) * 100",
+          "expr": "(avg(phoenix_evaluator_score{project_name=~\"$project\"}) * 100) or vector(0)",
           "legendFormat": "",
           "instant": true,
           "refId": "A"
@@ -145,7 +145,7 @@
       "datasource": "Prometheus",
       "targets": [
         {
-          "expr": "(clamp_max(count(phoenix_trace_count{project_name=~\"$project\"} > 0) / count(phoenix_trace_count{project_name=~\"$project\"}) * 100, 100)) or vector(0)",
+          "expr": "(clamp_max((count(phoenix_trace_count{project_name=~\"$project\"} > 0) or vector(0)) / clamp_min(count(phoenix_trace_count{project_name=~\"$project\"}),1) * 100, 100)) or vector(0)",
           "legendFormat": "",
           "instant": true,
           "refId": "A"
@@ -202,7 +202,7 @@
       "datasource": "Prometheus",
       "targets": [
         {
-          "expr": "(1 - avg(phoenix_evaluator_score{project_name=~\"$project\", evaluator_name=~\".*factual.*|.*grounding.*\"})) * 100",
+          "expr": "((1 - avg(phoenix_evaluator_score{project_name=~\"$project\", evaluator_name=~\".*factual.*|.*grounding.*\"})) * 100) or vector(0)",
           "legendFormat": "",
           "instant": true,
           "refId": "A"
@@ -316,7 +316,7 @@
       "datasource": "Prometheus",
       "targets": [
         {
-          "expr": "(1 - avg(phoenix_evaluator_score{project_name=~\"$project\", evaluator_name=~\".*pep.*\"})) * 100",
+          "expr": "((1 - avg(phoenix_evaluator_score{project_name=~\"$project\", evaluator_name=~\".*pep.*\"})) * 100) or vector(0)",
           "legendFormat": "",
           "instant": true,
           "refId": "A"
@@ -373,7 +373,7 @@
       "datasource": "Prometheus",
       "targets": [
         {
-          "expr": "(sum(temporal_workflow_completed_total{namespace=~\"$namespace\"}) / clamp_min(sum(temporal_workflow_completed_total{namespace=~\"$namespace\"}) + sum(temporal_workflow_failed_total{namespace=~\"$namespace\"}) + sum(temporal_workflow_timed_out_total{namespace=~\"$namespace\"}), 1) * 100) or vector(0)",
+          "expr": "((sum(temporal_workflow_completed_total{namespace=~\"$namespace\"}) or vector(0)) / clamp_min(sum(temporal_workflow_completed_total{namespace=~\"$namespace\"}) + sum(temporal_workflow_failed_total{namespace=~\"$namespace\"}) + sum(temporal_workflow_timed_out_total{namespace=~\"$namespace\"}), 1) * 100) or vector(0)",
           "legendFormat": "",
           "instant": true,
           "refId": "A"
@@ -443,7 +443,7 @@
       "datasource": "Prometheus",
       "targets": [
         {
-          "expr": "phoenix_evaluator_score{project_name=~\"$project\"}",
+          "expr": "(phoenix_evaluator_score{project_name=~\"$project\"}) or vector(0)",
           "legendFormat": "{{evaluator_name}}",
           "instant": true,
           "refId": "A"
@@ -516,47 +516,47 @@
       "datasource": "Prometheus",
       "targets": [
         {
-          "expr": "phoenix_evaluator_score{project_name=~\"$project\", evaluator_name=~\".*pep.*\"}",
+          "expr": "(phoenix_evaluator_score{project_name=~\"$project\", evaluator_name=~\".*pep.*\"}) or vector(0)",
           "legendFormat": "pep_accuracy",
           "refId": "A"
         },
         {
-          "expr": "phoenix_evaluator_score{project_name=~\"$project\", evaluator_name=~\".*fatca.*\"}",
+          "expr": "(phoenix_evaluator_score{project_name=~\"$project\", evaluator_name=~\".*fatca.*\"}) or vector(0)",
           "legendFormat": "fatca_accuracy",
           "refId": "B"
         },
         {
-          "expr": "phoenix_evaluator_score{project_name=~\"$project\", evaluator_name=~\".*aml.*\"}",
+          "expr": "(phoenix_evaluator_score{project_name=~\"$project\", evaluator_name=~\".*aml.*\"}) or vector(0)",
           "legendFormat": "aml_decision_quality",
           "refId": "C"
         },
         {
-          "expr": "phoenix_evaluator_score{project_name=~\"$project\", evaluator_name=~\".*kyc.*\"}",
+          "expr": "(phoenix_evaluator_score{project_name=~\"$project\", evaluator_name=~\".*kyc.*\"}) or vector(0)",
           "legendFormat": "kyc_quality",
           "refId": "D"
         },
         {
-          "expr": "phoenix_evaluator_score{project_name=~\"$project\", evaluator_name=~\".*factual.*|.*grounding.*\"}",
+          "expr": "(phoenix_evaluator_score{project_name=~\"$project\", evaluator_name=~\".*factual.*|.*grounding.*\"}) or vector(0)",
           "legendFormat": "factual_grounding",
           "refId": "E"
         },
         {
-          "expr": "phoenix_evaluator_score{project_name=~\"$project\", evaluator_name=~\".*escalation.*\"}",
+          "expr": "(phoenix_evaluator_score{project_name=~\"$project\", evaluator_name=~\".*escalation.*\"}) or vector(0)",
           "legendFormat": "escalation_quality",
           "refId": "F"
         },
         {
-          "expr": "phoenix_evaluator_score{project_name=~\"$project\", evaluator_name=~\".*step.*\"}",
+          "expr": "(phoenix_evaluator_score{project_name=~\"$project\", evaluator_name=~\".*step.*\"}) or vector(0)",
           "legendFormat": "step_completion",
           "refId": "G"
         },
         {
-          "expr": "phoenix_evaluator_score{project_name=~\"$project\", evaluator_name=~\".*response.*\"}",
+          "expr": "(phoenix_evaluator_score{project_name=~\"$project\", evaluator_name=~\".*response.*\"}) or vector(0)",
           "legendFormat": "response_quality",
           "refId": "H"
         },
         {
-          "expr": "phoenix_evaluator_score{project_name=~\"$project\", evaluator_name=~\".*doc.*|.*verification.*\"}",
+          "expr": "(phoenix_evaluator_score{project_name=~\"$project\", evaluator_name=~\".*doc.*|.*verification.*\"}) or vector(0)",
           "legendFormat": "doc_verification",
           "refId": "I"
         }

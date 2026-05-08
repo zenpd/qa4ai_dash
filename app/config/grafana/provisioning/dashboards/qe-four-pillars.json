@@ -88,7 +88,7 @@
       "datasource": "Prometheus",
       "targets": [
         {
-          "expr": "avg(phoenix_evaluator_score{project_name=~\"$project\"}) * 100",
+          "expr": "(avg(phoenix_evaluator_score{project_name=~\"$project\"}) * 100) or vector(0)",
           "legendFormat": "",
           "instant": true,
           "refId": "A"
@@ -145,7 +145,7 @@
       "datasource": "Prometheus",
       "targets": [
         {
-          "expr": "(clamp_max(count(phoenix_trace_count{project_name=~\"$project\"} > 0) / count(phoenix_trace_count{project_name=~\"$project\"}) * 100, 100)) or vector(0)",
+          "expr": "(clamp_max((count(phoenix_trace_count{project_name=~\"$project\"} > 0) or vector(0)) / clamp_min(count(phoenix_trace_count{project_name=~\"$project\"}),1) * 100, 100)) or vector(0)",
           "legendFormat": "",
           "instant": true,
           "refId": "A"
@@ -202,7 +202,7 @@
       "datasource": "Prometheus",
       "targets": [
         {
-          "expr": "(1 - avg(phoenix_evaluator_score{project_name=~\"$project\", evaluator_name=~\".*factual.*|.*grounding.*\"})) * 100",
+          "expr": "((1 - avg(phoenix_evaluator_score{project_name=~\"$project\", evaluator_name=~\".*factual.*|.*grounding.*\"})) * 100) or vector(0)",
           "legendFormat": "",
           "instant": true,
           "refId": "A"
@@ -316,7 +316,7 @@
       "datasource": "Prometheus",
       "targets": [
         {
-          "expr": "(1 - avg(phoenix_evaluator_score{project_name=~\"$project\", evaluator_name=~\".*pep.*\"})) * 100",
+          "expr": "((1 - avg(phoenix_evaluator_score{project_name=~\"$project\", evaluator_name=~\".*pep.*\"})) * 100) or vector(0)",
           "legendFormat": "",
           "instant": true,
           "refId": "A"
@@ -373,7 +373,7 @@
       "datasource": "Prometheus",
       "targets": [
         {
-          "expr": "(sum(temporal_workflow_completed_total{namespace=~\"$namespace\"}) / clamp_min(sum(temporal_workflow_completed_total{namespace=~\"$namespace\"}) + sum(temporal_workflow_failed_total{namespace=~\"$namespace\"}) + sum(temporal_workflow_timed_out_total{namespace=~\"$namespace\"}), 1) * 100) or vector(0)",
+          "expr": "((sum(temporal_workflow_completed_total{namespace=~\"$namespace\"}) or vector(0)) / clamp_min(sum(temporal_workflow_completed_total{namespace=~\"$namespace\"}) + sum(temporal_workflow_failed_total{namespace=~\"$namespace\"}) + sum(temporal_workflow_timed_out_total{namespace=~\"$namespace\"}), 1) * 100) or vector(0)",
           "legendFormat": "",
           "instant": true,
           "refId": "A"
