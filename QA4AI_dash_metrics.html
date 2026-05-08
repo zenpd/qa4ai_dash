@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QE for AI — Four Pillars Dashboard · ZenLabs Foundry</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f8f9fa;color:#1a1a1a;padding:24px;font-size:14px}
+.dh{padding:0 0 12px;border-bottom:1px solid #e0e0e0;margin-bottom:20px}
+.dh-title{font-size:20px;font-weight:600;color:#111;margin-bottom:3px}
+.dh-sub{font-size:12px;color:#666}
+.kpi-g{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:20px}
+.kpi{background:#fff;border:1px solid #e8e8e8;border-radius:8px;padding:12px 14px}
+.kpi-l{font-size:11px;color:#666;margin-bottom:4px}
+.kpi-v{font-size:22px;font-weight:600;color:#111}
+.kpi-d{font-size:11px;margin-top:2px}
+.kpi-d.up{color:#1D9E75}.kpi-d.dn{color:#c0392b}
+.p-nav{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap}
+.p-btn{padding:6px 16px;border-radius:999px;border:1px solid #ccc;background:#fff;font-size:12px;cursor:pointer;color:#555;transition:all .15s}
+.p-btn:hover{border-color:#378ADD;color:#185FA5}
+.p-btn.on{background:#E6F1FB;color:#185FA5;border-color:#185FA5}
+.p-sec{display:none}
+.p-head{font-size:14px;font-weight:600;color:#111;margin:0 0 16px;padding-bottom:8px;border-bottom:1px solid #e0e0e0}
+.ptag{display:inline-block;font-size:10px;padding:2px 8px;border-radius:4px;margin-right:8px;font-weight:600}
+.tb{background:#E6F1FB;color:#0C447C}.tt{background:#E1F5EE;color:#085041}
+.tp{background:#EEEDFE;color:#3C3489}.ta{background:#FAEEDA;color:#633806}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+.cc{background:#fff;border:1px solid #e8e8e8;border-radius:10px;padding:16px 18px}
+.ct{font-size:11px;font-weight:600;color:#888;margin-bottom:12px;text-transform:uppercase;letter-spacing:.05em}
+.gt{width:100%;border-collapse:collapse;font-size:12px}
+.gt th{font-size:10px;font-weight:600;color:#888;padding:6px 8px;border-bottom:1px solid #eee;text-align:left}
+.gt td{padding:7px 8px;border-bottom:1px solid #f0f0f0;color:#333}
+.gt tr:last-child td{border-bottom:none}
+.bd{display:inline-block;font-size:10px;padding:2px 7px;border-radius:4px;font-weight:500}
+.bbl{background:#FCEBEB;color:#A32D2D}.bwa{background:#FAEEDA;color:#633806}.bin{background:#E6F1FB;color:#0C447C}
+.sr{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid #f0f0f0;font-size:12px}
+.sr:last-child{border-bottom:none}
+.sr .sl{color:#666}.sr .sv{font-weight:500;color:#111}
+.ba{display:flex;gap:12px;margin-bottom:16px}
+.bac{flex:1;border:1px solid #e8e8e8;border-radius:8px;padding:12px}
+.bac .bal{font-size:10px;font-weight:700;letter-spacing:.07em;margin-bottom:8px}
+.bac.bef .bal{color:#A32D2D}.bac.aft .bal{color:#085041}
+.bac .bab{font-size:28px;font-weight:700;margin-bottom:4px}
+.bac.bef .bab{color:#E24B4A}.bac.aft .bab{color:#1D9E75}
+.bac .bad{font-size:11px;color:#666;line-height:1.5}
+.mat-row{display:flex;align-items:center;gap:10px;padding:5px 0}
+.mat-bar-bg{flex:1;height:9px;background:#f0f0f0;border-radius:4px;overflow:hidden}
+.mat-bar-fill{height:100%;border-radius:4px}
+@media(max-width:600px){.two{grid-template-columns:1fr}.ba{flex-direction:column}}
+</style>
+</head>
+<body>
+<div class="dh">
+  <p class="dh-title">QE for AI — Four Pillars Quality Dashboard</p>
+  <p class="dh-sub">ZenLabs Foundry · Agentic Banking · Digital Onboarding + Merchant Onboarding + ZenArc · April 2026</p>
+</div>
+<div class="kpi-g">
+  <div class="kpi"><p class="kpi-l">Avg eval score</p><p class="kpi-v">92%</p><p class="kpi-d up">+40pp vs v1 baseline</p></div>
+  <div class="kpi"><p class="kpi-l">LLM trace coverage</p><p class="kpi-v">100%</p><p class="kpi-d up">was 0%</p></div>
+  <div class="kpi"><p class="kpi-l">Hallucination rate</p><p class="kpi-v">1.2%</p><p class="kpi-d up">was 14%</p></div>
+  <div class="kpi"><p class="kpi-l">Cost / analysis</p><p class="kpi-v">$2</p><p class="kpi-d up">was $160 (-98.7%)</p></div>
+  <div class="kpi"><p class="kpi-l">PEP false-positive</p><p class="kpi-v">&lt;3%</p><p class="kpi-d up">was 18%</p></div>
+  <div class="kpi"><p class="kpi-l">Workflow durability</p><p class="kpi-v">100%</p><p class="kpi-d up">deterministic replay</p></div>
+</div>
+<div class="p-nav" id="pNav">
+  <button class="p-btn on" onclick="sp(1)">01 · Correctness &amp; evaluation</button>
+  <button class="p-btn" onclick="sp(2)">02 · Reliability &amp; durability</button>
+  <button class="p-btn" onclick="sp(3)">03 · Observability &amp; tracing</button>
+  <button class="p-btn" onclick="sp(4)">04 · Governance &amp; compliance</button>
+</div>
+<section class="p-sec" id="ps1">
+  <p class="p-head"><span class="ptag tb">Arize Phoenix</span>Correctness &amp; evaluation — LLM-as-judge scores across 9 evaluators</p>
+  <div class="two">
+    <div class="cc"><p class="ct">Evaluator scores — v4 current</p><div style="position:relative;height:260px"><canvas id="c1" role="img" aria-label="9 Phoenix evaluator scores ranging from 0.87 to 0.96.">All pass thresholds except pep and aml.</canvas></div></div>
+    <div class="cc"><p class="ct">Score trend — 4 experiment versions</p><div style="position:relative;height:260px"><canvas id="c2" role="img" aria-label="Line chart of 6 evaluators across 4 model versions showing consistent improvement.">Scores improve from 0.55-0.74 to 0.89-0.96.</canvas></div></div>
+  </div>
+  <div class="cc" style="margin-bottom:16px">
+    <p class="ct">CI gate thresholds &amp; current status</p>
+    <table class="gt">
+      <thead><tr><th>Evaluator</th><th>Min threshold</th><th>Current avg</th><th>Gate</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr><td>eval.pep_accuracy</td><td>0.95</td><td>0.94</td><td><span class="bd bbl">Block</span></td><td style="color:#E24B4A;font-weight:600">-0.01 below</td></tr>
+        <tr><td>eval.fatca_accuracy</td><td>0.95</td><td>0.96</td><td><span class="bd bbl">Block</span></td><td style="color:#1D9E75;font-weight:600">Pass</td></tr>
+        <tr><td>eval.aml_decision_quality</td><td>0.90</td><td>0.89</td><td><span class="bd bbl">Block</span></td><td style="color:#E24B4A;font-weight:600">-0.01 below</td></tr>
+        <tr><td>eval.escalation_quality</td><td>0.88</td><td>0.92</td><td><span class="bd bbl">Block</span></td><td style="color:#1D9E75;font-weight:600">Pass</td></tr>
+        <tr><td>eval.factual_grounding</td><td>0.85</td><td>0.90</td><td><span class="bd bbl">Block</span></td><td style="color:#1D9E75;font-weight:600">Pass</td></tr>
+        <tr><td>eval.kyc_quality</td><td>0.85</td><td>0.91</td><td><span class="bd bwa">Warn</span></td><td style="color:#1D9E75;font-weight:600">Pass</td></tr>
+        <tr><td>eval.document_verification</td><td>0.85</td><td>0.87</td><td><span class="bd bwa">Warn</span></td><td style="color:#1D9E75;font-weight:600">Pass</td></tr>
+        <tr><td>eval.step_completion</td><td>0.80</td><td>0.95</td><td><span class="bd bwa">Warn</span></td><td style="color:#1D9E75;font-weight:600">Pass</td></tr>
+        <tr><td>eval.response_quality</td><td>0.75</td><td>0.88</td><td><span class="bd bin">Info</span></td><td style="color:#1D9E75;font-weight:600">Pass</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+<section class="p-sec" id="ps2">
+  <p class="p-head"><span class="ptag tt">Temporal AI</span>Reliability &amp; durability — workflow resilience, fault injection, coverage</p>
+  <div class="two">
+    <div class="cc"><p class="ct">Quality coverage — before vs after QE tooling</p><div style="position:relative;height:260px"><canvas id="c3" role="img" aria-label="Grouped horizontal bar. Before 15-42%, after 95-100%.">Coverage improved dramatically.</canvas></div></div>
+    <div class="cc">
+      <p class="ct">Fault injection — QE test results</p>
+      <table class="gt" style="margin-bottom:12px">
+        <thead><tr><th>Fault scenario</th><th>Expected behaviour</th><th>Result</th></tr></thead>
+        <tbody>
+          <tr><td>LLM timeout (&gt;5 min)</td><td>Retry ×3 then compensate</td><td style="color:#1D9E75;font-weight:600">Pass</td></tr>
+          <tr><td>Worker kill -9 mid-run</td><td>Replay from checkpoint</td><td style="color:#1D9E75;font-weight:600">Pass</td></tr>
+          <tr><td>Redis down</td><td>Retry; DB persist succeeds</td><td style="color:#1D9E75;font-weight:600">Pass</td></tr>
+          <tr><td>DB constraint violation</td><td>Non-retryable + compensate</td><td style="color:#1D9E75;font-weight:600">Pass</td></tr>
+          <tr><td>OpenAI 429 rate limit</td><td>Backoff 2s→4s→8s</td><td style="color:#1D9E75;font-weight:600">Pass</td></tr>
+          <tr><td>Namespace bootstrap race</td><td>Idempotent registration</td><td style="color:#1D9E75;font-weight:600">Pass</td></tr>
+        </tbody>
+      </table>
+      <div style="display:flex;gap:8px">
+        <div style="flex:1;background:#EAF3DE;border-radius:8px;padding:10px;text-align:center"><p style="font-size:10px;font-weight:700;color:#3B6D11;margin-bottom:3px">RETRY POLICY</p><p style="font-size:18px;font-weight:700;color:#1D9E75">max 3×</p><p style="font-size:10px;color:#3B6D11">coeff 2.0, init 2s</p></div>
+        <div style="flex:1;background:#E6F1FB;border-radius:8px;padding:10px;text-align:center"><p style="font-size:10px;font-weight:700;color:#0C447C;margin-bottom:3px">S-T-C TIMEOUT</p><p style="font-size:18px;font-weight:700;color:#185FA5">10 min</p><p style="font-size:10px;color:#0C447C">schedule-to-close</p></div>
+        <div style="flex:1;background:#EEEDFE;border-radius:8px;padding:10px;text-align:center"><p style="font-size:10px;font-weight:700;color:#3C3489;margin-bottom:3px">DURABILITY</p><p style="font-size:18px;font-weight:700;color:#534AB7">100%</p><p style="font-size:10px;color:#3C3489">det. replay</p></div>
+      </div>
+    </div>
+  </div>
+  <div class="ba">
+    <div class="bac bef"><p class="bal">BEFORE QE TOOLING (V1)</p><p class="bab">~52%</p><p class="bad">No trace coverage · PEP false-pos 18% · Escalation misses 25% · Temporal namespace race = 0 workers on redeploy</p></div>
+    <div class="bac aft"><p class="bal">AFTER QE TOOLING (V2)</p><p class="bab">~92%</p><p class="bad">9 LLM-judge evaluators on every trace · PEP false-pos &lt;3% · Escalation misses &lt;2% · 100% trace visibility · Namespace bootstrap idempotent</p></div>
+  </div>
+</section>
+<section class="p-sec" id="ps3">
+  <p class="p-head"><span class="ptag tp">OTel + Phoenix</span>Observability &amp; tracing — span coverage, hallucination detection, latency</p>
+  <div class="two">
+    <div class="cc">
+      <p class="ct">Span type distribution — retail-onboarding</p>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;font-size:11px;color:#666">
+        <span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;border-radius:2px;background:#378ADD;display:inline-block"></span>LLM 38%</span>
+        <span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;border-radius:2px;background:#7F77DD;display:inline-block"></span>Chain 22%</span>
+        <span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;border-radius:2px;background:#1D9E75;display:inline-block"></span>Tool 18%</span>
+        <span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;border-radius:2px;background:#EF9F27;display:inline-block"></span>Retriever 12%</span>
+        <span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;border-radius:2px;background:#D4537E;display:inline-block"></span>Embedding 6%</span>
+        <span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;border-radius:2px;background:#888780;display:inline-block"></span>HTTP 4%</span>
+      </div>
+      <div style="position:relative;height:200px"><canvas id="c4" role="img" aria-label="Doughnut: LLM 38%, Chain 22%, Tool 18%, Retriever 12%, Embedding 6%, HTTP 4%.">6 span types.</canvas></div>
+    </div>
+    <div class="cc">
+      <p class="ct">Key observability metrics</p>
+      <div class="sr"><span class="sl">LLM call trace coverage</span><span class="sv">100%</span></div>
+      <div class="sr"><span class="sl">Spans per onboarding session</span><span class="sv">24–40</span></div>
+      <div class="sr"><span class="sl">Eval annotations per trace</span><span class="sv">9 evaluators</span></div>
+      <div class="sr"><span class="sl">Phoenix project</span><span class="sv" style="font-family:monospace;font-size:11px">retail-onboarding</span></div>
+      <div class="sr"><span class="sl">Exporter</span><span class="sv">OTLP HTTP (h2c :443)</span></div>
+      <div class="sr"><span class="sl">Audit report generation</span><span class="sv" style="color:#1D9E75">&lt;2 min (was 2–3 days)</span></div>
+      <div style="margin-top:12px;background:#f8f9fa;border-radius:8px;padding:10px">
+        <p style="font-size:11px;font-weight:600;color:#888;margin-bottom:8px;text-transform:uppercase;letter-spacing:.04em">Hallucination rate</p>
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:7px"><span style="font-size:11px;color:#666;min-width:80px">Before eval</span><div style="flex:1;height:10px;background:#F09595;border-radius:4px;position:relative"><span style="position:absolute;right:4px;top:-1px;font-size:10px;color:#791F1F;font-weight:600">14%</span></div></div>
+        <div style="display:flex;align-items:center;gap:10px"><span style="font-size:11px;color:#666;min-width:80px">After eval</span><div style="flex:1;height:10px;background:#f0f0f0;border-radius:4px;overflow:hidden"><div style="width:8.6%;height:100%;background:#1D9E75;border-radius:4px"></div></div><span style="font-size:10px;color:#085041;font-weight:600">1.2%</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="cc" style="margin-bottom:16px">
+    <p class="ct">Hallucination taxonomy — banking-specific risk types</p>
+    <table class="gt">
+      <thead><tr><th>Type</th><th>Banking example</th><th>Risk</th><th>Detection evaluator</th></tr></thead>
+      <tbody>
+        <tr><td style="color:#A32D2D;font-weight:600">Factual fabrication</td><td>Agent invents customer DOB or passport number</td><td style="color:#A32D2D">KYC fail, regulatory breach</td><td style="font-family:monospace;font-size:11px">eval.factual_grounding</td></tr>
+        <tr><td style="color:#633806;font-weight:600">Reference hallucination</td><td>Cites non-existent "GDPR Article 52(b)"</td><td style="color:#633806">Misleads compliance officers</td><td style="font-family:monospace;font-size:11px">eval.factual_grounding</td></tr>
+        <tr><td style="color:#633806;font-weight:600">Confident uncertainty</td><td>Definitive AML ruling on insufficient data</td><td style="color:#633806">False clean bill, missed SARs</td><td style="font-family:monospace;font-size:11px">eval.aml_decision_quality</td></tr>
+        <tr><td style="color:#A32D2D;font-weight:600">Context drift</td><td>Confuses two customers in long session</td><td style="color:#A32D2D">GDPR violation, data mixing</td><td style="font-family:monospace;font-size:11px">eval.kyc_quality</td></tr>
+        <tr><td style="color:#A32D2D;font-weight:600">Tool call hallucination</td><td>Invents Qdrant search result never received</td><td style="color:#A32D2D">Compliance decision on fake data</td><td style="font-family:monospace;font-size:11px">eval.factual_grounding</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+<section class="p-sec" id="ps4">
+  <p class="p-head"><span class="ptag ta">Governance</span>Governance &amp; compliance — CI gates, cost efficiency, regulatory audit readiness</p>
+  <div class="two">
+    <div class="cc"><p class="ct">ZenArc — compliance accuracy v1 vs v2</p><div style="position:relative;height:240px"><canvas id="c5" role="img" aria-label="Grouped bar. V1: AML 52%, KYC 58%, Capital 48%, Privacy 61%. V2: 97%, 99%, 95%, 98%.">Dramatic improvement across all compliance domains.</canvas></div></div>
+    <div class="cc">
+      <p class="ct">Cost &amp; time efficiency — ZenArc v1 → v2</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">
+        <div style="background:#FCEBEB;border-radius:8px;padding:10px;text-align:center"><p style="font-size:10px;font-weight:700;color:#A32D2D;margin-bottom:3px">BEFORE (V1)</p><p style="font-size:24px;font-weight:700;color:#E24B4A">$160</p><p style="font-size:10px;color:#A32D2D">per analysis</p></div>
+        <div style="background:#EAF3DE;border-radius:8px;padding:10px;text-align:center"><p style="font-size:10px;font-weight:700;color:#3B6D11;margin-bottom:3px">AFTER (V2)</p><p style="font-size:24px;font-weight:700;color:#1D9E75">$2</p><p style="font-size:10px;color:#3B6D11">per analysis</p></div>
+        <div style="background:#FCEBEB;border-radius:8px;padding:10px;text-align:center"><p style="font-size:10px;font-weight:700;color:#A32D2D;margin-bottom:3px">TIME BEFORE</p><p style="font-size:24px;font-weight:700;color:#E24B4A">4 hr</p><p style="font-size:10px;color:#A32D2D">per analysis</p></div>
+        <div style="background:#EAF3DE;border-radius:8px;padding:10px;text-align:center"><p style="font-size:10px;font-weight:700;color:#3B6D11;margin-bottom:3px">TIME AFTER</p><p style="font-size:24px;font-weight:700;color:#1D9E75">45 s</p><p style="font-size:10px;color:#3B6D11">per analysis</p></div>
+      </div>
+      <div class="sr"><span class="sl">Cost reduction</span><span class="sv" style="color:#1D9E75">98.7%</span></div>
+      <div class="sr"><span class="sl">Time reduction</span><span class="sv" style="color:#1D9E75">99%</span></div>
+      <div class="sr"><span class="sl">Compliance domains covered</span><span class="sv">5 (AML, KYC, Capital, Privacy, Cyber)</span></div>
+      <div class="sr"><span class="sl">Audit trail coverage</span><span class="sv">100%</span></div>
+    </div>
+  </div>
+  <div class="two">
+    <div class="cc">
+      <p class="ct">4-layer audit stack</p>
+      <div class="sr"><span class="sl">Layer 1 — Temporal event history</span><span class="sv">30-day retention</span></div>
+      <div class="sr"><span class="sl">Layer 2 — Phoenix OTel spans</span><span class="sv">90-day retention</span></div>
+      <div class="sr"><span class="sl">Layer 3 — Structured app logs</span><span class="sv">structlog + Azure Monitor</span></div>
+      <div class="sr"><span class="sl">Layer 4 — DB decision records</span><span class="sv">5–7 yr (AML rules)</span></div>
+      <div class="sr"><span class="sl">Audit report time</span><span class="sv" style="color:#1D9E75">&lt;2 min (was 2–3 days)</span></div>
+      <div class="sr"><span class="sl">PII in traces</span><span class="sv">OTel attribute filtering (GDPR)</span></div>
+    </div>
+    <div class="cc">
+      <p class="ct">QE maturity model</p>
+      <div class="mat-row"><span style="font-size:11px;color:#888;min-width:145px">L1 — Ad-hoc</span><div class="mat-bar-bg"><div class="mat-bar-fill" style="width:100%;background:#ccc"></div></div></div>
+      <div class="mat-row"><span style="font-size:11px;color:#888;min-width:145px">L2 — Traced</span><div class="mat-bar-bg"><div class="mat-bar-fill" style="width:100%;background:#85B7EB"></div></div></div>
+      <div class="mat-row"><span style="font-size:11px;color:#1D9E75;font-weight:600;min-width:145px">L3 — Evaluated</span><div class="mat-bar-bg" style="border:1px solid #1D9E75"><div class="mat-bar-fill" style="width:100%;background:#1D9E75"></div></div></div>
+      <div class="mat-row"><span style="font-size:11px;color:#185FA5;min-width:145px">L4 — Gated (target)</span><div class="mat-bar-bg"><div class="mat-bar-fill" style="width:30%;background:#378ADD;opacity:.5"></div></div></div>
+      <div class="mat-row"><span style="font-size:11px;color:#bbb;min-width:145px">L5 — Self-improving</span><div class="mat-bar-bg"><div class="mat-bar-fill" style="width:5%;background:#ccc"></div></div></div>
+      <div style="background:#f0f0f0;border-radius:8px;padding:10px;margin-top:12px">
+        <p style="font-size:12px;color:#444;line-height:1.6">"Temporal makes AI workflows <strong style="color:#1D9E75">durable</strong>. Phoenix makes them <strong style="color:#7F77DD">measurable</strong>. Together they make them <strong style="color:#111">trustworthy</strong>."</p>
+      </div>
+    </div>
+  </div>
+</section>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+function sp(n){document.querySelectorAll('.p-sec').forEach(function(s){s.style.display='none';});document.querySelectorAll('.p-btn').forEach(function(b){b.classList.remove('on');});document.getElementById('ps'+n).style.display='block';document.querySelectorAll('.p-btn')[n-1].classList.add('on');}
+new Chart(document.getElementById('c1'),{type:'bar',data:{labels:['fatca_accuracy','step_completion','pep_accuracy','escalation_quality','kyc_quality','factual_grounding','aml_quality','response_quality','doc_verification'],datasets:[{label:'Score',data:[0.96,0.95,0.94,0.92,0.91,0.90,0.89,0.88,0.87],backgroundColor:function(ctx){var scores=[0.96,0.95,0.94,0.92,0.91,0.90,0.89,0.88,0.87];var thresholds=[0.95,0.80,0.95,0.88,0.85,0.85,0.90,0.75,0.85];return scores[ctx.dataIndex]>=thresholds[ctx.dataIndex]?'#1D9E75':'#E24B4A';},borderRadius:3},{label:'Threshold',data:[0.95,0.80,0.95,0.88,0.85,0.85,0.90,0.75,0.85],backgroundColor:'rgba(0,0,0,0)',borderColor:'rgba(136,135,128,0.6)',borderWidth:1.5,type:'bar',borderRadius:0}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{min:0.5,max:1.0,ticks:{callback:function(v){return v.toFixed(2);},font:{size:10}},grid:{color:'rgba(0,0,0,0.05)'}},y:{ticks:{font:{size:10}}}}}});
+new Chart(document.getElementById('c2'),{type:'line',data:{labels:['v1 GPT-3.5','v2 GPT-4o','v3 fine-tuned','v4 current'],datasets:[{label:'kyc_quality',data:[0.67,0.84,0.89,0.91],borderColor:'#378ADD',borderWidth:2,pointRadius:4,tension:0.3,fill:false,borderDash:[]},{label:'pep_accuracy',data:[0.71,0.88,0.92,0.94],borderColor:'#7F77DD',borderWidth:2,pointRadius:4,tension:0.3,fill:false,borderDash:[6,3]},{label:'aml_quality',data:[0.58,0.79,0.87,0.89],borderColor:'#E24B4A',borderWidth:2,pointRadius:4,tension:0.3,fill:false,borderDash:[2,2]},{label:'fatca_accuracy',data:[0.74,0.90,0.94,0.96],borderColor:'#1D9E75',borderWidth:2,pointRadius:4,tension:0.3,fill:false,borderDash:[]},{label:'factual_grounding',data:[0.55,0.78,0.88,0.90],borderColor:'#EF9F27',borderWidth:2,pointRadius:4,tension:0.3,fill:false,borderDash:[8,4]},{label:'escalation',data:[0.63,0.82,0.89,0.92],borderColor:'#D4537E',borderWidth:2,pointRadius:4,tension:0.3,fill:false,borderDash:[4,2]}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{min:0.5,max:1.0,ticks:{callback:function(v){return v.toFixed(2);},font:{size:10}},grid:{color:'rgba(0,0,0,0.05)'}},x:{ticks:{font:{size:10}}}}}});
+new Chart(document.getElementById('c3'),{type:'bar',data:{labels:['Durability','Escalation logic','Step completion','Compliance acc.','Hallucination'],datasets:[{label:'Before QE',data:[15,20,42,25,32],backgroundColor:'#F09595',borderRadius:3},{label:'After QE',data:[100,96,95,99,97],backgroundColor:'#1D9E75',borderRadius:3}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{min:0,max:100,ticks:{callback:function(v){return v+'%';},font:{size:10}},grid:{color:'rgba(0,0,0,0.05)'}},y:{ticks:{font:{size:10}}}}}});
+new Chart(document.getElementById('c4'),{type:'doughnut',data:{labels:['LLM','Chain','Tool','Retriever','Embedding','HTTP'],datasets:[{data:[38,22,18,12,6,4],backgroundColor:['#378ADD','#7F77DD','#1D9E75','#EF9F27','#D4537E','#888780'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},cutout:'62%'}});
+new Chart(document.getElementById('c5'),{type:'bar',data:{labels:['AML','KYC','Capital rules','Privacy'],datasets:[{label:'V1 manual',data:[52,58,48,61],backgroundColor:'#F09595',borderRadius:3},{label:'V2 ZenArc AI',data:[97,99,95,98],backgroundColor:'#1D9E75',borderRadius:3}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{min:0,max:100,ticks:{callback:function(v){return v+'%';},font:{size:10}},grid:{color:'rgba(0,0,0,0.05)'}},x:{ticks:{font:{size:10}}}}}});
+setTimeout(function(){sp(1);},300);
+</script>
+</body>
+</html>

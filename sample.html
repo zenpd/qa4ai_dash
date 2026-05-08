@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Workflow Execution Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+            background: #fafbfc;
+            color: #1a2332;
+            line-height: 1.6;
+        }
+
+        /* Navigation Bar */
+        .navbar {
+            background: #ffffff;
+            border-bottom: 1px solid #e8ecf1;
+            padding: 0 40px;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+        }
+
+        .navbar-brand {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1a2332;
+            letter-spacing: -0.5px;
+        }
+
+        .navbar-status {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: #6b7684;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #10b981;
+            animation: pulse-dot 2s infinite;
+        }
+
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Main Container */
+        .main-container {
+            display: flex;
+            height: calc(100vh - 64px);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
+            background: #ffffff;
+            border-right: 1px solid #e8ecf1;
+            padding: 24px 0;
+            overflow-y: auto;
+        }
+
+        .sidebar-section {
+            padding: 0 16px;
+            margin-bottom: 24px;
+        }
+
+        .sidebar-label {
+            font-size: 11px;
+            font-weight: 700;
+            color: #8b95a5;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 10px;
+            padding: 0 12px;
+        }
+
+        .sidebar-item {
+            padding: 10px 12px;
+            margin-bottom: 4px;
+            border-radius: 6px;
+            font-size: 13px;
+            color: #6b7684;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .sidebar-item:hover {
+            background: #f5f7fa;
+            color: #1a2332;
+        }
+
+        .sidebar-item.active {
+            background: #eef5ff;
+            color: #2563eb;
+            font-weight: 500;
+        }
+
+        /* Content Area */
+        .content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 40px;
+        }
+
+        /* Header Section */
+        .header-section {
+            margin-bottom: 40px;
+        }
+
+        .page-title {
+            font-size: 28px;
+            font-weight: 600;
+            color: #1a2332;
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+        }
+
+        .page-subtitle {
+            font-size: 14px;
+            color: #8b95a5;
+        }
+
+        /* Toolbar */
+        .toolbar {
+            display: flex;
+            gap: 16px;
+            margin-top: 20px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .control-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #6b7684;
+        }
+
+        .control-select {
+            padding: 8px 12px;
+            border: 1px solid #d1d9e0;
+            border-radius: 6px;
+            background: #ffffff;
+            font-size: 13px;
+            color: #1a2332;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            min-width: 140px;
+        }
+
+        .control-select:hover {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .control-select:focus {
+            outline: none;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        /* Grid */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .grid-2 {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .grid-3 {
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        .grid-4 {
+            grid-template-columns: repeat(4, 1fr);
+        }
+
+        .grid-full {
+            grid-template-columns: 1fr;
+        }
+
+        /* Metric Card */
+        .metric-card {
+            background: #ffffff;
+            border: 1px solid #e8ecf1;
+            border-radius: 8px;
+            padding: 24px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .metric-card:hover {
+            border-color: #2563eb;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .metric-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #8b95a5;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            margin-bottom: 12px;
+        }
+
+        .metric-value {
+            font-size: 36px;
+            font-weight: 700;
+            color: #1a2332;
+            margin-bottom: 8px;
+            letter-spacing: -1px;
+        }
+
+        .metric-change {
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 16px;
+        }
+
+        .metric-change.positive {
+            color: #10b981;
+        }
+
+        .metric-change.negative {
+            color: #ef4444;
+        }
+
+        .metric-progress {
+            height: 4px;
+            background: #e8ecf1;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .metric-progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #2563eb, #0ea5e9);
+            border-radius: 2px;
+            transition: width 0.3s ease;
+        }
+
+        .metric-progress-bar.success {
+            background: linear-gradient(90deg, #10b981, #059669);
+        }
+
+        .metric-progress-bar.warning {
+            background: linear-gradient(90deg, #f59e0b, #d97706);
+        }
+
+        .metric-progress-bar.danger {
+            background: linear-gradient(90deg, #ef4444, #dc2626);
+        }
+
+        /* Section Title */
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1a2332;
+            margin: 40px 0 24px 0;
+            letter-spacing: -0.5px;
+        }
+
+        .section-title:first-child {
+            margin-top: 0;
+        }
+
+        /* Card */
+        .card {
+            background: #ffffff;
+            border: 1px solid #e8ecf1;
+            border-radius: 8px;
+            padding: 24px;
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            border-color: #2563eb;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.1);
+        }
+
+        .card-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #1a2332;
+            margin-bottom: 8px;
+        }
+
+        .card-description {
+            font-size: 12px;
+            color: #8b95a5;
+            margin-bottom: 20px;
+        }
+
+        /* Alert Box */
+        .alert-box {
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            border-left: 3px solid;
+            background-color: #fafbfc;
+        }
+
+        .alert-box.info {
+            border-left-color: #2563eb;
+            background-color: #eef5ff;
+        }
+
+        .alert-box.warning {
+            border-left-color: #f59e0b;
+            background-color: #fffbeb;
+        }
+
+        .alert-box.danger {
+            border-left-color: #ef4444;
+            background-color: #fef2f2;
+        }
+
+        .alert-title {
+            font-weight: 600;
+            font-size: 13px;
+            margin-bottom: 4px;
+        }
+
+        .alert-box.info .alert-title {
+            color: #1e40af;
+        }
+
+        .alert-box.warning .alert-title {
+            color: #92400e;
+        }
+
+        .alert-box.danger .alert-title {
+            color: #7f1d1d;
+        }
+
+        .alert-message {
+            font-size: 12px;
+            margin-bottom: 4px;
+        }
+
+        .alert-box.info .alert-message {
+            color: #1e40af;
+        }
+
+        .alert-box.warning .alert-message {
+            color: #92400e;
+        }
+
+        .alert-box.danger .alert-message {
+            color: #7f1d1d;
+        }
+
+        .alert-time {
+            font-size: 11px;
+            opacity: 0.7;
+        }
+
+        .alert-box.info .alert-time {
+            color: #1e40af;
+        }
+
+        .alert-box.warning .alert-time {
+            color: #92400e;
+        }
+
+        .alert-box.danger .alert-time {
+            color: #7f1d1d;
+        }
+
+        /* Table */
+        .table-container {
+            overflow-x: auto;
+            margin-top: 16px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        table th {
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            color: #8b95a5;
+            border-bottom: 1px solid #e8ecf1;
+            background: #fafbfc;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        table td {
+            padding: 12px;
+            border-bottom: 1px solid #e8ecf1;
+            color: #1a2332;
+        }
+
+        table tr:hover {
+            background: #fafbfc;
+        }
+
+        /* Badge */
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .badge.success {
+            background: rgba(16, 185, 129, 0.2);
+            color: #059669;
+        }
+
+        .badge.completed {
+            background: rgba(37, 99, 235, 0.2);
+            color: #1e40af;
+        }
+
+        .badge.failed {
+            background: rgba(239, 68, 68, 0.2);
+            color: #991b1b;
+        }
+
+        .badge.timeout {
+            background: rgba(245, 158, 11, 0.2);
+            color: #92400e;
+        }
+
+        .badge.canceled {
+            background: rgba(107, 118, 132, 0.2);
+            color: #374151;
+        }
+
+        /* Chart Container */
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-top: 16px;
+        }
+
+        .chart-container.large {
+            height: 400px;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 1px solid #e8ecf1;
+            font-size: 12px;
+            color: #8b95a5;
+            text-align: center;
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .grid-4 {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .grid-3 {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 0 20px;
+            }
+
+            .main-container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                border-right: none;
+                border-bottom: 1px solid #e8ecf1;
+                padding: 12px;
+                display: flex;
+                gap: 8px;
+                overflow-x: auto;
+                max-height: auto;
+            }
+
+            .sidebar-section {
+                margin-bottom: 0;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            .page-title {
+                font-size: 22px;
+            }
+
+            .toolbar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .control-select {
+                min-width: auto;
+                width: 100%;
+            }
+
+            .grid-3, .grid-2, .grid-4 {
+                grid-template-columns: 1fr;
+            }
+
+            .metric-value {
+                font-size: 28px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <div class="navbar">
+        <div class="navbar-brand">Workflow Dashboard</div>
+        <div class="navbar-status">
+            <div class="status-indicator">
+                <div class="status-dot"></div>
+                <span>System Online</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-section">
+                <div class="sidebar-label">Navigation</div>
+                <div class="sidebar-item active">Overview</div>
+                <div class="sidebar-item">Performance</div>
+                <div class="sidebar-item">Errors</div>
+                <div class="sidebar-item">Analytics</div>
+            </div>
+            <div class="sidebar-section">
+                <div class="sidebar-label">Settings</div>
+                <div class="sidebar-item">Configuration</div>
+                <div class="sidebar-item">Alerts</div>
+                <div class="sidebar-item">Integrations</div>
+            </div>
+        </div>
+
+        <!-- Content -->
+        <div class="content">
+            <!-- Header -->
+            <div class="header-section">
+                <div class="page-title">Workflow Execution</div>
+                <div class="page-subtitle">Monitor and analyze your workflow metrics in real-time</div>
+
+                <div class="toolbar">
+                    <div class="control-group">
+                        <div class="control-label">Namespace</div>
+                        <select class="control-select">
+                            <option>zenarc</option>
+                            <option>retail-onboarding</option>
+                            <option>merchant-onboarding</option>
+                            <option>capmarkets</option>
+                            <option>cccm</option>
+                            <option>insureflow</option>
+                            <option>agentzoo</option>
+                            <option>zaf-aria-idp</option>
+                            <option>zaf-kyx</option>
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <div class="control-label">Time Range</div>
+                        <select class="control-select">
+                            <option>Last 1 hour</option>
+                            <option>Last 6 hours</option>
+                            <option>Last 24 hours</option>
+                            <option>Last 7 days</option>
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <div class="control-label">Refresh Rate</div>
+                        <select class="control-select">
+                            <option>30 seconds</option>
+                            <option>1 minute</option>
+                            <option>5 minutes</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Alerts -->
+            <div class="section-title">Active Alerts</div>
+            <div class="grid grid-full">
+                <div class="card">
+                    <div class="alert-box warning">
+                        <div class="alert-title">High Error Rate Detected</div>
+                        <div class="alert-message">Error rate in DataProcess activity increased to 8.5% (threshold: 5%)</div>
+                        <div class="alert-time">2 minutes ago</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Key Metrics -->
+            <div class="section-title">Key Metrics</div>
+            <div class="grid grid-4">
+                <div class="metric-card">
+                    <div class="metric-label">Active Running</div>
+                    <div class="metric-value">42</div>
+                    <div class="metric-change positive">? 12% last hour</div>
+                    <div class="metric-progress">
+                        <div class="metric-progress-bar success" style="width: 42%;"></div>
+                    </div>
+                </div>
+
+                <div class="metric-card">
+                    <div class="metric-label">Completed</div>
+                    <div class="metric-value">1,203</div>
+                    <div class="metric-change positive">? 5% last hour</div>
+                    <div class="metric-progress">
+                        <div class="metric-progress-bar success" style="width: 95%;"></div>
+                    </div>
+                </div>
+
+                <div class="metric-card">
+                    <div class="metric-label">Failed</div>
+                    <div class="metric-value">12</div>
+                    <div class="metric-change negative">? 2 new</div>
+                    <div class="metric-progress">
+                        <div class="metric-progress-bar danger" style="width: 12%;"></div>
+                    </div>
+                </div>
+
+                <div class="metric-card">
+                    <div class="metric-label">Failure Rate</div>
+                    <div class="metric-value">0.9%</div>
+                    <div class="metric-change positive">Within SLA</div>
+                    <div class="metric-progress">
+                        <div class="metric-progress-bar success" style="width: 90%;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Additional Metrics -->
+            <div class="grid grid-3">
+                <div class="metric-card">
+                    <div class="metric-label">Timed Out</div>
+                    <div class="metric-value">5</div>
+                    <div class="metric-change">0.3% of total</div>
+                    <div class="metric-progress">
+                        <div class="metric-progress-bar warning" style="width: 8%;"></div>
+                    </div>
+                </div>
+
+                <div class="metric-card">
+                    <div class="metric-label">Canceled</div>
+                    <div class="metric-value">3</div>
+                    <div class="metric-change">User initiated</div>
+                    <div class="metric-progress">
+                        <div class="metric-progress-bar" style="width: 2%; background: #d1d9e0;"></div>
+                    </div>
+                </div>
+
+                <div class="metric-card">
+                    <div class="metric-label">Success Rate</div>
+                    <div class="metric-value">99.1%</div>
+                    <div class="metric-change positive">Target: 99%</div>
+                    <div class="metric-progress">
+                        <div class="metric-progress-bar success" style="width: 99.1%;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts -->
+            <div class="section-title">Performance Analysis</div>
+            <div class="grid grid-2">
+                <div class="card">
+                    <div class="card-title">Workflow Distribution</div>
+                    <div class="card-description">Current state distribution across all workflows</div>
+                    <div class="chart-container">
+                        <canvas id="pieChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">Execution Trends</div>
+                    <div class="card-description">Workflow executions over time</div>
+                    <div class="chart-container">
+                        <canvas id="trendChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Error Details -->
+            <div class="section-title">Error Analysis</div>
+            <div class="grid grid-full">
+                <div class="card">
+                    <div class="card-title">Failed Workflows</div>
+                    <div class="card-description">Recent workflow failures and their error types</div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Workflow ID</th>
+                                    <th>Error Type</th>
+                                    <th>Activity</th>
+                                    <th>Status</th>
+                                    <th>Time</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>WF-2024-0142</td>
+                                    <td>Timeout</td>
+                                    <td>DataProcess</td>
+                                    <td><span class="badge timeout">Timeout</span></td>
+                                    <td>2m ago</td>
+                                </tr>
+                                <tr>
+                                    <td>WF-2024-0141</td>
+                                    <td>Activity Error</td>
+                                    <td>ValidationCheck</td>
+                                    <td><span class="badge failed">Failed</span></td>
+                                    <td>5m ago</td>
+                                </tr>
+                                <tr>
+                                    <td>WF-2024-0140</td>
+                                    <td>Retry Exhausted</td>
+                                    <td>APICall</td>
+                                    <td><span class="badge failed">Failed</span></td>
+                                    <td>8m ago</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Activity Performance -->
+            <div class="section-title">Top Activities by Error Rate</div>
+            <div class="grid grid-full">
+                <div class="card">
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Activity Name</th>
+                                    <th>Total Executions</th>
+                                    <th>Errors</th>
+                                    <th>Error Rate</th>
+                                    <th>Trend</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>DataProcess</td>
+                                    <td>845</td>
+                                    <td>72</td>
+                                    <td>8.5%</td>
+                                    <td><span class="metric-change negative">? 2.1%</span></td>
+                                </tr>
+                                <tr>
+                                    <td>APICall</td>
+                                    <td>1,205</td>
+                                    <td>36</td>
+                                    <td>3.0%</td>
+                                    <td><span class="metric-change positive">? 0.5%</span></td>
+                                </tr>
+                                <tr>
+                                    <td>ValidationCheck</td>
+                                    <td>2,104</td>
+                                    <td>42</td>
+                                    <td>2.0%</td>
+                                    <td><span class="metric-change positive">? 1.2%</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer">
+                Last updated: <span id="lastUpdate">Just now</span> | Next refresh in 30 seconds
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Pie Chart
+        const pieCtx = document.getElementById('pieChart').getContext('2d');
+        new Chart(pieCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Running', 'Completed', 'Failed', 'Timed Out', 'Canceled'],
+                datasets: [{
+                    data: [42, 1203, 12, 5, 3],
+                    backgroundColor: [
+                        '#2563eb',
+                        '#10b981',
+                        '#ef4444',
+                        '#f59e0b',
+                        '#d1d9e0'
+                    ],
+                    borderColor: '#ffffff',
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            usePointStyle: true,
+                            padding: 16,
+                            font: { size: 12, family: 'system-ui, -apple-system, sans-serif' },
+                            color: '#6b7684'
+                        }
+                    }
+                }
+            }
+        });
+
+        // Trend Chart
+        const trendCtx = document.getElementById('trendChart').getContext('2d');
+        new Chart(trendCtx, {
+            type: 'line',
+            data: {
+                labels: ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00', '23:59'],
+                datasets: [
+                    {
+                        label: 'Completed',
+                        data: [120, 180, 240, 280, 260, 300, 320],
+                        borderColor: '#10b981',
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.4
+                    },
+                    {
+                        label: 'Failed',
+                        data: [8, 12, 15, 10, 18, 14, 12],
+                        borderColor: '#ef4444',
+                        backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.4
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        labels: {
+                            usePointStyle: true,
+                            padding: 16,
+                            font: { size: 12, family: 'system-ui, -apple-system, sans-serif' },
+                            color: '#6b7684'
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: '#e8ecf1' },
+                        ticks: { color: '#6b7684', font: { size: 11 } }
+                    },
+                    x: {
+                        grid: { display: false },
+                        ticks: { color: '#6b7684', font: { size: 11 } }
+                    }
+                }
+            }
+        });
+
+        // Update last update time
+        function updateTime() {
+            const now = new Date();
+            document.getElementById('lastUpdate').textContent = now.toLocaleTimeString();
+        }
+        updateTime();
+        setInterval(updateTime, 10000);
+    </script>
+</body>
+</html>

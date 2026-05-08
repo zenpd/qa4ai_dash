@@ -9,6 +9,7 @@ from app.observability.kpi_metrics import (
     _memory_usage,
 )
 from app.observability.phoenix import _drift_score
+from app.observability.temporal import _NAMESPACE_TO_APP
 from app.shared.config import settings
 from app.shared.logger import logger
 
@@ -43,6 +44,16 @@ class AlertItem(BaseModel):
 
 class AlertsResponse(BaseModel):
     alerts: list[AlertItem]
+
+
+class WorkflowOption(BaseModel):
+    namespace: str
+    app_name: str
+    label: str  # Display label: "namespace (app_name)"
+
+
+class WorkflowsResponse(BaseModel):
+    workflows: list[WorkflowOption]
 
 
 def _first_value(gauge) -> float | None:
@@ -125,3 +136,22 @@ async def get_alerts() -> AlertsResponse:
     ]
 
     return AlertsResponse(alerts=alerts)
+
+
+@router.get("/workflows", response_model=WorkflowsResponse)
+async def get_workflows() -> WorkflowsResponse:
+    """
+    Get available Temporal workflows/namespaces for dropdown selection.
+    
+    Returns a list of configured namespaces with their app mappings.
+    """
+    workflows = [
+        WorkflowOption(
+            namespace=namespace,
+            app_name=_NAMESPACE_TO_APP.get(namespace, "platform"),
+            label=f"{namespace} ({_NAMESPACE_TO_APP.get(namespace, 'platform')})",
+        )
+        for namespace in sorted(_NAMESPACE_TO_APP.keys())
+    ]
+    
+    return WorkflowsResponse(workflows=workflows)
