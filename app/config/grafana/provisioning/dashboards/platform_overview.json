@@ -1776,7 +1776,7 @@
             ]
           },
           "unit": "none",
-          "noValue": "N/A"
+          "noValue": "0"
         },
         "overrides": []
       },
@@ -1809,9 +1809,9 @@
             "type": "prometheus",
             "uid": "prometheus-ds"
           },
-          "expr": "sum(azure_aca_cpu_millicores{app=~\"$app\"}) * 1000000",
+          "expr": "sum(azure_aca_cpu_millicores{app=~\"$app\"})",
           "refId": "A",
-          "legendFormat": "CPU (nanocores)",
+          "legendFormat": "CPU (mc)",
           "instant": true,
           "range": false
         }
@@ -1837,7 +1837,7 @@
             ]
           },
           "unit": "decmbytes",
-          "noValue": "N/A"
+          "noValue": "0"
         },
         "overrides": []
       },
@@ -1898,7 +1898,7 @@
             ]
           },
           "unit": "short",
-          "noValue": "N/A"
+          "noValue": "0"
         },
         "overrides": []
       },
@@ -1959,7 +1959,7 @@
             ]
           },
           "unit": "short",
-          "noValue": "N/A"
+          "noValue": "0"
         },
         "overrides": []
       },

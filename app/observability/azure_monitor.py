@@ -262,9 +262,17 @@ class AzureMonitorCollector:
             results = await asyncio.gather(*tasks, return_exceptions=True)
 
             for app_name, metrics in zip(app_names, results):
-                if isinstance(metrics, Exception) or not isinstance(metrics, dict):
-                    continue
                 app_label = _classify_app(app_name)
+                # Always mark up/down so stale gauges don't persist
+                if isinstance(metrics, Exception) or not isinstance(metrics, dict) or not metrics:
+                    _aca_up.labels(app_name=app_name, app=app_label).set(0)
+                    # Explicitly zero-out metric gauges so sum() stays meaningful
+                    # even when individual apps stop reporting
+                    _aca_cpu.labels(app_name=app_name, app=app_label).set(0)
+                    _aca_mem.labels(app_name=app_name, app=app_label).set(0)
+                    _aca_replicas.labels(app_name=app_name, app=app_label).set(0)
+                    logger.debug("Azure: no metrics for %s (marked down)", app_name)
+                    continue
                 _aca_up.labels(app_name=app_name, app=app_label).set(1)
                 if "UsageNanoCores" in metrics:
                     # nanocores → millicores  (1 millicore = 1 000 000 nanocores)
