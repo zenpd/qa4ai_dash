@@ -1,6 +1,6 @@
 {
   "uid": "qe-observability",
-  "title": "QE for AI — Observability & Tracing",
+  "title": "QE for AI \u2014 Observability & Tracing",
   "tags": [
     "qe-pillar",
     "qe",
@@ -15,7 +15,7 @@
     "to": "now"
   },
   "style": "dark",
-  "description": "ZenLabs Foundry · Observability & Tracing",
+  "description": "ZenLabs Foundry \u00b7 Observability & Tracing",
   "annotations": {
     "list": [
       {
@@ -48,28 +48,44 @@
     "list": [
       {
         "name": "project",
-        "label": "Project",
+        "label": "Project / App",
         "type": "query",
-        "datasource": "Prometheus",
-        "query": "label_values(phoenix_project_present, project_name)",
-        "refresh": 1,
+        "datasource": {
+          "type": "prometheus",
+          "uid": "prometheus-ds"
+        },
+        "query": {
+          "query": "label_values(phoenix_project_present, project_name)",
+          "refId": "StandardVariableQuery"
+        },
+        "refresh": 2,
         "includeAll": true,
         "allValue": ".*",
         "multi": false,
         "sort": 1,
+        "hide": 0,
+        "skipUrlSync": false,
         "current": {}
       },
       {
         "name": "namespace",
         "label": "Namespace",
         "type": "query",
-        "datasource": "Prometheus",
-        "query": "label_values(temporal_workflow_active, namespace)",
-        "refresh": 1,
+        "datasource": {
+          "type": "prometheus",
+          "uid": "prometheus-ds"
+        },
+        "query": {
+          "query": "label_values(temporal_workflow_active, namespace)",
+          "refId": "StandardVariableQuery"
+        },
+        "refresh": 2,
         "includeAll": true,
         "allValue": ".*",
         "multi": false,
         "sort": 1,
+        "hide": 0,
+        "skipUrlSync": false,
         "current": {}
       }
     ]
@@ -420,7 +436,7 @@
     {
       "id": 30,
       "type": "row",
-      "title": "03 · Observability & Tracing — Span coverage, hallucination detection, latency",
+      "title": "03 \u00b7 Observability & Tracing \u2014 Span coverage, hallucination detection, latency",
       "gridPos": {
         "x": 0,
         "y": 48,
@@ -433,7 +449,7 @@
       "id": 31,
       "type": "piechart",
       "title": "Span Type Distribution",
-      "description": "Distribution of span kinds from recent traces — LLM, Chain, Tool, Retriever, Embedding, HTTP.",
+      "description": "Distribution of span kinds from recent traces \u2014 LLM, Chain, Tool, Retriever, Embedding, HTTP.",
       "gridPos": {
         "x": 0,
         "y": 49,
@@ -990,7 +1006,7 @@
     {
       "id": 401,
       "type": "stat",
-      "title": "Hallucination Rate — V1 Baseline",
+      "title": "Hallucination Rate \u2014 V1 Baseline",
       "description": "Historical hallucination rate before LLM-as-judge evaluation was introduced. Documented project baseline.",
       "gridPos": {
         "x": 0,
@@ -1041,7 +1057,7 @@
     {
       "id": 402,
       "type": "stat",
-      "title": "Hallucination Rate — Current (Live)",
+      "title": "Hallucination Rate \u2014 Current (Live)",
       "description": "Current hallucination rate derived from factual_grounding evaluator: (1 - score) * 100. Lower is better.",
       "gridPos": {
         "x": 6,
@@ -1100,7 +1116,7 @@
     {
       "id": 41,
       "type": "text",
-      "title": "Hallucination Taxonomy — Banking-Specific Risk Types",
+      "title": "Hallucination Taxonomy \u2014 Banking-Specific Risk Types",
       "gridPos": {
         "x": 12,
         "y": 58,

@@ -1,6 +1,6 @@
 {
   "uid": "qe-four-pillars",
-  "title": "QE for AI — Overview",
+  "title": "QE for AI \u2014 Overview",
   "tags": [
     "qe-pillar",
     "qe",
@@ -15,7 +15,7 @@
     "to": "now"
   },
   "style": "dark",
-  "description": "ZenLabs Foundry · Overview — use Pillar Navigation dropdown (top right) to drill into each pillar",
+  "description": "ZenLabs Foundry \u00b7 Overview \u2014 use Pillar Navigation dropdown (top right) to drill into each pillar",
   "annotations": {
     "list": [
       {
@@ -48,28 +48,44 @@
     "list": [
       {
         "name": "project",
-        "label": "Project",
+        "label": "Project / App",
         "type": "query",
-        "datasource": "Prometheus",
-        "query": "label_values(phoenix_project_present, project_name)",
-        "refresh": 1,
+        "datasource": {
+          "type": "prometheus",
+          "uid": "prometheus-ds"
+        },
+        "query": {
+          "query": "label_values(phoenix_project_present, project_name)",
+          "refId": "StandardVariableQuery"
+        },
+        "refresh": 2,
         "includeAll": true,
         "allValue": ".*",
         "multi": false,
         "sort": 1,
+        "hide": 0,
+        "skipUrlSync": false,
         "current": {}
       },
       {
         "name": "namespace",
         "label": "Namespace",
         "type": "query",
-        "datasource": "Prometheus",
-        "query": "label_values(temporal_workflow_active, namespace)",
-        "refresh": 1,
+        "datasource": {
+          "type": "prometheus",
+          "uid": "prometheus-ds"
+        },
+        "query": {
+          "query": "label_values(temporal_workflow_active, namespace)",
+          "refId": "StandardVariableQuery"
+        },
+        "refresh": 2,
         "includeAll": true,
         "allValue": ".*",
         "multi": false,
         "sort": 1,
+        "hide": 0,
+        "skipUrlSync": false,
         "current": {}
       }
     ]
