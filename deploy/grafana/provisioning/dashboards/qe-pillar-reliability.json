@@ -1,6 +1,6 @@
 {
   "uid": "qe-reliability",
-  "title": "QE for AI \u2014 Reliability & Durability",
+  "title": "QE for AI — Reliability & Durability",
   "tags": [
     "qe-pillar",
     "qe",
@@ -15,7 +15,7 @@
     "to": "now"
   },
   "style": "dark",
-  "description": "ZenLabs Foundry \u00b7 Reliability & Durability",
+  "description": "ZenLabs Foundry · Reliability & Durability",
   "annotations": {
     "list": [
       {
@@ -48,7 +48,7 @@
     "list": [
       {
         "name": "project",
-        "label": "Project / App",
+        "label": "Agentic App",
         "type": "query",
         "datasource": {
           "type": "prometheus",
@@ -56,27 +56,6 @@
         },
         "query": {
           "query": "label_values(phoenix_project_present, project_name)",
-          "refId": "StandardVariableQuery"
-        },
-        "refresh": 2,
-        "includeAll": true,
-        "allValue": ".*",
-        "multi": false,
-        "sort": 1,
-        "hide": 0,
-        "skipUrlSync": false,
-        "current": {}
-      },
-      {
-        "name": "namespace",
-        "label": "Namespace",
-        "type": "query",
-        "datasource": {
-          "type": "prometheus",
-          "uid": "prometheus-ds"
-        },
-        "query": {
-          "query": "label_values(temporal_workflow_active, namespace)",
           "refId": "StandardVariableQuery"
         },
         "refresh": 2,
@@ -389,7 +368,7 @@
       "datasource": "Prometheus",
       "targets": [
         {
-          "expr": "((sum(temporal_workflow_completed_total{namespace=~\"$namespace\"}) or vector(0)) / clamp_min(sum(temporal_workflow_completed_total{namespace=~\"$namespace\"}) + sum(temporal_workflow_failed_total{namespace=~\"$namespace\"}) + sum(temporal_workflow_timed_out_total{namespace=~\"$namespace\"}), 1) * 100) or vector(0)",
+          "expr": "((sum(temporal_workflow_completed_total{}) or vector(0)) / clamp_min(sum(temporal_workflow_completed_total{}) + sum(temporal_workflow_failed_total{}) + sum(temporal_workflow_timed_out_total{}), 1) * 100) or vector(0)",
           "legendFormat": "",
           "instant": true,
           "refId": "A"
@@ -436,7 +415,7 @@
     {
       "id": 20,
       "type": "row",
-      "title": "02 \u00b7 Reliability & Durability \u2014 Workflow resilience, fault injection, coverage",
+      "title": "02 · Reliability & Durability — Workflow resilience, fault injection, coverage",
       "gridPos": {
         "x": 0,
         "y": 26,
@@ -449,7 +428,7 @@
       "id": 21,
       "type": "barchart",
       "title": "Workflow Execution Status",
-      "description": "Temporal workflow counts by status per namespace \u2014 Running, Completed, Failed, TimedOut, Canceled.",
+      "description": "Temporal workflow counts by status per namespace — Running, Completed, Failed, TimedOut, Canceled.",
       "gridPos": {
         "x": 0,
         "y": 27,
@@ -459,32 +438,32 @@
       "datasource": "Prometheus",
       "targets": [
         {
-          "expr": "temporal_workflow_completed_total{namespace=~\"$namespace\"}",
-          "legendFormat": "Completed \u2014 {{namespace}}",
+          "expr": "temporal_workflow_completed_total{}",
+          "legendFormat": "Completed — {{namespace}}",
           "instant": true,
           "refId": "A"
         },
         {
-          "expr": "temporal_workflow_failed_total{namespace=~\"$namespace\"}",
-          "legendFormat": "Failed \u2014 {{namespace}}",
+          "expr": "temporal_workflow_failed_total{}",
+          "legendFormat": "Failed — {{namespace}}",
           "instant": true,
           "refId": "B"
         },
         {
-          "expr": "temporal_workflow_active{namespace=~\"$namespace\"}",
-          "legendFormat": "Running \u2014 {{namespace}}",
+          "expr": "temporal_workflow_active{}",
+          "legendFormat": "Running — {{namespace}}",
           "instant": true,
           "refId": "C"
         },
         {
-          "expr": "temporal_workflow_timed_out_total{namespace=~\"$namespace\"}",
-          "legendFormat": "TimedOut \u2014 {{namespace}}",
+          "expr": "temporal_workflow_timed_out_total{}",
+          "legendFormat": "TimedOut — {{namespace}}",
           "instant": true,
           "refId": "D"
         },
         {
-          "expr": "temporal_workflow_canceled_total{namespace=~\"$namespace\"}",
-          "legendFormat": "Canceled \u2014 {{namespace}}",
+          "expr": "temporal_workflow_canceled_total{}",
+          "legendFormat": "Canceled — {{namespace}}",
           "instant": true,
           "refId": "E"
         }
@@ -604,7 +583,7 @@
     {
       "id": 22,
       "type": "text",
-      "title": "Fault Injection \u2014 QE Test Results",
+      "title": "Fault Injection — QE Test Results",
       "description": "Fault injection test results from QE testing suite.",
       "gridPos": {
         "x": 12,
@@ -614,7 +593,7 @@
       },
       "options": {
         "mode": "html",
-        "content": "<table class='ft'><thead><tr><th>Fault Scenario</th><th>Expected Behaviour</th><th>Result</th></tr></thead><tbody><tr><td>LLM timeout (&gt;5 min)</td><td>Retry \u00c3\u20143 then compensate</td><td class='ps'>Pass \u00e2\u0153\u201c</td></tr><tr><td>Worker kill -9 mid-run</td><td>Replay from checkpoint</td><td class='ps'>Pass \u00e2\u0153\u201c</td></tr><tr><td>Redis down</td><td>Retry; DB persist succeeds</td><td class='ps'>Pass \u00e2\u0153\u201c</td></tr><tr><td>DB constraint violation</td><td>Non-retryable + compensate</td><td class='ps'>Pass \u00e2\u0153\u201c</td></tr><tr><td>OpenAI 429 rate limit</td><td>Backoff 2s\u00e2\u2020\u20194s\u00e2\u2020\u20198s</td><td class='ps'>Pass \u00e2\u0153\u201c</td></tr><tr><td>Namespace bootstrap race</td><td>Idempotent registration</td><td class='ps'>Pass \u00e2\u0153\u201c</td></tr></tbody></table>"
+        "content": "<table class='ft'><thead><tr><th>Fault Scenario</th><th>Expected Behaviour</th><th>Result</th></tr></thead><tbody><tr><td>LLM timeout (&gt;5 min)</td><td>Retry Ã—3 then compensate</td><td class='ps'>Pass âœ“</td></tr><tr><td>Worker kill -9 mid-run</td><td>Replay from checkpoint</td><td class='ps'>Pass âœ“</td></tr><tr><td>Redis down</td><td>Retry; DB persist succeeds</td><td class='ps'>Pass âœ“</td></tr><tr><td>DB constraint violation</td><td>Non-retryable + compensate</td><td class='ps'>Pass âœ“</td></tr><tr><td>OpenAI 429 rate limit</td><td>Backoff 2sâ†’4sâ†’8s</td><td class='ps'>Pass âœ“</td></tr><tr><td>Namespace bootstrap race</td><td>Idempotent registration</td><td class='ps'>Pass âœ“</td></tr></tbody></table>"
       }
     },
     {
@@ -728,7 +707,7 @@
       "datasource": "Prometheus",
       "targets": [
         {
-          "expr": "((sum(temporal_workflow_completed_total{namespace=~\"$namespace\"}) or vector(0)) / clamp_min(sum(temporal_workflow_completed_total{namespace=~\"$namespace\"}) + sum(temporal_workflow_failed_total{namespace=~\"$namespace\"}) + sum(temporal_workflow_timed_out_total{namespace=~\"$namespace\"}), 1) * 100) or vector(0)",
+          "expr": "((sum(temporal_workflow_completed_total{}) or vector(0)) / clamp_min(sum(temporal_workflow_completed_total{}) + sum(temporal_workflow_failed_total{}) + sum(temporal_workflow_timed_out_total{}), 1) * 100) or vector(0)",
           "legendFormat": "",
           "instant": true,
           "refId": "A"
@@ -768,7 +747,7 @@
     {
       "id": 261,
       "type": "stat",
-      "title": "V1 Baseline \u2014 Pre-QE Quality",
+      "title": "V1 Baseline — Pre-QE Quality",
       "description": "Historical quality baseline before QE tooling was introduced. No trace coverage, no LLM-judge evaluators.",
       "gridPos": {
         "x": 0,
@@ -948,7 +927,7 @@
       "datasource": "Prometheus",
       "targets": [
         {
-          "expr": "((sum(temporal_workflow_completed_total{namespace=~\"$namespace\"}) or vector(0)) / clamp_min(sum(temporal_workflow_completed_total{namespace=~\"$namespace\"}) + sum(temporal_workflow_failed_total{namespace=~\"$namespace\"}) + sum(temporal_workflow_timed_out_total{namespace=~\"$namespace\"}), 1) * 100) or vector(0)",
+          "expr": "((sum(temporal_workflow_completed_total{}) or vector(0)) / clamp_min(sum(temporal_workflow_completed_total{}) + sum(temporal_workflow_failed_total{}) + sum(temporal_workflow_timed_out_total{}), 1) * 100) or vector(0)",
           "legendFormat": "",
           "instant": true,
           "refId": "A"

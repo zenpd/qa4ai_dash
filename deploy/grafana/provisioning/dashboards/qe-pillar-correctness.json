@@ -1,6 +1,6 @@
 {
   "uid": "qe-correctness",
-  "title": "QE for AI \u2014 Correctness & Evaluation",
+  "title": "QE for AI — Correctness & Evaluation",
   "tags": [
     "qe-pillar",
     "qe",
@@ -15,7 +15,7 @@
     "to": "now"
   },
   "style": "dark",
-  "description": "ZenLabs Foundry \u00b7 Correctness & Evaluation",
+  "description": "ZenLabs Foundry · Correctness & Evaluation",
   "annotations": {
     "list": [
       {
@@ -48,7 +48,7 @@
     "list": [
       {
         "name": "project",
-        "label": "Project / App",
+        "label": "Agentic App",
         "type": "query",
         "datasource": {
           "type": "prometheus",
@@ -56,27 +56,6 @@
         },
         "query": {
           "query": "label_values(phoenix_project_present, project_name)",
-          "refId": "StandardVariableQuery"
-        },
-        "refresh": 2,
-        "includeAll": true,
-        "allValue": ".*",
-        "multi": false,
-        "sort": 1,
-        "hide": 0,
-        "skipUrlSync": false,
-        "current": {}
-      },
-      {
-        "name": "namespace",
-        "label": "Namespace",
-        "type": "query",
-        "datasource": {
-          "type": "prometheus",
-          "uid": "prometheus-ds"
-        },
-        "query": {
-          "query": "label_values(temporal_workflow_active, namespace)",
           "refId": "StandardVariableQuery"
         },
         "refresh": 2,
@@ -389,7 +368,7 @@
       "datasource": "Prometheus",
       "targets": [
         {
-          "expr": "((sum(temporal_workflow_completed_total{namespace=~\"$namespace\"}) or vector(0)) / clamp_min(sum(temporal_workflow_completed_total{namespace=~\"$namespace\"}) + sum(temporal_workflow_failed_total{namespace=~\"$namespace\"}) + sum(temporal_workflow_timed_out_total{namespace=~\"$namespace\"}), 1) * 100) or vector(0)",
+          "expr": "((sum(temporal_workflow_completed_total{}) or vector(0)) / clamp_min(sum(temporal_workflow_completed_total{}) + sum(temporal_workflow_failed_total{}) + sum(temporal_workflow_timed_out_total{}), 1) * 100) or vector(0)",
           "legendFormat": "",
           "instant": true,
           "refId": "A"
@@ -436,7 +415,7 @@
     {
       "id": 10,
       "type": "row",
-      "title": "01 \u00b7 Correctness & Evaluation \u2014 LLM-as-judge scores across 9 evaluators",
+      "title": "01 · Correctness & Evaluation — LLM-as-judge scores across 9 evaluators",
       "gridPos": {
         "x": 0,
         "y": 4,
@@ -448,8 +427,8 @@
     {
       "id": 11,
       "type": "barchart",
-      "title": "Evaluator Scores \u2014 Current",
-      "description": "Phoenix LLM-as-judge evaluator scores (0\u201c1 scale). Bars colored green when passing threshold, red when below.",
+      "title": "Evaluator Scores — Current",
+      "description": "Phoenix LLM-as-judge evaluator scores (0“1 scale). Bars colored green when passing threshold, red when below.",
       "gridPos": {
         "x": 0,
         "y": 5,
@@ -522,7 +501,7 @@
       "id": 12,
       "type": "timeseries",
       "title": "Evaluator Score Trend",
-      "description": "Score trend over time for all evaluators \u2014 tracks improvement across model versions.",
+      "description": "Score trend over time for all evaluators — tracks improvement across model versions.",
       "gridPos": {
         "x": 12,
         "y": 5,
@@ -619,7 +598,7 @@
       },
       "options": {
         "mode": "html",
-        "content": "<table class='gt'><thead><tr><th>Evaluator</th><th>Min Threshold</th><th>Gate</th><th>Description</th></tr></thead><tbody><tr><td>eval.pep_accuracy</td><td>0.95</td><td><span class='bd bbl'>Block</span></td><td>PEP screening accuracy \u2014 false positives must be minimised</td></tr><tr><td>eval.fatca_accuracy</td><td>0.95</td><td><span class='bd bbl'>Block</span></td><td>FATCA classification accuracy for US tax compliance</td></tr><tr><td>eval.aml_decision_quality</td><td>0.90</td><td><span class='bd bbl'>Block</span></td><td>AML decision quality \u2014 must not miss suspicious activity</td></tr><tr><td>eval.escalation_quality</td><td>0.88</td><td><span class='bd bbl'>Block</span></td><td>Correct escalation routing and priority assignment</td></tr><tr><td>eval.factual_grounding</td><td>0.85</td><td><span class='bd bbl'>Block</span></td><td>LLM output grounded in source data \u2014 anti-hallucination</td></tr><tr><td>eval.kyc_quality</td><td>0.85</td><td><span class='bd bwa'>Warn</span></td><td>KYC data extraction and verification quality</td></tr><tr><td>eval.document_verification</td><td>0.85</td><td><span class='bd bwa'>Warn</span></td><td>Document authenticity and data extraction accuracy</td></tr><tr><td>eval.step_completion</td><td>0.80</td><td><span class='bd bwa'>Warn</span></td><td>Workflow step completion and ordering correctness</td></tr><tr><td>eval.response_quality</td><td>0.75</td><td><span class='bd bin'>Info</span></td><td>Overall LLM response quality and coherence</td></tr></tbody></table>"
+        "content": "<table class='gt'><thead><tr><th>Evaluator</th><th>Min Threshold</th><th>Gate</th><th>Description</th></tr></thead><tbody><tr><td>eval.pep_accuracy</td><td>0.95</td><td><span class='bd bbl'>Block</span></td><td>PEP screening accuracy — false positives must be minimised</td></tr><tr><td>eval.fatca_accuracy</td><td>0.95</td><td><span class='bd bbl'>Block</span></td><td>FATCA classification accuracy for US tax compliance</td></tr><tr><td>eval.aml_decision_quality</td><td>0.90</td><td><span class='bd bbl'>Block</span></td><td>AML decision quality — must not miss suspicious activity</td></tr><tr><td>eval.escalation_quality</td><td>0.88</td><td><span class='bd bbl'>Block</span></td><td>Correct escalation routing and priority assignment</td></tr><tr><td>eval.factual_grounding</td><td>0.85</td><td><span class='bd bbl'>Block</span></td><td>LLM output grounded in source data — anti-hallucination</td></tr><tr><td>eval.kyc_quality</td><td>0.85</td><td><span class='bd bwa'>Warn</span></td><td>KYC data extraction and verification quality</td></tr><tr><td>eval.document_verification</td><td>0.85</td><td><span class='bd bwa'>Warn</span></td><td>Document authenticity and data extraction accuracy</td></tr><tr><td>eval.step_completion</td><td>0.80</td><td><span class='bd bwa'>Warn</span></td><td>Workflow step completion and ordering correctness</td></tr><tr><td>eval.response_quality</td><td>0.75</td><td><span class='bd bin'>Info</span></td><td>Overall LLM response quality and coherence</td></tr></tbody></table>"
       }
     }
   ]

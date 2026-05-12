@@ -84,7 +84,7 @@
         "hide": 0,
         "includeAll": true,
         "allValue": ".*",
-        "label": "Application",
+        "label": "Agentic App",
         "multi": false,
         "name": "app",
         "options": [
@@ -160,7 +160,7 @@
         "y": 0
       },
       "id": 300,
-      "title": "Summary \u2014 $app",
+      "title": "Summary — $app",
       "type": "row"
     },
     {
@@ -488,7 +488,7 @@
         "y": 8
       },
       "id": 100,
-      "title": "Temporal \u2014 Workflow Health (all namespaces)",
+      "title": "Temporal — Workflow Health (all namespaces)",
       "type": "row"
     },
     {
@@ -894,7 +894,7 @@
         "y": 19
       },
       "id": 101,
-      "title": "Phoenix \u2014 LLM Projects (filtered by $app)",
+      "title": "Phoenix — LLM Projects (filtered by $app)",
       "type": "row"
     },
     {
@@ -1172,7 +1172,7 @@
         },
         "showHeader": true
       },
-      "title": "Phoenix Projects \u2014 filtered by $app",
+      "title": "Phoenix Projects — filtered by $app",
       "type": "table",
       "targets": [
         {
@@ -1211,7 +1211,7 @@
         "y": 32
       },
       "id": 310,
-      "title": "Phoenix \u2014 Tracing & Token Usage (filtered by $app)",
+      "title": "Phoenix — Tracing & Token Usage (filtered by $app)",
       "type": "row"
     },
     {
@@ -1677,7 +1677,7 @@
         },
         "showHeader": true
       },
-      "title": "Phoenix Project Details \u2014 filtered by $app",
+      "title": "Phoenix Project Details — filtered by $app",
       "type": "table",
       "targets": [
         {

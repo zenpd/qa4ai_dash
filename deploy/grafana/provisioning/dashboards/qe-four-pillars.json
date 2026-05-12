@@ -1,6 +1,6 @@
 {
   "uid": "qe-four-pillars",
-  "title": "QE for AI \u2014 Overview",
+  "title": "QE for AI — Overview",
   "tags": [
     "qe-pillar",
     "qe",
@@ -15,7 +15,7 @@
     "to": "now"
   },
   "style": "dark",
-  "description": "ZenLabs Foundry \u00b7 Overview \u2014 use Pillar Navigation dropdown (top right) to drill into each pillar",
+  "description": "ZenLabs Foundry · Overview — use Pillar Navigation dropdown (top right) to drill into each pillar",
   "annotations": {
     "list": [
       {
@@ -48,7 +48,7 @@
     "list": [
       {
         "name": "project",
-        "label": "Project / App",
+        "label": "Agentic App",
         "type": "query",
         "datasource": {
           "type": "prometheus",
@@ -56,27 +56,6 @@
         },
         "query": {
           "query": "label_values(phoenix_project_present, project_name)",
-          "refId": "StandardVariableQuery"
-        },
-        "refresh": 2,
-        "includeAll": true,
-        "allValue": ".*",
-        "multi": false,
-        "sort": 1,
-        "hide": 0,
-        "skipUrlSync": false,
-        "current": {}
-      },
-      {
-        "name": "namespace",
-        "label": "Namespace",
-        "type": "query",
-        "datasource": {
-          "type": "prometheus",
-          "uid": "prometheus-ds"
-        },
-        "query": {
-          "query": "label_values(temporal_workflow_active, namespace)",
           "refId": "StandardVariableQuery"
         },
         "refresh": 2,
@@ -389,7 +368,7 @@
       "datasource": "Prometheus",
       "targets": [
         {
-          "expr": "((sum(temporal_workflow_completed_total{namespace=~\"$namespace\"}) or vector(0)) / clamp_min(sum(temporal_workflow_completed_total{namespace=~\"$namespace\"}) + sum(temporal_workflow_failed_total{namespace=~\"$namespace\"}) + sum(temporal_workflow_timed_out_total{namespace=~\"$namespace\"}), 1) * 100) or vector(0)",
+          "expr": "((sum(temporal_workflow_completed_total{}) or vector(0)) / clamp_min(sum(temporal_workflow_completed_total{}) + sum(temporal_workflow_failed_total{}) + sum(temporal_workflow_timed_out_total{}), 1) * 100) or vector(0)",
           "legendFormat": "",
           "instant": true,
           "refId": "A"
@@ -695,28 +674,28 @@
       "datasource": "Prometheus",
       "targets": [
         {
-          "expr": "temporal_workflow_active{namespace=~\"$namespace\"}",
+          "expr": "temporal_workflow_active{}",
           "legendFormat": "{{namespace}}",
           "instant": true,
           "refId": "active",
           "format": "table"
         },
         {
-          "expr": "temporal_workflow_completed_total{namespace=~\"$namespace\"}",
+          "expr": "temporal_workflow_completed_total{}",
           "legendFormat": "{{namespace}}",
           "instant": true,
           "refId": "completed",
           "format": "table"
         },
         {
-          "expr": "temporal_workflow_failed_total{namespace=~\"$namespace\"}",
+          "expr": "temporal_workflow_failed_total{}",
           "legendFormat": "{{namespace}}",
           "instant": true,
           "refId": "failed",
           "format": "table"
         },
         {
-          "expr": "temporal_workflow_timed_out_total{namespace=~\"$namespace\"}",
+          "expr": "temporal_workflow_timed_out_total{}",
           "legendFormat": "{{namespace}}",
           "instant": true,
           "refId": "timedout",

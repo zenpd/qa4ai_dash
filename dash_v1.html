@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QE for AI — Four Pillars · ZenLabs Foundry</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,300;12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ════════════════════════════════════════════ TOKENS */
+:root {
+  --bg:   #F2F6FF;
+  --sf:   #FFFFFF;
+  --sf2:  #E8EDFB;
+  --bd:   rgba(11,23,66,.08);
+  --bdm:  rgba(11,23,66,.14);
+  --tx:   #0A1530;
+  --mu:   #546080;
+  --mu2:  #8A9BBF;
+  --c1:   #059669; --c1l:rgba(5,150,105,.07);  --c1m:rgba(5,150,105,.16);
+  --c2:   #0369A1; --c2l:rgba(3,105,161,.07);  --c2m:rgba(3,105,161,.16);
+  --c3:   #6D28D9; --c3l:rgba(109,40,217,.07); --c3m:rgba(109,40,217,.16);
+  --c4:   #B45309; --c4l:rgba(180,83,9,.07);   --c4m:rgba(180,83,9,.16);
+  --lv:   #EF4444;
+  --r:    14px;
+  --sh:   0 1px 4px rgba(11,23,66,.05), 0 6px 20px rgba(11,23,66,.07);
+  --shl:  0 4px 12px rgba(11,23,66,.07), 0 24px 64px rgba(11,23,66,.12);
+  --fd:   'Bricolage Grotesque', sans-serif;
+  --fb:   'Plus Jakarta Sans', sans-serif;
+}
+*,*::before,*::after { box-sizing:border-box; margin:0; padding:0 }
+html { scroll-behavior:smooth }
+body { font-family:var(--fb); background:var(--bg); color:var(--tx); overflow-x:hidden; font-size:14px; line-height:1.6 }
+
+body::before {
+  content:''; position:fixed; inset:0; z-index:-1; pointer-events:none;
+  background:
+    radial-gradient(ellipse 75% 60% at -2% -2%,  rgba(5,150,105,.05)  0%, transparent 55%),
+    radial-gradient(ellipse 65% 65% at 102% 5%,  rgba(3,105,161,.06)  0%, transparent 55%),
+    radial-gradient(ellipse 60% 50% at 50% 105%, rgba(109,40,217,.04) 0%, transparent 55%),
+    var(--bg);
+}
+
+/* ════════════════════════════════════════════ HEADER */
+.hdr {
+  position:sticky; top:0; z-index:400; height:62px;
+  background:rgba(242,246,255,.92); backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px);
+  border-bottom:1px solid var(--bd);
+  display:flex; align-items:center; padding:0 32px; gap:14px;
+}
+.wm { font-family:var(--fd); font-size:15px; font-weight:800; letter-spacing:-.3px; color:var(--tx); white-space:nowrap; flex-shrink:0 }
+.wm-g { color:var(--c1) }
+.vsep { width:1px; height:22px; background:var(--bdm); flex-shrink:0 }
+.selg { display:flex; align-items:center; gap:7px }
+.sellbl { font-size:10px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--mu); white-space:nowrap }
+.sel {
+  font-family:var(--fb); font-size:12px; font-weight:600; color:var(--tx);
+  background:var(--sf); border:1.5px solid var(--bdm); border-radius:9px;
+  padding:5px 28px 5px 10px; cursor:pointer; appearance:none; -webkit-appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='7' fill='none'%3E%3Cpath d='M1 1l4.5 4.5L10 1' stroke='%23546080' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat:no-repeat; background-position:right 9px center;
+  transition:border-color .15s, box-shadow .15s; max-width:196px;
+}
+.sel:focus { outline:none; border-color:var(--c2); box-shadow:0 0 0 3px rgba(3,105,161,.14) }
+.hsp { flex:1 }
+
+/* Refresh button */
+.refresh-btn {
+  font-family:var(--fb); font-size:11px; font-weight:700; color:var(--mu);
+  background:var(--sf); border:1.5px solid var(--bd); border-radius:8px;
+  padding:5px 12px; cursor:pointer; display:flex; align-items:center; gap:6px;
+  transition:all .18s; white-space:nowrap; flex-shrink:0;
+}
+.refresh-btn:hover { border-color:var(--c2); color:var(--c2) }
+.refresh-btn.spinning .r-ico { animation:rot 0.8s linear infinite }
+
+.live {
+  display:flex; align-items:center; gap:7px; font-size:10px; font-weight:700;
+  letter-spacing:.08em; text-transform:uppercase; color:var(--lv);
+  background:rgba(239,68,68,.07); border:1px solid rgba(239,68,68,.2);
+  padding:4px 12px; border-radius:99px; white-space:nowrap; flex-shrink:0;
+}
+.ldot { width:7px; height:7px; background:var(--lv); border-radius:50%; animation:lp 1.6s ease-in-out infinite }
+@keyframes lp { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.28;transform:scale(.72)} }
+@keyframes rot { to { transform:rotate(360deg) } }
+
+/* ════════════════════════════════════════════ HERO */
+.hero { max-width:1340px; margin:0 auto; padding:48px 32px 0; animation:fu .4s ease both }
+.ey {
+  font-size:10px; font-weight:700; letter-spacing:.2em; text-transform:uppercase;
+  color:var(--c2); margin-bottom:12px; display:flex; align-items:center; gap:10px;
+}
+.ey::before { content:''; width:20px; height:2px; background:var(--c2); border-radius:2px }
+.ht {
+  font-family:var(--fd); font-size:clamp(30px,3.8vw,50px); font-weight:800;
+  line-height:1.05; letter-spacing:-.035em; color:var(--tx); margin-bottom:12px;
+}
+.ht em {
+  font-style:normal;
+  background:linear-gradient(110deg,var(--c1) 0%,var(--c2) 100%);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+}
+.hd { font-size:14px; color:var(--mu); max-width:640px; line-height:1.75 }
+
+/* ════════════════════════════════════════════ KPI STRIP */
+.kpi-sec { max-width:1340px; margin:38px auto 0; padding:0 32px; animation:fu .4s .07s ease both }
+
+.kpi-header {
+  display:flex; align-items:center; justify-content:space-between;
+  margin-bottom:16px;
+}
+.kpi-lbl-row {
+  font-size:10px; font-weight:700; letter-spacing:.16em; text-transform:uppercase; color:var(--mu2);
+  display:flex; align-items:center; gap:10px;
+}
+.kpi-lbl-row::after { content:''; flex:1; height:1px; background:var(--bd) }
+.kpi-ts { font-size:10px; color:var(--mu2); display:flex; align-items:center; gap:5px }
+
+.kpis { display:grid; grid-template-columns:repeat(5,1fr); gap:12px }
+
+.kpi {
+  background:var(--sf); border:1.5px solid var(--bd); border-radius:16px;
+  padding:20px 18px 16px; position:relative; overflow:hidden;
+  transition:transform .22s, box-shadow .22s, border-color .22s;
+  cursor:default;
+}
+.kpi:hover { transform:translateY(-3px); box-shadow:var(--shl) }
+
+/* top accent */
+.kpi::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:3px;
+  background:var(--kc,var(--mu2)); border-radius:16px 16px 0 0;
+}
+/* glow on load */
+.kpi.just-loaded::after {
+  content:''; position:absolute; inset:0;
+  background:radial-gradient(ellipse 80% 80% at 50% -10%, var(--kgl,rgba(5,150,105,.08)) 0%, transparent 70%);
+  animation:glow .8s ease forwards;
+}
+@keyframes glow { from{opacity:1} to{opacity:0} }
+
+.kpi-icon {
+  width:32px; height:32px; border-radius:9px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:15px; margin-bottom:12px;
+  background:var(--kc-bg, var(--sf2));
+}
+
+.kpi-name { font-size:10px; font-weight:700; letter-spacing:.07em; text-transform:uppercase; color:var(--mu); margin-bottom:8px }
+
+.kpi-val-wrap { display:flex; align-items:baseline; gap:2px; min-height:38px; margin-bottom:4px }
+.kpi-num {
+  font-family:var(--fd); font-size:30px; font-weight:800;
+  color:var(--tx); line-height:1; letter-spacing:-.03em;
+}
+.kpi-unit { font-family:var(--fd); font-size:16px; font-weight:600; color:var(--mu); }
+.kpi-sub { font-size:10px; color:var(--mu2); line-height:1.4 }
+
+/* Per-card status dot */
+.kpi-status {
+  position:absolute; top:14px; right:14px;
+  width:8px; height:8px; border-radius:50%;
+  background:var(--mu2);
+  transition:background .3s;
+}
+.kpi-status.live  { background:var(--c1); animation:lp 2s ease-in-out infinite }
+.kpi-status.error { background:var(--lv); animation:none }
+
+/* shimmer skeleton */
+.skel {
+  display:inline-block; width:70px; height:30px; border-radius:7px;
+  background:linear-gradient(90deg,var(--sf2) 25%,rgba(11,23,66,.07) 50%,var(--sf2) 75%);
+  background-size:300% 100%; animation:shim 1.3s infinite;
+}
+@keyframes shim { 0%{background-position:150% center} 100%{background-position:-150% center} }
+
+/* ════════════════════════════════════════════ FRAMEWORK CARDS */
+.fw { max-width:1340px; margin:42px auto 0; padding:0 32px; animation:fu .4s .14s ease both }
+.sec-lbl { font-size:10px; font-weight:700; letter-spacing:.16em; text-transform:uppercase; color:var(--mu2); margin-bottom:16px }
+
+.pgrid { display:grid; grid-template-columns:repeat(4,1fr); gap:11px; position:relative }
+.pgrid::after {
+  content:''; position:absolute; top:50%; left:9%; right:9%; height:1px;
+  background:linear-gradient(to right,var(--c1),var(--c2),var(--c3),var(--c4));
+  opacity:.12; z-index:0; pointer-events:none;
+}
+
+.pc {
+  background:var(--sf); border:1.5px solid var(--bd); border-radius:var(--r);
+  padding:22px 18px 18px; position:relative; z-index:1; cursor:pointer; overflow:hidden;
+  transition:transform .22s, box-shadow .22s, border-color .22s;
+}
+.pc::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:3px;
+  background:var(--cp); border-radius:var(--r) var(--r) 0 0;
+  transform:scaleX(0); transform-origin:left; transition:transform .28s;
+}
+.pc:hover { transform:translateY(-3px); box-shadow:var(--shl) }
+.pc:hover::before,.pc.sel::before { transform:scaleX(1) }
+.pc.sel { border-color:var(--cp); box-shadow:0 0 0 3px var(--cr), var(--shl); transform:translateY(-3px) }
+
+.pc[data-p="1"] { --cp:var(--c1); --cbg:var(--c1l); --cr:rgba(5,150,105,.14) }
+.pc[data-p="2"] { --cp:var(--c2); --cbg:var(--c2l); --cr:rgba(3,105,161,.14) }
+.pc[data-p="3"] { --cp:var(--c3); --cbg:var(--c3l); --cr:rgba(109,40,217,.14) }
+.pc[data-p="4"] { --cp:var(--c4); --cbg:var(--c4l); --cr:rgba(180,83,9,.14) }
+
+.p-step {
+  font-size:9px; font-weight:800; letter-spacing:.14em; text-transform:uppercase;
+  color:var(--cp); margin-bottom:13px; display:flex; align-items:center; gap:7px;
+}
+.p-num {
+  width:22px; height:22px; border-radius:6px; background:var(--cbg);
+  display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:800;
+}
+.p-ico {
+  width:40px; height:40px; border-radius:12px; background:var(--cbg);
+  display:flex; align-items:center; justify-content:center; font-size:20px;
+  margin-bottom:12px; transition:transform .22s;
+}
+.pc:hover .p-ico { transform:scale(1.1) rotate(-6deg) }
+.p-name { font-family:var(--fd); font-size:15px; font-weight:700; color:var(--tx); letter-spacing:-.02em; margin-bottom:7px }
+.p-body { font-size:11.5px; color:var(--mu); line-height:1.65; margin-bottom:12px }
+.chips { display:flex; flex-wrap:wrap; gap:5px }
+.chip {
+  font-size:9px; font-weight:700; letter-spacing:.06em; text-transform:uppercase;
+  padding:3px 8px; border-radius:5px; background:var(--cbg); color:var(--cp);
+  border:1px solid var(--cp); opacity:.6; transition:opacity .18s;
+}
+.pc.sel .chip, .pc:hover .chip { opacity:1 }
+.p-cta {
+  font-size:11px; font-weight:700; color:var(--cp); margin-top:14px;
+  opacity:0; transition:opacity .2s; display:flex; align-items:center; gap:4px;
+}
+.p-cta::after { content:'→' }
+.pc:hover .p-cta, .pc.sel .p-cta { opacity:1 }
+.c-arr { position:absolute; right:12px; top:50%; transform:translateY(-50%); color:var(--cp); font-size:18px; opacity:.18; transition:opacity .2s; pointer-events:none }
+.pc:last-child .c-arr { display:none }
+.pc:hover .c-arr { opacity:.65 }
+
+/* ════════════════════════════════════════════ OVERVIEW BTN */
+.ov-row { max-width:1340px; margin:10px auto 0; padding:0 32px; display:flex; align-items:center; gap:12px; animation:fu .4s .2s ease both }
+.ov-btn {
+  font-family:var(--fb); font-size:12px; font-weight:600; color:var(--mu);
+  background:var(--sf); border:1.5px solid var(--bd); border-radius:10px;
+  padding:9px 18px; cursor:pointer; display:flex; align-items:center; gap:7px; transition:all .2s;
+}
+.ov-btn:hover { border-color:var(--bdm); color:var(--tx) }
+.ov-btn.sel { background:var(--tx); color:#fff; border-color:var(--tx) }
+.ov-hint { font-size:11px; color:var(--mu2) }
+
+/* ════════════════════════════════════════════ DASHBOARD EMBED */
+.ds { max-width:1340px; margin:26px auto 0; padding:0 32px 52px; animation:fu .4s .25s ease both }
+.dcard { background:var(--sf); border:1px solid var(--bd); border-radius:20px; overflow:hidden; box-shadow:var(--shl) }
+.dtop {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:15px 22px; border-bottom:1px solid var(--bd); gap:12px; flex-wrap:wrap;
+}
+.drow { display:flex; align-items:center; gap:12px }
+.dpip { width:11px; height:11px; border-radius:50%; flex-shrink:0; transition:background .3s }
+.dtxt { font-family:var(--fd); font-size:14px; font-weight:700; color:var(--tx); letter-spacing:-.01em }
+.dsub { font-size:11px; color:var(--mu2); margin-top:1px }
+.dright { display:flex; align-items:center; gap:10px }
+.dtag {
+  font-size:10px; font-weight:700; letter-spacing:.06em; text-transform:uppercase;
+  padding:4px 10px; border-radius:7px; background:rgba(5,150,105,.09); color:var(--c1); border:1px solid rgba(5,150,105,.2);
+}
+.dref { font-size:10px; color:var(--mu2); display:flex; align-items:center; gap:5px }
+.spin-s { display:inline-block; animation:rot .9s linear infinite }
+.panel { display:none } .panel.act { display:block }
+iframe.gf { width:100%; border:none; display:block; height:860px; background:#f5f8ff }
+
+/* ════════════════════════════════════════════ LOOP DARK CARD */
+.loop { max-width:1340px; margin:0 auto; padding:0 32px 52px }
+.loop-in {
+  background:linear-gradient(140deg,#090F24 0%,#132046 100%);
+  border-radius:20px; padding:48px 52px;
+  display:grid; grid-template-columns:1fr 320px; gap:52px; align-items:center;
+  position:relative; overflow:hidden;
+}
+.loop-in::before {
+  content:''; position:absolute; inset:0; pointer-events:none;
+  background:
+    radial-gradient(ellipse 55% 80% at 100% 50%,rgba(5,150,105,.18) 0%,transparent 60%),
+    radial-gradient(ellipse 40% 60% at 0% 100%,rgba(3,105,161,.14) 0%,transparent 50%);
+}
+.lh { font-family:var(--fd); font-size:clamp(22px,2.8vw,32px); font-weight:800; line-height:1.1; letter-spacing:-.03em; color:#fff; margin-bottom:18px; position:relative }
+.lh span { color:#34D399 }
+.lb { font-size:13px; color:rgba(255,255,255,.6); line-height:1.8; position:relative; max-width:540px }
+.lsteps { display:flex; flex-direction:column; gap:12px; position:relative; z-index:1 }
+.lstep {
+  display:flex; align-items:flex-start; gap:12px;
+  background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.07);
+  border-radius:12px; padding:13px 14px;
+  transition:background .2s;
+}
+.lstep:hover { background:rgba(255,255,255,.08) }
+.lico { width:32px; height:32px; border-radius:9px; display:flex; align-items:center; justify-content:center; font-size:16px; flex-shrink:0 }
+.ls1 .lico{background:rgba(5,150,105,.3)} .ls2 .lico{background:rgba(3,105,161,.3)}
+.ls3 .lico{background:rgba(109,40,217,.3)} .ls4 .lico{background:rgba(180,83,9,.3)}
+.lt { font-size:12px; color:rgba(255,255,255,.72); line-height:1.55 }
+.ltt { font-weight:700; color:#fff; margin-bottom:2px; font-size:12.5px }
+
+/* ════════════════════════════════════════════ FOOTER */
+.foot { text-align:center; padding:24px; font-size:11px; color:var(--mu2); border-top:1px solid var(--bd); letter-spacing:.04em }
+
+/* ════════════════════════════════════════════ ANIMATIONS */
+@keyframes fu { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+
+/* ════════════════════════════════════════════ RESPONSIVE */
+@media(max-width:1100px) {
+  .pgrid { grid-template-columns:repeat(2,1fr) }
+  .kpis  { grid-template-columns:repeat(3,1fr) }
+  .loop-in { grid-template-columns:1fr } .lsteps { display:none }
+}
+@media(max-width:680px) {
+  .hdr { padding:0 14px; gap:8px } .sellbl { display:none } .sel { max-width:150px }
+  .hero,.kpi-sec,.fw,.ov-row,.ds,.loop { padding-left:14px; padding-right:14px }
+  .pgrid,.kpis { grid-template-columns:1fr 1fr }
+  iframe.gf { height:520px }
+}
+@media(max-width:450px) { .kpis { grid-template-columns:1fr } }
+</style>
+</head>
+<body>
+
+<!-- ════ HEADER ══════════════════════════════════════════════════════ -->
+<header class="hdr">
+  <div class="wm">ZenLabs <span class="wm-g">Foundry</span> · QE<sup style="font-size:9px">4</sup>AI</div>
+  <div class="vsep"></div>
+
+  <div class="selg">
+    <span class="sellbl">Project</span>
+    <select class="sel" id="selProject" onchange="onFilterChange()">
+      <option value="All">All Projects</option>
+      <option value="zenarc-compliance">zenarc-compliance</option>
+      <option value="retail-onboarding">retail-onboarding</option>
+      <option value="merchant-onboarding">merchant-onboarding</option>
+      <option value="zap-aria-idp">zap-aria-idp</option>
+      <option value="agent-zoo-builder">agent-zoo-builder</option>
+      <option value="insureflow-uc001-claims">insureflow-uc001-claims</option>
+    </select>
+  </div>
+
+  <div class="selg">
+    <span class="sellbl">Namespace</span>
+    <select class="sel" id="selNs" onchange="onFilterChange()">
+      <option value="All">All Namespaces</option>
+      <option value="zenarc">zenarc</option>
+      <option value="retail-onboarding">retail-onboarding</option>
+      <option value="merchant-onboarding">merchant-onboarding</option>
+    </select>
+  </div>
+
+  <div class="hsp"></div>
+
+  <button class="refresh-btn" id="refreshBtn" onclick="refreshAll()">
+    <span class="r-ico" style="display:inline-block">↻</span> Refresh
+  </button>
+  <div class="live"><div class="ldot"></div>Live</div>
+</header>
+
+<!-- ════ HERO ════════════════════════════════════════════════════════ -->
+<section class="hero">
+  <p class="ey">Agentic Banking · ZenLabs Foundry · April 2026</p>
+  <h1 class="ht">Quality Engineering<br>for <em>Multi-Agentic AI</em></h1>
+  <p class="hd">Four interlocking pillars — Correctness, Reliability, Observability, Governance — form a continuous quality loop. Filter by project and namespace to drill into live metrics from Grafana and Prometheus.</p>
+</section>
+
+<!-- ════ KPI STRIP ═══════════════════════════════════════════════════ -->
+<section class="kpi-sec">
+  <div class="kpi-header">
+    <div class="kpi-lbl-row">Live Prometheus Metrics</div>
+    <div class="kpi-ts" id="kpiTs">—</div>
+  </div>
+  <div class="kpis">
+
+    <div class="kpi" id="kc-eval" style="--kc:var(--c1);--kc-bg:var(--c1l);--kgl:rgba(5,150,105,.1)">
+      <div class="kpi-status" id="ks-eval"></div>
+      <div class="kpi-icon" style="background:var(--c1l)">📊</div>
+      <div class="kpi-name">Avg Eval Score</div>
+      <div class="kpi-val-wrap"><div class="kpi-num" id="kv-eval"><span class="skel"></span></div></div>
+      <div class="kpi-sub">LLM-as-judge · all evaluators</div>
+    </div>
+
+    <div class="kpi" id="kc-hall" style="--kc:var(--lv);--kc-bg:rgba(239,68,68,.07);--kgl:rgba(239,68,68,.07)">
+      <div class="kpi-status" id="ks-hall"></div>
+      <div class="kpi-icon" style="background:rgba(239,68,68,.09)">🧠</div>
+      <div class="kpi-name">Hallucination Rate</div>
+      <div class="kpi-val-wrap"><div class="kpi-num" id="kv-hall"><span class="skel"></span></div></div>
+      <div class="kpi-sub">Faithfulness evaluator inverse</div>
+    </div>
+
+    <div class="kpi" id="kc-wf" style="--kc:var(--c2);--kc-bg:var(--c2l);--kgl:rgba(3,105,161,.09)">
+      <div class="kpi-status" id="ks-wf"></div>
+      <div class="kpi-icon" style="background:var(--c2l)">⚡</div>
+      <div class="kpi-name">Active Workflows</div>
+      <div class="kpi-val-wrap"><div class="kpi-num" id="kv-wf"><span class="skel"></span></div></div>
+      <div class="kpi-sub">Temporal live executions</div>
+    </div>
+
+    <div class="kpi" id="kc-tr" style="--kc:var(--c3);--kc-bg:var(--c3l);--kgl:rgba(109,40,217,.08)">
+      <div class="kpi-status" id="ks-tr"></div>
+      <div class="kpi-icon" style="background:var(--c3l)">🔭</div>
+      <div class="kpi-name">Trace Count</div>
+      <div class="kpi-val-wrap"><div class="kpi-num" id="kv-tr"><span class="skel"></span></div></div>
+      <div class="kpi-sub">Phoenix OTel spans ingested</div>
+    </div>
+
+    <div class="kpi" id="kc-cpu" style="--kc:var(--c4);--kc-bg:var(--c4l);--kgl:rgba(180,83,9,.08)">
+      <div class="kpi-status" id="ks-cpu"></div>
+      <div class="kpi-icon" style="background:var(--c4l)">🖥️</div>
+      <div class="kpi-name">ACA CPU</div>
+      <div class="kpi-val-wrap"><div class="kpi-num" id="kv-cpu"><span class="skel"></span></div></div>
+      <div class="kpi-sub">Azure Container App · millicores</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ════ FOUR PILLAR CARDS ════════════════════════════════════════════ -->
+<section class="fw">
+  <p class="sec-lbl">The Four-Pillar Framework — click a pillar to load its dashboard</p>
+  <div class="pgrid">
+
+    <div class="pc sel" data-p="1" onclick="selPillar(1)">
+      <div class="c-arr">›</div>
+      <div class="p-step"><div class="p-num">01</div>Correctness</div>
+      <div class="p-ico">✅</div>
+      <div class="p-name">Correctness &amp; Evaluation</div>
+      <div class="p-body">LLM-as-judge evaluators score every agent response against domain-specific thresholds. CI gates block deploys when scores regress — preventing degraded models reaching production.</div>
+      <div class="chips">
+        <span class="chip">Arize Phoenix</span><span class="chip">LangSmith</span>
+        <span class="chip">LLM-as-Judge</span><span class="chip">CI Gates</span>
+      </div>
+      <div class="p-cta">View live dashboard</div>
+    </div>
+
+    <div class="pc" data-p="2" onclick="selPillar(2)">
+      <div class="c-arr">›</div>
+      <div class="p-step"><div class="p-num">02</div>Reliability</div>
+      <div class="p-ico">🔁</div>
+      <div class="p-name">Reliability &amp; Durability</div>
+      <div class="p-body">Temporal workflows give every agentic activity a deterministic replay guarantee. Fault-injection tests validate retry policies, timeout compensations, and namespace resilience under real chaos.</div>
+      <div class="chips">
+        <span class="chip">Temporal AI</span><span class="chip">Fault Injection</span>
+        <span class="chip">Replay Testing</span><span class="chip">Idempotency</span>
+      </div>
+      <div class="p-cta">View live dashboard</div>
+    </div>
+
+    <div class="pc" data-p="3" onclick="selPillar(3)">
+      <div class="c-arr">›</div>
+      <div class="p-step"><div class="p-num">03</div>Observability</div>
+      <div class="p-ico">🔭</div>
+      <div class="p-name">Observability &amp; Tracing</div>
+      <div class="p-body">OpenTelemetry spans capture every LLM call, tool invocation, retriever hop, and chain step. Phoenix annotates traces with evaluator scores — hallucinations and latency regressions become instantly visible.</div>
+      <div class="chips">
+        <span class="chip">OpenTelemetry</span><span class="chip">Arize Phoenix</span>
+        <span class="chip">OTLP / h2c</span><span class="chip">Span Tracing</span>
+      </div>
+      <div class="p-cta">View live dashboard</div>
+    </div>
+
+    <div class="pc" data-p="4" onclick="selPillar(4)">
+      <div class="p-step"><div class="p-num">04</div>Governance</div>
+      <div class="p-ico">⚖️</div>
+      <div class="p-name">Governance &amp; Compliance</div>
+      <div class="p-body">A four-layer audit stack — Temporal history, OTel spans, structured logs, DB decision records — ensures every AI decision is explainable. CI cost gates prevent run-away inference spend across agents.</div>
+      <div class="chips">
+        <span class="chip">Azure Monitor</span><span class="chip">EntraID</span>
+        <span class="chip">AML / KYC</span><span class="chip">Audit Trail</span>
+      </div>
+      <div class="p-cta">View live dashboard</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- overview shortcut -->
+<div class="ov-row">
+  <button class="ov-btn" id="ovBtn" onclick="selOverview()">🏛️&nbsp; All-Pillars Overview</button>
+  <span class="ov-hint">Four-pillar combined summary dashboard</span>
+</div>
+
+<!-- ════ LIVE GRAFANA EMBED ════════════════════════════════════════════ -->
+<section class="ds">
+  <div class="dcard">
+    <div class="dtop">
+      <div class="drow">
+        <div class="dpip" id="dpip" style="background:var(--c1)"></div>
+        <div>
+          <div class="dtxt" id="dtxt">Pillar 01 — Correctness &amp; Evaluation</div>
+          <div class="dsub" id="dsub">LLM-as-judge scores · evaluator CI gates · hallucination tracking</div>
+        </div>
+      </div>
+      <div class="dright">
+        <span class="dtag">Grafana · Live</span>
+        <span class="dref"><span class="spin-s">↻</span>&nbsp;auto 30 s</span>
+      </div>
+    </div>
+    <div class="panel"    id="pov"><iframe class="gf" id="iov" title="QE Overview"      loading="lazy" allowfullscreen></iframe></div>
+    <div class="panel act" id="p1"><iframe class="gf" id="i1"  title="QE Correctness"   loading="lazy" allowfullscreen></iframe></div>
+    <div class="panel"    id="p2"><iframe class="gf" id="i2"  title="QE Reliability"   loading="lazy" allowfullscreen></iframe></div>
+    <div class="panel"    id="p3"><iframe class="gf" id="i3"  title="QE Observability" loading="lazy" allowfullscreen></iframe></div>
+    <div class="panel"    id="p4"><iframe class="gf" id="i4"  title="QE Governance"    loading="lazy" allowfullscreen></iframe></div>
+  </div>
+</section>
+
+<!-- ════ CONTINUOUS LOOP CARD ════════════════════════════════════════ -->
+<section class="loop">
+  <div class="loop-in">
+    <div>
+      <h2 class="lh">How the Four Pillars continuously improve <span>Multi-Agentic Apps</span></h2>
+      <p class="lb">Each pillar feeds the next in a continuous quality loop. Correctness evaluators surface where agents fail; Reliability tooling ensures they recover deterministically; Observability traces reveal exactly why they failed; Governance gates prevent bad patterns re-entering production — making every release measurably more trustworthy than the last.</p>
+    </div>
+    <div class="lsteps">
+      <div class="lstep ls1">
+        <div class="lico">✅</div>
+        <div class="lt"><div class="ltt">Correctness → sets the quality bar</div>LLM-as-judge evaluators score KYC, AML, PEP, and escalation decisions. CI blocks regressions before they ship.</div>
+      </div>
+      <div class="lstep ls2">
+        <div class="lico">🔁</div>
+        <div class="lt"><div class="ltt">Reliability → makes quality durable</div>Temporal replays ensure the correct execution path is retried after any infra failure — not just on the happy path.</div>
+      </div>
+      <div class="lstep ls3">
+        <div class="lico">🔭</div>
+        <div class="lt"><div class="ltt">Observability → makes quality visible</div>Every span carries eval annotations. Regressions appear as score drops on Phoenix before users are ever affected.</div>
+      </div>
+      <div class="lstep ls4">
+        <div class="lico">⚖️</div>
+        <div class="lt"><div class="ltt">Governance → keeps quality auditable</div>Four-layer audit stack + cost gates ensure every AI decision is explainable to regulators and engineering teams.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="foot">
+  ZenLabs Foundry · QE for AI · KPIs fetched live from Prometheus via Grafana datasource proxy · No data is hardcoded · Auto-refreshes every 30 seconds
+</footer>
+
+<!-- ════════════════════════════════════════════════════════════════════
+     SCRIPT
+═══════════════════════════════════════════════════════════════════════ -->
+<script>
+/* ── CONFIG ─────────────────────────────────────────────────────────── */
+const GRAFANA  = 'https://unified-dash-grafana.bravesky-d9f9eeb7.eastus2.azurecontainerapps.io';
+const DS_UID   = 'prometheus-ds';
+const PROM_API = `${GRAFANA}/api/datasources/proxy/uid/${DS_UID}/api/v1/query`;
+const GF_QS    = 'orgId=1&refresh=30s&theme=light&kiosk';
+const BASIC_B64 = 'YWRtaW46WmVuTGFic0AyMDI1IQ=='; // admin:ZenLabs@2025!
+
+// CORS proxy — used as fallback when direct fetch is blocked cross-origin.
+// Anonymous access is enabled on Grafana, so no credentials pass through proxy.
+const PROXY = 'https://corsproxy.io/?';
+
+const DASH = {
+  ov: '/d/qe-four-pillars/',
+  1:  '/d/qe-correctness/',
+  2:  '/d/qe-reliability/',
+  3:  '/d/qe-observability/',
+  4:  '/d/qe-governance/',
+};
+
+const META = {
+  ov:{ color:'#546080', txt:'All Pillars — Four-Pillar Overview',        sub:'Combined health · Correctness · Reliability · Observability · Governance' },
+  1: { color:'#059669', txt:'Pillar 01 — Correctness &amp; Evaluation', sub:'LLM-as-judge scores · evaluator CI gates · hallucination tracking' },
+  2: { color:'#0369A1', txt:'Pillar 02 — Reliability &amp; Durability', sub:'Temporal workflows · fault injection · replay coverage · retry policies' },
+  3: { color:'#6D28D9', txt:'Pillar 03 — Observability &amp; Tracing',  sub:'OTel spans · Phoenix traces · span type distribution · p95 latency' },
+  4: { color:'#B45309', txt:'Pillar 04 — Governance &amp; Compliance',  sub:'Audit layers · cost tracking · CI compliance gates · AML / KYC accuracy' },
+};
+
+/* ── STATE ──────────────────────────────────────────────────────────── */
+let curKey = 1;
+let refreshTimer = null;
+
+/* ── HELPERS ────────────────────────────────────────────────────────── */
+const $ = id => document.getElementById(id);
+const getProject   = () => $('selProject').value;
+const getNamespace = () => $('selNs').value;
+
+function grafanaURL(key) {
+  const p = getProject(), n = getNamespace();
+  return `${GRAFANA}${DASH[key]}?${GF_QS}&var-project=${p}&var-namespace=${n}`;
+}
+
+/* ── PROMQL BUILDER ─────────────────────────────────────────────────── */
+function buildQueries() {
+  const proj = getProject();
+  const ns   = getNamespace();
+
+  // Phoenix label: project_name | Temporal label: namespace
+  const px = proj !== 'All' ? `{project_name="${proj}"}` : '';
+  const tm = ns   !== 'All' ? `{namespace="${ns}"}`      : '';
+  const faith = proj !== 'All'
+    ? `{project_name="${proj}",evaluator_name=~".*faithfulness.*"}`
+    : `{evaluator_name=~".*faithfulness.*"}`;
+
+  return [
+    { id:'eval', q:`avg(phoenix_evaluator_score${px}) * 100`,              suffix:'%',   dec:1 },
+    { id:'hall', q:`(1 - avg(phoenix_evaluator_score${faith})) * 100`,     suffix:'%',   dec:1 },
+    { id:'wf',   q:`sum(temporal_workflow_active${tm})`,                   suffix:'',    dec:0 },
+    { id:'tr',   q:`sum(phoenix_trace_count${px})`,                        suffix:'',    dec:0 },
+    { id:'cpu',  q:`sum(azure_aca_cpu_millicores)`,                        suffix:' mc', dec:0 },
+  ];
+}
+
+/* ── FETCH WITH FALLBACK ─────────────────────────────────────────────
+   Order:
+   1. Direct fetch, no auth      (works if Grafana CORS allows the page origin)
+   2. Direct fetch, basic auth   (same, but with Authorization header — may preflight)
+   3. Via CORS proxy, no auth    (bypasses browser CORS; anon access handles auth on Grafana side)
+   4. Via CORS proxy, basic auth (proxy forwards the header to Grafana)
+─────────────────────────────────────────────────────────────────────── */
+async function fetchPromQL(query) {
+  const directUrl = `${PROM_API}?query=${encodeURIComponent(query)}`;
+  const proxyUrl  = `${PROXY}${encodeURIComponent(directUrl)}`;
+  const TIMEOUT   = 7000;
+
+  const tryFetch = async (url, headers = {}) => {
+    const ctrl = new AbortController();
+    const tid  = setTimeout(() => ctrl.abort(), TIMEOUT);
+    try {
+      const r = await fetch(url, { headers, credentials:'include', signal:ctrl.signal });
+      clearTimeout(tid);
+      if (!r.ok) return null;
+      const j = await r.json();
+      if (j?.status === 'success') {
+        const v = j?.data?.result?.[0]?.value?.[1];
+        return (v !== undefined && v !== null) ? parseFloat(v) : null;
+      }
+    } catch { /* swallow */ }
+    clearTimeout(tid);
+    return null;
+  };
+
+  // 1. Direct, anon
+  let val = await tryFetch(directUrl);
+  if (val !== null) return val;
+
+  // 2. Direct, basic auth (Authorization triggers CORS preflight — may fail cross-origin)
+  val = await tryFetch(directUrl, { 'Authorization': `Basic ${BASIC_B64}` });
+  if (val !== null) return val;
+
+  // 3. Via CORS proxy, anon (Grafana handles auth with its anonymous access setting)
+  val = await tryFetch(proxyUrl);
+  if (val !== null) return val;
+
+  // 4. Via CORS proxy, basic auth
+  val = await tryFetch(proxyUrl, { 'x-auth': `Basic ${BASIC_B64}` });
+  return val; // null if all fail
+}
+
+/* ── KPI RENDERING ───────────────────────────────────────────────────── */
+function setCardState(id, state) {
+  const dot = $(`ks-${id}`);
+  const card = $(`kc-${id}`);
+  dot.className   = `kpi-status ${state}`;
+  if (state === 'live') {
+    card.classList.add('just-loaded');
+    setTimeout(() => card.classList.remove('just-loaded'), 900);
+  }
+}
+
+// Animate count-up
+function countUp(el, target, suffix, decimals, duration = 700) {
+  const start    = performance.now();
+  const from     = 0;
+  const fmt = v => {
+    if (v >= 1_000_000) return (v/1_000_000).toFixed(1) + '<span class="kpi-unit">M' + suffix + '</span>';
+    if (v >= 1000)      return (v/1000).toFixed(1)      + '<span class="kpi-unit">k' + suffix + '</span>';
+    return v.toFixed(decimals)                           + (suffix ? `<span class="kpi-unit">${suffix}</span>` : '');
+  };
+  const tick = now => {
+    const t = Math.min((now - start) / duration, 1);
+    const ease = 1 - Math.pow(1 - t, 3); // ease-out cubic
+    el.innerHTML = fmt(from + (target - from) * ease);
+    if (t < 1) requestAnimationFrame(tick);
+    else        el.innerHTML = fmt(target);
+  };
+  requestAnimationFrame(tick);
+}
+
+function renderKPI(id, val, suffix, decimals) {
+  const el = $(`kv-${id}`);
+  if (val === null || isNaN(val)) {
+    el.innerHTML = '<span style="font-size:20px;color:var(--mu2);font-weight:600">—</span>';
+    setCardState(id, 'error');
+  } else {
+    countUp(el, val, suffix, decimals);
+    setCardState(id, 'live');
+  }
+}
+
+function showSkeletons() {
+  ['eval','hall','wf','tr','cpu'].forEach(id => {
+    $(`kv-${id}`).innerHTML = '<span class="skel"></span>';
+    setCardState(id, '');
+  });
+  $('kpiTs').textContent = 'Fetching…';
+}
+
+/* ── LOAD ALL KPIs ───────────────────────────────────────────────────── */
+async function loadKPIs() {
+  showSkeletons();
+  const queries = buildQueries();
+
+  // Fire all in parallel
+  const results = await Promise.all(queries.map(({ id, q, suffix, dec }) =>
+    fetchPromQL(q).then(val => ({ id, val, suffix, dec }))
+  ));
+
+  results.forEach(({ id, val, suffix, dec }) => renderKPI(id, val, suffix, dec));
+
+  const ts = new Date().toLocaleTimeString([], { hour:'2-digit', minute:'2-digit', second:'2-digit' });
+  const anyLive = results.some(r => r.val !== null);
+  $('kpiTs').innerHTML = anyLive
+    ? `<span style="color:var(--c1);font-weight:700">●</span>&nbsp;Updated ${ts}`
+    : `<span style="color:var(--lv);font-weight:700">●</span>&nbsp;No data — check filter`;
+}
+
+/* ── IFRAME MANAGEMENT ───────────────────────────────────────────────── */
+function loadIframe(key) {
+  const el = $(key === 'ov' ? 'iov' : 'i' + key);
+  if (!el) return;
+  const url = grafanaURL(key);
+  if (el.getAttribute('data-loaded') !== url) {
+    el.src = url;
+    el.setAttribute('data-loaded', url);
+  }
+}
+
+function updateHeader(key) {
+  const m = META[key];
+  $('dpip').style.background = m.color;
+  $('dtxt').innerHTML = m.txt;
+  $('dsub').textContent = m.sub;
+}
+
+function showPanel(key) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('act'));
+  $((key === 'ov' ? 'pov' : 'p' + key)).classList.add('act');
+  loadIframe(key);
+  updateHeader(key);
+  curKey = key;
+  document.querySelector('.ds').scrollIntoView({ behavior:'smooth', block:'start' });
+}
+
+/* ── SELECTION ───────────────────────────────────────────────────────── */
+function selPillar(n) {
+  document.querySelectorAll('.pc').forEach(c => c.classList.remove('sel'));
+  document.querySelector(`.pc[data-p="${n}"]`).classList.add('sel');
+  $('ovBtn').classList.remove('sel');
+  showPanel(n);
+}
+function selOverview() {
+  document.querySelectorAll('.pc').forEach(c => c.classList.remove('sel'));
+  $('ovBtn').classList.add('sel');
+  showPanel('ov');
+}
+
+/* ── FILTER CHANGE ───────────────────────────────────────────────────── */
+function onFilterChange() {
+  ['iov','i1','i2','i3','i4'].forEach(id => {
+    const el = $(id);
+    if (el) { el.src = 'about:blank'; el.removeAttribute('data-loaded'); }
+  });
+  showPanel(curKey);
+  loadKPIs();
+}
+
+/* ── MANUAL REFRESH ──────────────────────────────────────────────────── */
+function refreshAll() {
+  const btn = $('refreshBtn');
+  btn.classList.add('spinning');
+  loadKPIs().finally(() => {
+    setTimeout(() => btn.classList.remove('spinning'), 600);
+  });
+}
+
+/* ── AUTO-REFRESH (30s) ──────────────────────────────────────────────── */
+function startAutoRefresh() {
+  clearInterval(refreshTimer);
+  refreshTimer = setInterval(loadKPIs, 30_000);
+}
+
+/* ── BOOT ────────────────────────────────────────────────────────────── */
+window.addEventListener('DOMContentLoaded', () => {
+  selPillar(1);
+  loadKPIs();
+  startAutoRefresh();
+});
+</script>
+</body>
+</html>

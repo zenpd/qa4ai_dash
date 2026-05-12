@@ -1,0 +1,5 @@
+version: v1.1.0
+steps:
+  - build: -t $Registry/unified-dash/app:latest -f Dockerfile .
+  - push:
+    - $Registry/unified-dash/app:latest

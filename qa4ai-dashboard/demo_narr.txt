@@ -1,0 +1,62 @@
+QA4AI Unified Dashboard — Demo Narrative
+Opening (Overview Page)
+"This is the QA4AI Unified Dashboard — a single pane of glass for measuring the quality, reliability, and security of AI agents in production. Think of it as the observability layer that sits on top of your LLM-powered workflows.
+
+The Overview page gives you an instant health summary. The five KPI cards across the top answer the first questions any engineering lead or product owner would ask: How correct is the AI? Is the CI gate passing? How many traces are we processing? Are workflows healthy? And where are we in our AI maturity journey?
+
+Below that, the radar chart maps our four quality pillars — Correctness, Reliability, Observability, and Governance — so you can spot which dimension needs attention at a glance.
+
+At the bottom you'll find the AI Fluency Framework, the 4Ds — Delegation, Description, Discernment, and Diligence. This is the conceptual model that anchors every metric in this dashboard to a business-meaningful capability level."
+
+Correctness Page
+"Correctness is where we answer: is the AI giving the right answer? The Avg QE Score here reflects our response quality evaluator — a custom LLM-as-judge that scores agent outputs against our ground-truth criteria.
+
+The horizontal bar chart ranks evaluators by score with a 75% threshold line. Green bars are passing; anything below that line is a regression risk that would fail our CI gate. The CI Gate Pass Rate card at the top tells you in one number whether this build is deployable.
+
+The detail table below breaks it down per evaluator per project, with explicit PASS and FAIL pills. For the digital-onboarding agent, you can see that response_quality and factual_grounding are both above threshold, while you might have evaluators under active improvement. This is the data that drives your automated quality gate in the pipeline."
+
+Reliability Page
+"Reliability covers the workflow orchestration layer — Temporal. The KPI strip shows active, completed, failed, and timed-out workflow counts, plus an overall success rate.
+
+The stacked bar chart breaks this down by namespace, so you can instantly see if a particular environment — say, the retail onboarding namespace — has a spike in failures versus the merchant or corporate namespaces.
+
+The namespace health cards on the right provide a per-tenant health score: green above 95%, amber 85–95%, red below. The Activity Error Rate at the bottom is a hard number — if it's anything other than zero, something in the orchestration layer needs immediate attention."
+
+Observability Page
+"Observability is our window into what's happening inside the LLM calls themselves — trace volume, latency, and token consumption, all scraped from Phoenix.
+
+The trace count chart shows project activity — which agents are processing the most requests. The grouped latency chart is particularly valuable: the p50 bar shows typical response time, but the p99 bar exposes tail latency — the worst 1% of requests that your users actually experience. For real-time onboarding, a p99 above 3 seconds is a user experience problem.
+
+The Project Registry table at the bottom is clickable — every project name links to a drill-down view with span-level detail, so you can go from dashboard summary to individual trace in two clicks."
+
+Governance Page
+"Governance is the page that answers the leadership question: how mature is our AI operation?
+
+On the left, the AI Maturity Model maps our current posture onto a five-level CMMI-style scale — from Level 1 Initial, where AI usage is ad hoc, all the way to Level 5 Optimizing, where we have continuous improvement loops in place. The current level is highlighted. This gives a board-level rollup of the entire quality programme.
+
+On the right, the radar chart shows coverage across governance domains — Decision Quality, Process Timeliness, Token Efficiency, and others — so domain owners can see exactly where gaps exist.
+
+The table at the bottom maps each domain to its evaluator source and gives a pass/fail verdict. This is the traceability layer — connecting a high-level maturity claim all the way back to a specific measurable metric."
+
+Infrastructure Page
+"Infrastructure gives the platform and SRE teams their view — CPU, memory, and disk utilisation of the host running the observability stack, plus process-level metrics for the Phoenix exporter itself.
+
+The key feature here is the Azure Container Apps table. When the Azure Monitor Collector is UP, this table populates with live replica counts, CPU in millicores, and memory in megabytes for every ACA service — Phoenix, Prometheus, Grafana, the backend, and this UI. Red cells flag services near resource limits before they become incidents.
+
+This page closes the loop between your AI quality metrics and the infrastructure serving them. You can't trust your evaluator scores if the collector is down or if Phoenix is OOMing."
+
+Security Page
+"The Security page is where we go beyond functional correctness into adversarial robustness. This runs our Red, Blue, and Purple team evaluation framework against the digital-onboarding agent.
+
+The Red Team evaluators measure attack resistance — Prompt Injection Resistance, Adversarial KYC Bypass Detection, Social Engineering Resistance, and PII Exfiltration Resistance. A score of 1.0 on Prompt Injection means the agent correctly refused every adversarial injection attempt in our test suite.
+
+The Blue Team evaluators measure defence effectiveness — did the guardrails fire when they should? PII Redaction Effectiveness at 0.65 tells us there's room to improve our redaction coverage. Guardrail Trigger Effectiveness at 0.71 means roughly 3 in 10 attack attempts didn't trigger the expected guardrail — that's an actionable finding.
+
+The Purple Team resilience score is the combined outcome — 0.79, indicating a solid but not perfect security posture that we're actively improving.
+
+All 8 evaluators are tracked against an 80% pass threshold, giving the security team a quantitative acceptance criterion — the same pipeline discipline we apply to functional quality."
+
+Closing
+"That's the full dashboard. Seven pages, one coherent view: from model-level correctness, through workflow reliability and trace observability, up through governance maturity and platform health, to adversarial security testing. Every metric flows from real data — Phoenix annotations, Temporal metrics, Azure Monitor, and our custom evaluator framework — with no synthetic numbers in production.
+
+This is what AI-native quality engineering looks like at scale."

@@ -1,0 +1,63 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html, body, #root {
+    @apply h-full bg-canvas text-fg;
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    font-size: 13px;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track  { background: #f0f0f0; }
+  ::-webkit-scrollbar-thumb  { background: #d0d7de; border-radius: 9999px; }
+  ::-webkit-scrollbar-thumb:hover { background: #afb8c1; }
+}
+
+@layer components {
+  .card {
+    @apply bg-canvas-overlay border border-border rounded-lg p-4;
+  }
+
+  .pill {
+    @apply inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+
+  .pill-success { @apply pill bg-success/10 text-success; }
+  .pill-danger  { @apply pill bg-danger/10  text-danger;  }
+  .pill-warning { @apply pill bg-warning/10 text-warning; }
+  .pill-accent  { @apply pill bg-accent/10  text-accent;  }
+
+  .nav-link {
+    @apply flex items-center gap-2.5 px-3 py-2 rounded-md text-fg-muted hover:text-fg hover:bg-canvas-subtle
+           transition-colors duration-150 cursor-pointer select-none;
+  }
+
+  .nav-link.active {
+    @apply bg-accent-emphasis/15 text-accent;
+  }
+
+  .btn {
+    @apply inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-border
+           bg-canvas-subtle text-fg-muted hover:text-fg hover:border-fg-subtle
+           transition-colors duration-150 cursor-pointer text-xs;
+  }
+
+  .btn-accent {
+    @apply btn border-accent/40 text-accent hover:bg-accent/10 hover:text-accent;
+  }
+
+  .select {
+    @apply bg-canvas-subtle border border-border rounded-md px-2.5 py-1.5
+           text-fg text-xs focus:outline-none focus:ring-1 focus:ring-accent
+           focus:border-accent cursor-pointer;
+  }
+}

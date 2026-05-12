@@ -1,0 +1,9 @@
+version: v1.1.0
+steps:
+  - build: -t $Registry/unified-dash/ui:latest -f Dockerfile .
+  - push:
+    - $Registry/unified-dash/ui:latest
+credentials:
+  - registry: zafacr-gqfyc3h8eya2djey.azurecr.io
+    username: zafacr
+    password: FKZSP1v13KwyQk4qPIJSJaIZ1Sx1xkASfp1ZnBwN5YmzAdmtHzskJQQJ99CBACHYHv6Eqg7NAAACAZCRoXHy

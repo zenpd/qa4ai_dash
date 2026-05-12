@@ -1,6 +1,6 @@
 {
   "uid": "qe-governance",
-  "title": "QE for AI \u2014 Governance & Compliance",
+  "title": "QE for AI — Governance & Compliance",
   "tags": [
     "qe-pillar",
     "qe",
@@ -15,7 +15,7 @@
     "to": "now"
   },
   "style": "dark",
-  "description": "ZenLabs Foundry \u00b7 Governance & Compliance",
+  "description": "ZenLabs Foundry · Governance & Compliance",
   "annotations": {
     "list": [
       {
@@ -48,7 +48,7 @@
     "list": [
       {
         "name": "project",
-        "label": "Project / App",
+        "label": "Agentic App",
         "type": "query",
         "datasource": {
           "type": "prometheus",
@@ -56,27 +56,6 @@
         },
         "query": {
           "query": "label_values(phoenix_project_present, project_name)",
-          "refId": "StandardVariableQuery"
-        },
-        "refresh": 2,
-        "includeAll": true,
-        "allValue": ".*",
-        "multi": false,
-        "sort": 1,
-        "hide": 0,
-        "skipUrlSync": false,
-        "current": {}
-      },
-      {
-        "name": "namespace",
-        "label": "Namespace",
-        "type": "query",
-        "datasource": {
-          "type": "prometheus",
-          "uid": "prometheus-ds"
-        },
-        "query": {
-          "query": "label_values(temporal_workflow_active, namespace)",
           "refId": "StandardVariableQuery"
         },
         "refresh": 2,
@@ -389,7 +368,7 @@
       "datasource": "Prometheus",
       "targets": [
         {
-          "expr": "((sum(temporal_workflow_completed_total{namespace=~\"$namespace\"}) or vector(0)) / clamp_min(sum(temporal_workflow_completed_total{namespace=~\"$namespace\"}) + sum(temporal_workflow_failed_total{namespace=~\"$namespace\"}) + sum(temporal_workflow_timed_out_total{namespace=~\"$namespace\"}), 1) * 100) or vector(0)",
+          "expr": "((sum(temporal_workflow_completed_total{}) or vector(0)) / clamp_min(sum(temporal_workflow_completed_total{}) + sum(temporal_workflow_failed_total{}) + sum(temporal_workflow_timed_out_total{}), 1) * 100) or vector(0)",
           "legendFormat": "",
           "instant": true,
           "refId": "A"
@@ -436,7 +415,7 @@
     {
       "id": 50,
       "type": "row",
-      "title": "04 \u00b7 Governance & Compliance \u2014 CI gates, cost efficiency, regulatory audit readiness",
+      "title": "04 · Governance & Compliance — CI gates, cost efficiency, regulatory audit readiness",
       "gridPos": {
         "x": 0,
         "y": 63,
@@ -448,8 +427,8 @@
     {
       "id": 51,
       "type": "barchart",
-      "title": "Compliance Evaluator Scores \u2014 Current",
-      "description": "Compliance-related evaluator scores from Phoenix \u2014 AML, KYC, PEP, FATCA accuracy.",
+      "title": "Compliance Evaluator Scores — Current",
+      "description": "Compliance-related evaluator scores from Phoenix — AML, KYC, PEP, FATCA accuracy.",
       "gridPos": {
         "x": 0,
         "y": 64,
@@ -1057,7 +1036,7 @@
       },
       "options": {
         "mode": "html",
-        "content": "<div class='as'><div class='sr'><span class='sl'>Layer 1 \u2014 Temporal event history</span><span class='sv'>30-day retention</span></div><div class='sr'><span class='sl'>Layer 2 \u2014 Phoenix OTel spans</span><span class='sv'>90-day retention</span></div><div class='sr'><span class='sl'>Layer 3 \u2014 Structured app logs</span><span class='sv'>structlog + Azure Monitor</span></div><div class='sr'><span class='sl'>Layer 4 \u2014 DB decision records</span><span class='sv'>5\u201c7 yr (AML rules)</span></div><div class='sr'><span class='sl'>Audit report time</span><span class='sv' style='color:#1D9E75'>&lt;2 min (was 2\u201c3 days)</span></div><div class='sr'><span class='sl'>PII in traces</span><span class='sv'>OTel attribute filtering (GDPR)</span></div></div>"
+        "content": "<div class='as'><div class='sr'><span class='sl'>Layer 1 — Temporal event history</span><span class='sv'>30-day retention</span></div><div class='sr'><span class='sl'>Layer 2 — Phoenix OTel spans</span><span class='sv'>90-day retention</span></div><div class='sr'><span class='sl'>Layer 3 — Structured app logs</span><span class='sv'>structlog + Azure Monitor</span></div><div class='sr'><span class='sl'>Layer 4 — DB decision records</span><span class='sv'>5“7 yr (AML rules)</span></div><div class='sr'><span class='sl'>Audit report time</span><span class='sv' style='color:#1D9E75'>&lt;2 min (was 2“3 days)</span></div><div class='sr'><span class='sl'>PII in traces</span><span class='sv'>OTel attribute filtering (GDPR)</span></div></div>"
       }
     },
     {
@@ -1072,7 +1051,7 @@
       },
       "options": {
         "mode": "html",
-        "content": "<div class='mm'><div class='mr'><span class='ml' style='color:#888'>L1 \u2014 Ad-hoc</span><div class='mb'><div class='mf' style='width:100%;background:#555'></div></div></div><div class='mr'><span class='ml' style='color:#888'>L2 \u2014 Traced</span><div class='mb'><div class='mf' style='width:100%;background:#378ADD'></div></div></div><div class='mr'><span class='ml' style='color:#1D9E75;font-weight:600'>L3 \u2014 Evaluated \u00e2\u2014\u20ac current</span><div class='mb' style='border:1px solid #1D9E75'><div class='mf' style='width:100%;background:#1D9E75'></div></div></div><div class='mr'><span class='ml' style='color:#378ADD'>L4 \u2014 Gated (target)</span><div class='mb'><div class='mf' style='width:30%;background:#378ADD;opacity:0.5'></div></div></div><div class='mr'><span class='ml' style='color:#666'>L5 \u2014 Self-improving</span><div class='mb'><div class='mf' style='width:5%;background:#555'></div></div></div><div style='background:#1a1a1a;border-radius:8px;padding:12px;margin-top:12px'><p style='font-size:13px;color:#aaa;line-height:1.6'>\"Temporal makes AI workflows <strong style=\"color:#1D9E75\">durable</strong>. Phoenix makes them <strong style=\"color:#7F77DD\">measurable</strong>. Together they make them <strong style=\"color:#ddd\">trustworthy</strong>.\"</p></div></div>"
+        "content": "<div class='mm'><div class='mr'><span class='ml' style='color:#888'>L1 — Ad-hoc</span><div class='mb'><div class='mf' style='width:100%;background:#555'></div></div></div><div class='mr'><span class='ml' style='color:#888'>L2 — Traced</span><div class='mb'><div class='mf' style='width:100%;background:#378ADD'></div></div></div><div class='mr'><span class='ml' style='color:#1D9E75;font-weight:600'>L3 — Evaluated â—€ current</span><div class='mb' style='border:1px solid #1D9E75'><div class='mf' style='width:100%;background:#1D9E75'></div></div></div><div class='mr'><span class='ml' style='color:#378ADD'>L4 — Gated (target)</span><div class='mb'><div class='mf' style='width:30%;background:#378ADD;opacity:0.5'></div></div></div><div class='mr'><span class='ml' style='color:#666'>L5 — Self-improving</span><div class='mb'><div class='mf' style='width:5%;background:#555'></div></div></div><div style='background:#1a1a1a;border-radius:8px;padding:12px;margin-top:12px'><p style='font-size:13px;color:#aaa;line-height:1.6'>\"Temporal makes AI workflows <strong style=\"color:#1D9E75\">durable</strong>. Phoenix makes them <strong style=\"color:#7F77DD\">measurable</strong>. Together they make them <strong style=\"color:#ddd\">trustworthy</strong>.\"</p></div></div>"
       }
     }
   ]

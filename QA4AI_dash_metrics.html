@@ -3,219 +3,820 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>QE for AI — Four Pillars Dashboard · ZenLabs Foundry</title>
+<title>QE for AI — Four Pillars · ZenLabs Foundry</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f8f9fa;color:#1a1a1a;padding:24px;font-size:14px}
-.dh{padding:0 0 12px;border-bottom:1px solid #e0e0e0;margin-bottom:20px}
-.dh-title{font-size:20px;font-weight:600;color:#111;margin-bottom:3px}
-.dh-sub{font-size:12px;color:#666}
-.kpi-g{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:20px}
-.kpi{background:#fff;border:1px solid #e8e8e8;border-radius:8px;padding:12px 14px}
-.kpi-l{font-size:11px;color:#666;margin-bottom:4px}
-.kpi-v{font-size:22px;font-weight:600;color:#111}
-.kpi-d{font-size:11px;margin-top:2px}
-.kpi-d.up{color:#1D9E75}.kpi-d.dn{color:#c0392b}
-.p-nav{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap}
-.p-btn{padding:6px 16px;border-radius:999px;border:1px solid #ccc;background:#fff;font-size:12px;cursor:pointer;color:#555;transition:all .15s}
-.p-btn:hover{border-color:#378ADD;color:#185FA5}
-.p-btn.on{background:#E6F1FB;color:#185FA5;border-color:#185FA5}
+:root{
+  --bg:#0d1117;--surface:#161b22;--surface2:#21262d;--border:#30363d;
+  --text:#e6edf3;--muted:#8b949e;--dim:#484f58;
+  --blue:#58a6ff;--blue-dim:#1f6feb;--green:#3fb950;--green-dim:#196c2e;
+  --red:#f85149;--orange:#e3b341;--purple:#bc8cff;
+  --grad1:linear-gradient(135deg,#1f6feb 0%,#58a6ff 100%);
+  --grad2:linear-gradient(135deg,#196c2e 0%,#3fb950 100%);
+  --grad3:linear-gradient(135deg,#6e40c9 0%,#bc8cff 100%);
+  --grad4:linear-gradient(135deg,#9e6a03 0%,#e3b341 100%);
+}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding:0}
+.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.brand{display:flex;align-items:center;gap:12px}
+.brand-logo{width:36px;height:36px;border-radius:9px;background:var(--grad1);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;color:#fff;letter-spacing:-.5px}
+.brand-name{font-size:15px;font-weight:600;color:var(--text)}
+.brand-sub{font-size:11px;color:var(--muted)}
+.topbar-right{display:flex;align-items:center;gap:12px}
+.live-badge{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--green);font-weight:700;letter-spacing:.04em}
+.live-dot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+.last-refresh{font-size:11px;color:var(--muted)}
+.refresh-btn{background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:5px 12px;border-radius:6px;font-size:12px;cursor:pointer;transition:all .15s}
+.refresh-btn:hover{border-color:var(--blue);color:var(--blue)}
+.filters{background:var(--surface2);border-bottom:1px solid var(--border);padding:10px 24px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.filter-label{font-size:10px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.06em;white-space:nowrap}
+select{background:var(--surface);border:1px solid var(--border);color:var(--text);padding:5px 28px 5px 10px;border-radius:6px;font-size:12px;cursor:pointer;-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath fill='%238b949e' d='M5 6L0 0h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center;min-width:155px;transition:border-color .15s}
+select:hover,select:focus{border-color:var(--blue);outline:none}
+select option{background:var(--surface2)}
+.filter-sep{width:1px;height:20px;background:var(--border)}
+.main{padding:24px;max-width:1400px;margin:0 auto}
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:12px;margin-bottom:24px}
+.kpi{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;position:relative;overflow:hidden;transition:border-color .2s,transform .15s}
+.kpi:hover{border-color:var(--blue-dim);transform:translateY(-1px)}
+.kpi-accent{position:absolute;top:0;left:0;right:0;height:2px}
+.kpi.blue .kpi-accent{background:var(--grad1)}.kpi.green .kpi-accent{background:var(--grad2)}
+.kpi.purple .kpi-accent{background:var(--grad3)}.kpi.orange .kpi-accent{background:var(--grad4)}
+.kpi.red .kpi-accent{background:linear-gradient(135deg,#da3633 0%,#f85149 100%)}
+.kpi-label{font-size:11px;color:var(--muted);margin-bottom:6px;font-weight:500}
+.kpi-value{font-size:26px;font-weight:700;color:var(--text);font-variant-numeric:tabular-nums;min-height:34px;display:flex;align-items:center}
+.kpi-delta{font-size:11px;margin-top:4px;color:var(--muted)}
+.kpi-delta.up{color:var(--green)}.kpi-delta.dn{color:var(--red)}
+.spinner{display:inline-block;width:18px;height:18px;border:2px solid var(--border);border-top-color:var(--blue);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.sec-nav{display:flex;gap:6px;margin-bottom:20px;flex-wrap:wrap}
+.sec-btn{padding:7px 16px;border-radius:8px;border:1px solid var(--border);background:transparent;font-size:12px;cursor:pointer;color:var(--muted);transition:all .15s;display:flex;align-items:center;gap:6px}
+.sec-btn:hover{border-color:var(--blue-dim);color:var(--blue)}
+.sec-btn.on{background:var(--blue-dim);border-color:var(--blue);color:#fff;font-weight:600}
+.sec-tag{display:inline-block;width:7px;height:7px;border-radius:50%}
+.tag-blue{background:var(--blue)}.tag-green{background:var(--green)}.tag-purple{background:var(--purple)}.tag-orange{background:var(--orange)}
 .p-sec{display:none}
-.p-head{font-size:14px;font-weight:600;color:#111;margin:0 0 16px;padding-bottom:8px;border-bottom:1px solid #e0e0e0}
-.ptag{display:inline-block;font-size:10px;padding:2px 8px;border-radius:4px;margin-right:8px;font-weight:600}
-.tb{background:#E6F1FB;color:#0C447C}.tt{background:#E1F5EE;color:#085041}
-.tp{background:#EEEDFE;color:#3C3489}.ta{background:#FAEEDA;color:#633806}
+.p-sec.active{display:block;animation:fadeIn .2s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+.sec-header{display:flex;align-items:center;gap:10px;margin-bottom:20px;padding-bottom:12px;border-bottom:1px solid var(--border)}
+.sec-badge{font-size:10px;font-weight:700;padding:3px 10px;border-radius:999px;letter-spacing:.06em}
+.badge-blue{background:rgba(88,166,255,.15);color:var(--blue);border:1px solid rgba(88,166,255,.3)}
+.badge-green{background:rgba(63,185,80,.15);color:var(--green);border:1px solid rgba(63,185,80,.3)}
+.badge-purple{background:rgba(188,140,255,.15);color:var(--purple);border:1px solid rgba(188,140,255,.3)}
+.badge-orange{background:rgba(227,179,65,.15);color:var(--orange);border:1px solid rgba(227,179,65,.3)}
+.sec-title{font-size:14px;font-weight:600;color:var(--text)}
 .two{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
-.cc{background:#fff;border:1px solid #e8e8e8;border-radius:10px;padding:16px 18px}
-.ct{font-size:11px;font-weight:600;color:#888;margin-bottom:12px;text-transform:uppercase;letter-spacing:.05em}
-.gt{width:100%;border-collapse:collapse;font-size:12px}
-.gt th{font-size:10px;font-weight:600;color:#888;padding:6px 8px;border-bottom:1px solid #eee;text-align:left}
-.gt td{padding:7px 8px;border-bottom:1px solid #f0f0f0;color:#333}
-.gt tr:last-child td{border-bottom:none}
-.bd{display:inline-block;font-size:10px;padding:2px 7px;border-radius:4px;font-weight:500}
-.bbl{background:#FCEBEB;color:#A32D2D}.bwa{background:#FAEEDA;color:#633806}.bin{background:#E6F1FB;color:#0C447C}
-.sr{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid #f0f0f0;font-size:12px}
-.sr:last-child{border-bottom:none}
-.sr .sl{color:#666}.sr .sv{font-weight:500;color:#111}
-.ba{display:flex;gap:12px;margin-bottom:16px}
-.bac{flex:1;border:1px solid #e8e8e8;border-radius:8px;padding:12px}
-.bac .bal{font-size:10px;font-weight:700;letter-spacing:.07em;margin-bottom:8px}
-.bac.bef .bal{color:#A32D2D}.bac.aft .bal{color:#085041}
-.bac .bab{font-size:28px;font-weight:700;margin-bottom:4px}
-.bac.bef .bab{color:#E24B4A}.bac.aft .bab{color:#1D9E75}
-.bac .bad{font-size:11px;color:#666;line-height:1.5}
-.mat-row{display:flex;align-items:center;gap:10px;padding:5px 0}
-.mat-bar-bg{flex:1;height:9px;background:#f0f0f0;border-radius:4px;overflow:hidden}
+.three{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:16px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;margin-bottom:16px}
+.card-title{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:14px}
+.chart-wrap{position:relative;height:240px}
+.tbl{width:100%;border-collapse:collapse;font-size:12px}
+.tbl th{font-size:10px;font-weight:600;color:var(--muted);padding:6px 10px;border-bottom:1px solid var(--border);text-align:left;white-space:nowrap}
+.tbl td{padding:8px 10px;border-bottom:1px solid var(--border);color:var(--text)}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tr:hover td{background:rgba(33,38,45,.8)}
+.pass{color:var(--green);font-weight:600}.fail{color:var(--red);font-weight:600}.warn-txt{color:var(--orange);font-weight:600}
+.stat-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);font-size:12px}
+.stat-row:last-child{border-bottom:none}
+.stat-label{color:var(--muted)}.stat-value{font-weight:600;color:var(--text)}
+.pill{display:inline-block;font-size:10px;padding:2px 8px;border-radius:4px;font-weight:700}
+.pill-red{background:rgba(248,81,73,.15);color:var(--red);border:1px solid rgba(248,81,73,.3)}
+.pill-orange{background:rgba(227,179,65,.15);color:var(--orange);border:1px solid rgba(227,179,65,.3)}
+.pill-blue{background:rgba(88,166,255,.15);color:var(--blue);border:1px solid rgba(88,166,255,.3)}
+.pill-green{background:rgba(63,185,80,.15);color:var(--green);border:1px solid rgba(63,185,80,.3)}
+.eval-row{display:flex;align-items:center;gap:10px;padding:5px 0;font-size:12px}
+.eval-name{min-width:185px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:11px}
+.eval-bar-bg{flex:1;height:8px;background:var(--border);border-radius:4px;overflow:hidden}
+.eval-bar-fill{height:100%;border-radius:4px;transition:width .6s ease}
+.eval-score{min-width:44px;text-align:right;font-weight:700;font-variant-numeric:tabular-nums;font-size:12px}
+.wf-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}
+.wf-card{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:14px;text-align:center}
+.wf-card-label{font-size:10px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+.wf-card-value{font-size:24px;font-weight:700;font-variant-numeric:tabular-nums}
+.wf-card-value.green{color:var(--green)}.wf-card-value.orange{color:var(--orange)}
+.wf-card-value.red{color:var(--red)}.wf-card-value.blue{color:var(--blue)}
+.maturity-row{display:flex;align-items:center;gap:10px;padding:6px 0}
+.mat-label{font-size:11px;color:var(--muted);min-width:165px}
+.mat-bar-bg{flex:1;height:8px;background:var(--border);border-radius:4px;overflow:hidden}
 .mat-bar-fill{height:100%;border-radius:4px}
-@media(max-width:600px){.two{grid-template-columns:1fr}.ba{flex-direction:column}}
+.err-box{background:rgba(248,81,73,.08);border:1px solid rgba(248,81,73,.25);border-radius:8px;padding:12px 16px;font-size:12px;color:var(--red);margin-bottom:16px;display:none}
+.empty{text-align:center;padding:48px 24px;color:var(--muted);font-size:13px}
+.no-data{color:var(--dim);font-style:italic}
+@media(max-width:768px){.two,.three,.wf-cards{grid-template-columns:1fr}.kpi-grid{grid-template-columns:repeat(2,1fr)}.topbar{flex-direction:column;align-items:flex-start;gap:8px}.eval-name{min-width:110px}}
 </style>
 </head>
 <body>
-<div class="dh">
-  <p class="dh-title">QE for AI — Four Pillars Quality Dashboard</p>
-  <p class="dh-sub">ZenLabs Foundry · Agentic Banking · Digital Onboarding + Merchant Onboarding + ZenArc · April 2026</p>
-</div>
-<div class="kpi-g">
-  <div class="kpi"><p class="kpi-l">Avg eval score</p><p class="kpi-v">92%</p><p class="kpi-d up">+40pp vs v1 baseline</p></div>
-  <div class="kpi"><p class="kpi-l">LLM trace coverage</p><p class="kpi-v">100%</p><p class="kpi-d up">was 0%</p></div>
-  <div class="kpi"><p class="kpi-l">Hallucination rate</p><p class="kpi-v">1.2%</p><p class="kpi-d up">was 14%</p></div>
-  <div class="kpi"><p class="kpi-l">Cost / analysis</p><p class="kpi-v">$2</p><p class="kpi-d up">was $160 (-98.7%)</p></div>
-  <div class="kpi"><p class="kpi-l">PEP false-positive</p><p class="kpi-v">&lt;3%</p><p class="kpi-d up">was 18%</p></div>
-  <div class="kpi"><p class="kpi-l">Workflow durability</p><p class="kpi-v">100%</p><p class="kpi-d up">deterministic replay</p></div>
-</div>
-<div class="p-nav" id="pNav">
-  <button class="p-btn on" onclick="sp(1)">01 · Correctness &amp; evaluation</button>
-  <button class="p-btn" onclick="sp(2)">02 · Reliability &amp; durability</button>
-  <button class="p-btn" onclick="sp(3)">03 · Observability &amp; tracing</button>
-  <button class="p-btn" onclick="sp(4)">04 · Governance &amp; compliance</button>
-</div>
-<section class="p-sec" id="ps1">
-  <p class="p-head"><span class="ptag tb">Arize Phoenix</span>Correctness &amp; evaluation — LLM-as-judge scores across 9 evaluators</p>
-  <div class="two">
-    <div class="cc"><p class="ct">Evaluator scores — v4 current</p><div style="position:relative;height:260px"><canvas id="c1" role="img" aria-label="9 Phoenix evaluator scores ranging from 0.87 to 0.96.">All pass thresholds except pep and aml.</canvas></div></div>
-    <div class="cc"><p class="ct">Score trend — 4 experiment versions</p><div style="position:relative;height:260px"><canvas id="c2" role="img" aria-label="Line chart of 6 evaluators across 4 model versions showing consistent improvement.">Scores improve from 0.55-0.74 to 0.89-0.96.</canvas></div></div>
+
+<div class="topbar">
+  <div class="brand">
+    <div class="brand-logo">QE</div>
+    <div>
+      <div class="brand-name">QE for AI — Four Pillars Dashboard</div>
+      <div class="brand-sub">ZenLabs Foundry · Live metrics via Prometheus</div>
+    </div>
   </div>
-  <div class="cc" style="margin-bottom:16px">
-    <p class="ct">CI gate thresholds &amp; current status</p>
-    <table class="gt">
-      <thead><tr><th>Evaluator</th><th>Min threshold</th><th>Current avg</th><th>Gate</th><th>Status</th></tr></thead>
-      <tbody>
-        <tr><td>eval.pep_accuracy</td><td>0.95</td><td>0.94</td><td><span class="bd bbl">Block</span></td><td style="color:#E24B4A;font-weight:600">-0.01 below</td></tr>
-        <tr><td>eval.fatca_accuracy</td><td>0.95</td><td>0.96</td><td><span class="bd bbl">Block</span></td><td style="color:#1D9E75;font-weight:600">Pass</td></tr>
-        <tr><td>eval.aml_decision_quality</td><td>0.90</td><td>0.89</td><td><span class="bd bbl">Block</span></td><td style="color:#E24B4A;font-weight:600">-0.01 below</td></tr>
-        <tr><td>eval.escalation_quality</td><td>0.88</td><td>0.92</td><td><span class="bd bbl">Block</span></td><td style="color:#1D9E75;font-weight:600">Pass</td></tr>
-        <tr><td>eval.factual_grounding</td><td>0.85</td><td>0.90</td><td><span class="bd bbl">Block</span></td><td style="color:#1D9E75;font-weight:600">Pass</td></tr>
-        <tr><td>eval.kyc_quality</td><td>0.85</td><td>0.91</td><td><span class="bd bwa">Warn</span></td><td style="color:#1D9E75;font-weight:600">Pass</td></tr>
-        <tr><td>eval.document_verification</td><td>0.85</td><td>0.87</td><td><span class="bd bwa">Warn</span></td><td style="color:#1D9E75;font-weight:600">Pass</td></tr>
-        <tr><td>eval.step_completion</td><td>0.80</td><td>0.95</td><td><span class="bd bwa">Warn</span></td><td style="color:#1D9E75;font-weight:600">Pass</td></tr>
-        <tr><td>eval.response_quality</td><td>0.75</td><td>0.88</td><td><span class="bd bin">Info</span></td><td style="color:#1D9E75;font-weight:600">Pass</td></tr>
-      </tbody>
-    </table>
+  <div class="topbar-right">
+    <div class="live-badge"><span class="live-dot"></span>LIVE</div>
+    <span class="last-refresh" id="lastRefresh">Connecting…</span>
+    <button class="refresh-btn" onclick="loadAll()">↺ Refresh</button>
   </div>
-</section>
-<section class="p-sec" id="ps2">
-  <p class="p-head"><span class="ptag tt">Temporal AI</span>Reliability &amp; durability — workflow resilience, fault injection, coverage</p>
-  <div class="two">
-    <div class="cc"><p class="ct">Quality coverage — before vs after QE tooling</p><div style="position:relative;height:260px"><canvas id="c3" role="img" aria-label="Grouped horizontal bar. Before 15-42%, after 95-100%.">Coverage improved dramatically.</canvas></div></div>
-    <div class="cc">
-      <p class="ct">Fault injection — QE test results</p>
-      <table class="gt" style="margin-bottom:12px">
-        <thead><tr><th>Fault scenario</th><th>Expected behaviour</th><th>Result</th></tr></thead>
-        <tbody>
-          <tr><td>LLM timeout (&gt;5 min)</td><td>Retry ×3 then compensate</td><td style="color:#1D9E75;font-weight:600">Pass</td></tr>
-          <tr><td>Worker kill -9 mid-run</td><td>Replay from checkpoint</td><td style="color:#1D9E75;font-weight:600">Pass</td></tr>
-          <tr><td>Redis down</td><td>Retry; DB persist succeeds</td><td style="color:#1D9E75;font-weight:600">Pass</td></tr>
-          <tr><td>DB constraint violation</td><td>Non-retryable + compensate</td><td style="color:#1D9E75;font-weight:600">Pass</td></tr>
-          <tr><td>OpenAI 429 rate limit</td><td>Backoff 2s→4s→8s</td><td style="color:#1D9E75;font-weight:600">Pass</td></tr>
-          <tr><td>Namespace bootstrap race</td><td>Idempotent registration</td><td style="color:#1D9E75;font-weight:600">Pass</td></tr>
-        </tbody>
+</div>
+
+<div class="filters">
+  <div style="display:flex;align-items:center;gap:8px">
+    <span class="filter-label">Project / App</span>
+    <select id="selProject" onchange="loadAll()"><option value=".*">All Projects</option></select>
+  </div>
+  <div class="filter-sep"></div>
+  <div style="display:flex;align-items:center;gap:8px">
+    <span class="filter-label">Namespace</span>
+    <select id="selNamespace" onchange="loadAll()"><option value=".*">All Namespaces</option></select>
+  </div>
+  <div class="filter-sep"></div>
+  <div style="display:flex;align-items:center;gap:8px">
+    <span class="filter-label">Auto-refresh</span>
+    <select id="selInterval" onchange="setAutoRefresh()">
+      <option value="0">Off</option>
+      <option value="30" selected>30 s</option>
+      <option value="60">1 min</option>
+      <option value="300">5 min</option>
+    </select>
+  </div>
+</div>
+
+<div class="main">
+  <div id="errBox" class="err-box">⚠ Could not reach Prometheus — metrics may be unavailable or stale.</div>
+
+  <!-- KPI STRIP -->
+  <div class="kpi-grid">
+    <div class="kpi blue"><div class="kpi-accent"></div><div class="kpi-label">Avg Eval Score</div><div class="kpi-value" id="k-score"><div class="spinner"></div></div><div class="kpi-delta" id="k-score-d"></div></div>
+    <div class="kpi green"><div class="kpi-accent"></div><div class="kpi-label">LLM Trace Coverage</div><div class="kpi-value" id="k-cover"><div class="spinner"></div></div><div class="kpi-delta" id="k-cover-d"></div></div>
+    <div class="kpi red"><div class="kpi-accent"></div><div class="kpi-label">Span Error Rate</div><div class="kpi-value" id="k-hall"><div class="spinner"></div></div><div class="kpi-delta" id="k-hall-d"></div></div>
+    <div class="kpi orange"><div class="kpi-accent"></div><div class="kpi-label">Active Workflows</div><div class="kpi-value" id="k-wf"><div class="spinner"></div></div><div class="kpi-delta" id="k-wf-d"></div></div>
+    <div class="kpi purple"><div class="kpi-accent"></div><div class="kpi-label">Total Traces</div><div class="kpi-value" id="k-traces"><div class="spinner"></div></div><div class="kpi-delta" id="k-traces-d"></div></div>
+    <div class="kpi green"><div class="kpi-accent"></div><div class="kpi-label">Workflow Durability</div><div class="kpi-value" id="k-dur"><div class="spinner"></div></div><div class="kpi-delta" id="k-dur-d"></div></div>
+    <div class="kpi blue"><div class="kpi-accent"></div><div class="kpi-label">Projects Online</div><div class="kpi-value" id="k-proj"><div class="spinner"></div></div><div class="kpi-delta" id="k-proj-d"></div></div>
+    <div class="kpi orange"><div class="kpi-accent"></div><div class="kpi-label">Completed Workflows</div><div class="kpi-value" id="k-wfc"><div class="spinner"></div></div><div class="kpi-delta" id="k-wfc-d"></div></div>
+  </div>
+
+  <!-- SECTION NAV -->
+  <div class="sec-nav">
+    <button class="sec-btn on" onclick="showSec(1)"><span class="sec-tag tag-blue"></span>01 · Correctness &amp; Evaluation</button>
+    <button class="sec-btn" onclick="showSec(2)"><span class="sec-tag tag-green"></span>02 · Reliability &amp; Durability</button>
+    <button class="sec-btn" onclick="showSec(3)"><span class="sec-tag tag-purple"></span>03 · Observability &amp; Tracing</button>
+    <button class="sec-btn" onclick="showSec(4)"><span class="sec-tag tag-orange"></span>04 · Governance &amp; Compliance</button>
+  </div>
+
+  <!-- ═══ SECTION 1: CORRECTNESS ═══ -->
+  <section class="p-sec active" id="ps1">
+    <div class="sec-header">
+      <span class="sec-badge badge-blue">Arize Phoenix</span>
+      <span class="sec-title">Correctness &amp; Evaluation — heuristic &amp; LLM-as-judge scores from Phoenix span annotations</span>
+    </div>
+    <div class="two">
+      <div class="card">
+        <div class="card-title">Evaluator Scores — Live</div>
+        <div id="evalBars"><div class="spinner" style="display:block;margin:20px auto"></div></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Score vs Threshold</div>
+        <div class="chart-wrap"><canvas id="cEvalBar"></canvas></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">CI Gate Status</div>
+      <table class="tbl">
+        <thead><tr><th>Evaluator</th><th>Current Avg</th><th>Threshold</th><th>Gate</th><th>Status</th></tr></thead>
+        <tbody id="evalTableBody"><tr><td colspan="5" style="text-align:center;padding:24px"><div class="spinner" style="margin:0 auto"></div></td></tr></tbody>
       </table>
-      <div style="display:flex;gap:8px">
-        <div style="flex:1;background:#EAF3DE;border-radius:8px;padding:10px;text-align:center"><p style="font-size:10px;font-weight:700;color:#3B6D11;margin-bottom:3px">RETRY POLICY</p><p style="font-size:18px;font-weight:700;color:#1D9E75">max 3×</p><p style="font-size:10px;color:#3B6D11">coeff 2.0, init 2s</p></div>
-        <div style="flex:1;background:#E6F1FB;border-radius:8px;padding:10px;text-align:center"><p style="font-size:10px;font-weight:700;color:#0C447C;margin-bottom:3px">S-T-C TIMEOUT</p><p style="font-size:18px;font-weight:700;color:#185FA5">10 min</p><p style="font-size:10px;color:#0C447C">schedule-to-close</p></div>
-        <div style="flex:1;background:#EEEDFE;border-radius:8px;padding:10px;text-align:center"><p style="font-size:10px;font-weight:700;color:#3C3489;margin-bottom:3px">DURABILITY</p><p style="font-size:18px;font-weight:700;color:#534AB7">100%</p><p style="font-size:10px;color:#3C3489">det. replay</p></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Per-Project Quality Breakdown</div>
+      <div id="projQuality"><div class="spinner" style="display:block;margin:20px auto"></div></div>
+    </div>
+  </section>
+
+  <!-- ═══ SECTION 2: RELIABILITY ═══ -->
+  <section class="p-sec" id="ps2">
+    <div class="sec-header">
+      <span class="sec-badge badge-green">Temporal AI</span>
+      <span class="sec-title">Reliability &amp; Durability — workflow execution, fault tolerance, namespace health</span>
+    </div>
+    <div class="wf-cards">
+      <div class="wf-card"><div class="wf-card-label">Active</div><div class="wf-card-value green" id="wf-active"><div class="spinner" style="margin:0 auto"></div></div></div>
+      <div class="wf-card"><div class="wf-card-label">Completed</div><div class="wf-card-value blue" id="wf-completed">—</div></div>
+      <div class="wf-card"><div class="wf-card-label">Failed</div><div class="wf-card-value red" id="wf-failed">—</div></div>
+      <div class="wf-card"><div class="wf-card-label">Timed Out</div><div class="wf-card-value orange" id="wf-timeout">—</div></div>
+    </div>
+    <div class="two">
+      <div class="card">
+        <div class="card-title">Status by Namespace</div>
+        <div class="chart-wrap"><canvas id="cWfStatus"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Namespace Durability</div>
+        <div id="nsHealthList"><div class="spinner" style="display:block;margin:20px auto"></div></div>
       </div>
     </div>
-  </div>
-  <div class="ba">
-    <div class="bac bef"><p class="bal">BEFORE QE TOOLING (V1)</p><p class="bab">~52%</p><p class="bad">No trace coverage · PEP false-pos 18% · Escalation misses 25% · Temporal namespace race = 0 workers on redeploy</p></div>
-    <div class="bac aft"><p class="bal">AFTER QE TOOLING (V2)</p><p class="bab">~92%</p><p class="bad">9 LLM-judge evaluators on every trace · PEP false-pos &lt;3% · Escalation misses &lt;2% · 100% trace visibility · Namespace bootstrap idempotent</p></div>
-  </div>
-</section>
-<section class="p-sec" id="ps3">
-  <p class="p-head"><span class="ptag tp">OTel + Phoenix</span>Observability &amp; tracing — span coverage, hallucination detection, latency</p>
-  <div class="two">
-    <div class="cc">
-      <p class="ct">Span type distribution — retail-onboarding</p>
-      <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;font-size:11px;color:#666">
-        <span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;border-radius:2px;background:#378ADD;display:inline-block"></span>LLM 38%</span>
-        <span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;border-radius:2px;background:#7F77DD;display:inline-block"></span>Chain 22%</span>
-        <span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;border-radius:2px;background:#1D9E75;display:inline-block"></span>Tool 18%</span>
-        <span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;border-radius:2px;background:#EF9F27;display:inline-block"></span>Retriever 12%</span>
-        <span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;border-radius:2px;background:#D4537E;display:inline-block"></span>Embedding 6%</span>
-        <span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;border-radius:2px;background:#888780;display:inline-block"></span>HTTP 4%</span>
-      </div>
-      <div style="position:relative;height:200px"><canvas id="c4" role="img" aria-label="Doughnut: LLM 38%, Chain 22%, Tool 18%, Retriever 12%, Embedding 6%, HTTP 4%.">6 span types.</canvas></div>
+    <div class="card">
+      <div class="card-title">Workflow Failures &amp; Timeouts</div>
+      <div id="actErrors"><div class="empty">Loading…</div></div>
     </div>
-    <div class="cc">
-      <p class="ct">Key observability metrics</p>
-      <div class="sr"><span class="sl">LLM call trace coverage</span><span class="sv">100%</span></div>
-      <div class="sr"><span class="sl">Spans per onboarding session</span><span class="sv">24–40</span></div>
-      <div class="sr"><span class="sl">Eval annotations per trace</span><span class="sv">9 evaluators</span></div>
-      <div class="sr"><span class="sl">Phoenix project</span><span class="sv" style="font-family:monospace;font-size:11px">retail-onboarding</span></div>
-      <div class="sr"><span class="sl">Exporter</span><span class="sv">OTLP HTTP (h2c :443)</span></div>
-      <div class="sr"><span class="sl">Audit report generation</span><span class="sv" style="color:#1D9E75">&lt;2 min (was 2–3 days)</span></div>
-      <div style="margin-top:12px;background:#f8f9fa;border-radius:8px;padding:10px">
-        <p style="font-size:11px;font-weight:600;color:#888;margin-bottom:8px;text-transform:uppercase;letter-spacing:.04em">Hallucination rate</p>
-        <div style="display:flex;align-items:center;gap:10px;margin-bottom:7px"><span style="font-size:11px;color:#666;min-width:80px">Before eval</span><div style="flex:1;height:10px;background:#F09595;border-radius:4px;position:relative"><span style="position:absolute;right:4px;top:-1px;font-size:10px;color:#791F1F;font-weight:600">14%</span></div></div>
-        <div style="display:flex;align-items:center;gap:10px"><span style="font-size:11px;color:#666;min-width:80px">After eval</span><div style="flex:1;height:10px;background:#f0f0f0;border-radius:4px;overflow:hidden"><div style="width:8.6%;height:100%;background:#1D9E75;border-radius:4px"></div></div><span style="font-size:10px;color:#085041;font-weight:600">1.2%</span></div>
+  </section>
+
+  <!-- ═══ SECTION 3: OBSERVABILITY ═══ -->
+  <section class="p-sec" id="ps3">
+    <div class="sec-header">
+      <span class="sec-badge badge-purple">OTel + Phoenix</span>
+      <span class="sec-title">Observability &amp; Tracing — trace volume, latency percentiles, token usage</span>
+    </div>
+    <div class="three">
+      <div class="card">
+        <div class="card-title">Trace Count by Project</div>
+        <div class="chart-wrap"><canvas id="cTraces"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Latency Percentiles (ms)</div>
+        <div class="chart-wrap"><canvas id="cLatency"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Token Usage</div>
+        <div class="chart-wrap"><canvas id="cTokens"></canvas></div>
       </div>
     </div>
-  </div>
-  <div class="cc" style="margin-bottom:16px">
-    <p class="ct">Hallucination taxonomy — banking-specific risk types</p>
-    <table class="gt">
-      <thead><tr><th>Type</th><th>Banking example</th><th>Risk</th><th>Detection evaluator</th></tr></thead>
-      <tbody>
-        <tr><td style="color:#A32D2D;font-weight:600">Factual fabrication</td><td>Agent invents customer DOB or passport number</td><td style="color:#A32D2D">KYC fail, regulatory breach</td><td style="font-family:monospace;font-size:11px">eval.factual_grounding</td></tr>
-        <tr><td style="color:#633806;font-weight:600">Reference hallucination</td><td>Cites non-existent "GDPR Article 52(b)"</td><td style="color:#633806">Misleads compliance officers</td><td style="font-family:monospace;font-size:11px">eval.factual_grounding</td></tr>
-        <tr><td style="color:#633806;font-weight:600">Confident uncertainty</td><td>Definitive AML ruling on insufficient data</td><td style="color:#633806">False clean bill, missed SARs</td><td style="font-family:monospace;font-size:11px">eval.aml_decision_quality</td></tr>
-        <tr><td style="color:#A32D2D;font-weight:600">Context drift</td><td>Confuses two customers in long session</td><td style="color:#A32D2D">GDPR violation, data mixing</td><td style="font-family:monospace;font-size:11px">eval.kyc_quality</td></tr>
-        <tr><td style="color:#A32D2D;font-weight:600">Tool call hallucination</td><td>Invents Qdrant search result never received</td><td style="color:#A32D2D">Compliance decision on fake data</td><td style="font-family:monospace;font-size:11px">eval.factual_grounding</td></tr>
-      </tbody>
-    </table>
-  </div>
-</section>
-<section class="p-sec" id="ps4">
-  <p class="p-head"><span class="ptag ta">Governance</span>Governance &amp; compliance — CI gates, cost efficiency, regulatory audit readiness</p>
-  <div class="two">
-    <div class="cc"><p class="ct">ZenArc — compliance accuracy v1 vs v2</p><div style="position:relative;height:240px"><canvas id="c5" role="img" aria-label="Grouped bar. V1: AML 52%, KYC 58%, Capital 48%, Privacy 61%. V2: 97%, 99%, 95%, 98%.">Dramatic improvement across all compliance domains.</canvas></div></div>
-    <div class="cc">
-      <p class="ct">Cost &amp; time efficiency — ZenArc v1 → v2</p>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">
-        <div style="background:#FCEBEB;border-radius:8px;padding:10px;text-align:center"><p style="font-size:10px;font-weight:700;color:#A32D2D;margin-bottom:3px">BEFORE (V1)</p><p style="font-size:24px;font-weight:700;color:#E24B4A">$160</p><p style="font-size:10px;color:#A32D2D">per analysis</p></div>
-        <div style="background:#EAF3DE;border-radius:8px;padding:10px;text-align:center"><p style="font-size:10px;font-weight:700;color:#3B6D11;margin-bottom:3px">AFTER (V2)</p><p style="font-size:24px;font-weight:700;color:#1D9E75">$2</p><p style="font-size:10px;color:#3B6D11">per analysis</p></div>
-        <div style="background:#FCEBEB;border-radius:8px;padding:10px;text-align:center"><p style="font-size:10px;font-weight:700;color:#A32D2D;margin-bottom:3px">TIME BEFORE</p><p style="font-size:24px;font-weight:700;color:#E24B4A">4 hr</p><p style="font-size:10px;color:#A32D2D">per analysis</p></div>
-        <div style="background:#EAF3DE;border-radius:8px;padding:10px;text-align:center"><p style="font-size:10px;font-weight:700;color:#3B6D11;margin-bottom:3px">TIME AFTER</p><p style="font-size:24px;font-weight:700;color:#1D9E75">45 s</p><p style="font-size:10px;color:#3B6D11">per analysis</p></div>
+    <div class="two">
+      <div class="card">
+        <div class="card-title">Aggregated Metrics</div>
+        <div id="obsMetrics"><div class="spinner" style="display:block;margin:20px auto"></div></div>
       </div>
-      <div class="sr"><span class="sl">Cost reduction</span><span class="sv" style="color:#1D9E75">98.7%</span></div>
-      <div class="sr"><span class="sl">Time reduction</span><span class="sv" style="color:#1D9E75">99%</span></div>
-      <div class="sr"><span class="sl">Compliance domains covered</span><span class="sv">5 (AML, KYC, Capital, Privacy, Cyber)</span></div>
-      <div class="sr"><span class="sl">Audit trail coverage</span><span class="sv">100%</span></div>
-    </div>
-  </div>
-  <div class="two">
-    <div class="cc">
-      <p class="ct">4-layer audit stack</p>
-      <div class="sr"><span class="sl">Layer 1 — Temporal event history</span><span class="sv">30-day retention</span></div>
-      <div class="sr"><span class="sl">Layer 2 — Phoenix OTel spans</span><span class="sv">90-day retention</span></div>
-      <div class="sr"><span class="sl">Layer 3 — Structured app logs</span><span class="sv">structlog + Azure Monitor</span></div>
-      <div class="sr"><span class="sl">Layer 4 — DB decision records</span><span class="sv">5–7 yr (AML rules)</span></div>
-      <div class="sr"><span class="sl">Audit report time</span><span class="sv" style="color:#1D9E75">&lt;2 min (was 2–3 days)</span></div>
-      <div class="sr"><span class="sl">PII in traces</span><span class="sv">OTel attribute filtering (GDPR)</span></div>
-    </div>
-    <div class="cc">
-      <p class="ct">QE maturity model</p>
-      <div class="mat-row"><span style="font-size:11px;color:#888;min-width:145px">L1 — Ad-hoc</span><div class="mat-bar-bg"><div class="mat-bar-fill" style="width:100%;background:#ccc"></div></div></div>
-      <div class="mat-row"><span style="font-size:11px;color:#888;min-width:145px">L2 — Traced</span><div class="mat-bar-bg"><div class="mat-bar-fill" style="width:100%;background:#85B7EB"></div></div></div>
-      <div class="mat-row"><span style="font-size:11px;color:#1D9E75;font-weight:600;min-width:145px">L3 — Evaluated</span><div class="mat-bar-bg" style="border:1px solid #1D9E75"><div class="mat-bar-fill" style="width:100%;background:#1D9E75"></div></div></div>
-      <div class="mat-row"><span style="font-size:11px;color:#185FA5;min-width:145px">L4 — Gated (target)</span><div class="mat-bar-bg"><div class="mat-bar-fill" style="width:30%;background:#378ADD;opacity:.5"></div></div></div>
-      <div class="mat-row"><span style="font-size:11px;color:#bbb;min-width:145px">L5 — Self-improving</span><div class="mat-bar-bg"><div class="mat-bar-fill" style="width:5%;background:#ccc"></div></div></div>
-      <div style="background:#f0f0f0;border-radius:8px;padding:10px;margin-top:12px">
-        <p style="font-size:12px;color:#444;line-height:1.6">"Temporal makes AI workflows <strong style="color:#1D9E75">durable</strong>. Phoenix makes them <strong style="color:#7F77DD">measurable</strong>. Together they make them <strong style="color:#111">trustworthy</strong>."</p>
+      <div class="card">
+        <div class="card-title">Project Registry</div>
+        <div id="projStatus"><div class="spinner" style="display:block;margin:20px auto"></div></div>
       </div>
     </div>
-  </div>
-</section>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+  </section>
+
+  <!-- ═══ SECTION 4: GOVERNANCE ═══ -->
+  <section class="p-sec" id="ps4">
+    <div class="sec-header">
+      <span class="sec-badge badge-orange">Governance</span>
+      <span class="sec-title">Governance &amp; Compliance — evaluator coverage across regulatory domains</span>
+    </div>
+    <div class="two">
+      <div class="card">
+        <div class="card-title">Compliance Domain Scores — Live</div>
+        <div class="chart-wrap"><canvas id="cGovScores"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Domain Coverage Status</div>
+        <div id="govCoverage"><div class="spinner" style="display:block;margin:20px auto"></div></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">QE Maturity Model</div>
+      <div style="margin-top:6px">
+        <div class="maturity-row"><span class="mat-label" style="color:var(--dim)">L1 — Ad-hoc testing</span><div class="mat-bar-bg"><div class="mat-bar-fill" style="width:100%;background:var(--dim)"></div></div></div>
+        <div class="maturity-row"><span class="mat-label" style="color:var(--muted)">L2 — Traced &amp; logged</span><div class="mat-bar-bg"><div class="mat-bar-fill" style="width:100%;background:var(--blue-dim)"></div></div></div>
+        <div class="maturity-row"><span class="mat-label" style="color:var(--green);font-weight:600">L3 — LLM-evaluated ✓ Current</span><div class="mat-bar-bg" style="border:1px solid var(--green)"><div class="mat-bar-fill" style="width:100%;background:var(--green)"></div></div></div>
+        <div class="maturity-row"><span class="mat-label" style="color:var(--blue)">L4 — CI-gated (target)</span><div class="mat-bar-bg"><div class="mat-bar-fill" style="width:35%;background:var(--blue);opacity:.5"></div></div></div>
+        <div class="maturity-row"><span class="mat-label" style="color:var(--dim)">L5 — Self-improving</span><div class="mat-bar-bg"><div class="mat-bar-fill" style="width:5%;background:var(--dim)"></div></div></div>
+      </div>
+      <div style="margin-top:16px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:14px">
+        <p style="font-size:13px;color:var(--muted);line-height:1.8">"Temporal makes AI workflows <strong style="color:var(--green)">durable</strong>. Phoenix makes them <strong style="color:var(--purple)">measurable</strong>. Together they make them <strong style="color:var(--text)">trustworthy</strong>."</p>
+      </div>
+    </div>
+  </section>
+</div>
+
 <script>
-function sp(n){document.querySelectorAll('.p-sec').forEach(function(s){s.style.display='none';});document.querySelectorAll('.p-btn').forEach(function(b){b.classList.remove('on');});document.getElementById('ps'+n).style.display='block';document.querySelectorAll('.p-btn')[n-1].classList.add('on');}
-new Chart(document.getElementById('c1'),{type:'bar',data:{labels:['fatca_accuracy','step_completion','pep_accuracy','escalation_quality','kyc_quality','factual_grounding','aml_quality','response_quality','doc_verification'],datasets:[{label:'Score',data:[0.96,0.95,0.94,0.92,0.91,0.90,0.89,0.88,0.87],backgroundColor:function(ctx){var scores=[0.96,0.95,0.94,0.92,0.91,0.90,0.89,0.88,0.87];var thresholds=[0.95,0.80,0.95,0.88,0.85,0.85,0.90,0.75,0.85];return scores[ctx.dataIndex]>=thresholds[ctx.dataIndex]?'#1D9E75':'#E24B4A';},borderRadius:3},{label:'Threshold',data:[0.95,0.80,0.95,0.88,0.85,0.85,0.90,0.75,0.85],backgroundColor:'rgba(0,0,0,0)',borderColor:'rgba(136,135,128,0.6)',borderWidth:1.5,type:'bar',borderRadius:0}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{min:0.5,max:1.0,ticks:{callback:function(v){return v.toFixed(2);},font:{size:10}},grid:{color:'rgba(0,0,0,0.05)'}},y:{ticks:{font:{size:10}}}}}});
-new Chart(document.getElementById('c2'),{type:'line',data:{labels:['v1 GPT-3.5','v2 GPT-4o','v3 fine-tuned','v4 current'],datasets:[{label:'kyc_quality',data:[0.67,0.84,0.89,0.91],borderColor:'#378ADD',borderWidth:2,pointRadius:4,tension:0.3,fill:false,borderDash:[]},{label:'pep_accuracy',data:[0.71,0.88,0.92,0.94],borderColor:'#7F77DD',borderWidth:2,pointRadius:4,tension:0.3,fill:false,borderDash:[6,3]},{label:'aml_quality',data:[0.58,0.79,0.87,0.89],borderColor:'#E24B4A',borderWidth:2,pointRadius:4,tension:0.3,fill:false,borderDash:[2,2]},{label:'fatca_accuracy',data:[0.74,0.90,0.94,0.96],borderColor:'#1D9E75',borderWidth:2,pointRadius:4,tension:0.3,fill:false,borderDash:[]},{label:'factual_grounding',data:[0.55,0.78,0.88,0.90],borderColor:'#EF9F27',borderWidth:2,pointRadius:4,tension:0.3,fill:false,borderDash:[8,4]},{label:'escalation',data:[0.63,0.82,0.89,0.92],borderColor:'#D4537E',borderWidth:2,pointRadius:4,tension:0.3,fill:false,borderDash:[4,2]}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{min:0.5,max:1.0,ticks:{callback:function(v){return v.toFixed(2);},font:{size:10}},grid:{color:'rgba(0,0,0,0.05)'}},x:{ticks:{font:{size:10}}}}}});
-new Chart(document.getElementById('c3'),{type:'bar',data:{labels:['Durability','Escalation logic','Step completion','Compliance acc.','Hallucination'],datasets:[{label:'Before QE',data:[15,20,42,25,32],backgroundColor:'#F09595',borderRadius:3},{label:'After QE',data:[100,96,95,99,97],backgroundColor:'#1D9E75',borderRadius:3}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{min:0,max:100,ticks:{callback:function(v){return v+'%';},font:{size:10}},grid:{color:'rgba(0,0,0,0.05)'}},y:{ticks:{font:{size:10}}}}}});
-new Chart(document.getElementById('c4'),{type:'doughnut',data:{labels:['LLM','Chain','Tool','Retriever','Embedding','HTTP'],datasets:[{data:[38,22,18,12,6,4],backgroundColor:['#378ADD','#7F77DD','#1D9E75','#EF9F27','#D4537E','#888780'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},cutout:'62%'}});
-new Chart(document.getElementById('c5'),{type:'bar',data:{labels:['AML','KYC','Capital rules','Privacy'],datasets:[{label:'V1 manual',data:[52,58,48,61],backgroundColor:'#F09595',borderRadius:3},{label:'V2 ZenArc AI',data:[97,99,95,98],backgroundColor:'#1D9E75',borderRadius:3}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{min:0,max:100,ticks:{callback:function(v){return v+'%';},font:{size:10}},grid:{color:'rgba(0,0,0,0.05)'}},x:{ticks:{font:{size:10}}}}}});
-setTimeout(function(){sp(1);},300);
+// ════════════════════════════
+//  CONFIG
+// ════════════════════════════
+const GRAFANA   = 'https://unified-dash-grafana.bravesky-d9f9eeb7.eastus2.azurecontainerapps.io';
+const PROM_BASE = `${GRAFANA}/api/datasources/proxy/uid/prometheus-ds/api/v1`;
+
+// When served via serve.py the proxy injects auth — GFAUTH is a no-op
+// When opened directly against Grafana, Basic auth is sent
+const GFAUTH = { Authorization: 'Basic ' + btoa('admin:ZenLabs@2025!') };
+
+// Evaluators that actually exist in Phoenix (posted via run_eval_quick.py)
+const THRESHOLDS = {
+  response_quality:      {min:0.75, gate:'Block'},   // span OK:1.0 ERROR:0.0 UNSET:0.5
+  latency_quality:       {min:0.65, gate:'Warn'},    // fast=1.0 slow=0.2
+  token_efficiency:      {min:0.70, gate:'Info'},    // token count efficiency score
+  // Named evaluators that can be added when domain-specific evals run:
+  pep_accuracy:          {min:0.95, gate:'Block'},
+  fatca_accuracy:        {min:0.95, gate:'Block'},
+  aml_decision_quality:  {min:0.90, gate:'Block'},
+  escalation_quality:    {min:0.88, gate:'Block'},
+  factual_grounding:     {min:0.85, gate:'Block'},
+  kyc_quality:           {min:0.85, gate:'Warn'},
+};
+
+// Governance domains mapped to available evaluators
+// response_quality = regulatory decision health; latency_quality = process timeliness
+const GOV_DOMAINS = {
+  'Decision Quality':   'response_quality',
+  'Process Timeliness': 'latency_quality',
+  'Token Efficiency':   'token_efficiency',
+};
+// Additional domain evaluators (show when dedicated LLM-as-judge evals are run):
+const GOV_DOMAIN_EXTRA = {
+  AML:   'aml_decision_quality',
+  KYC:   'kyc_quality',
+  FATCA: 'fatca_accuracy',
+  PEP:   'pep_accuracy',
+};
+
+const COLORS = {
+  blue:'rgba(88,166,255,.75)', green:'rgba(63,185,80,.75)',
+  red:'rgba(248,81,73,.75)', orange:'rgba(227,179,65,.75)',
+  purple:'rgba(188,140,255,.75)', dim:'rgba(72,79,88,.5)',
+};
+
+let charts = {}, autoTick = null, currentSec = 1;
+
+// ════════════════════════════
+//  HELPERS
+// ════════════════════════════
+const pct  = (v,d=1) => isFinite(v) ? v.toFixed(d)+'%' : '—';
+const num  = v => isFinite(v) ? Math.round(v).toLocaleString() : '—';
+const mono = s => `<span style="font-family:monospace;font-size:11px">${s}</span>`;
+
+async function promQuery(expr){
+  try{
+    const r = await fetch(`${PROM_BASE}/query?query=${encodeURIComponent(expr)}`, { headers: GFAUTH });
+    if(!r.ok) throw new Error(`HTTP ${r.status}`);
+    const j = await r.json();
+    if(j.status !== 'success') throw new Error(j.error || 'Prometheus error');
+    return j.data?.result ?? [];
+  } catch(e) {
+    console.warn('[promQuery]', e.message, '|', expr);
+    return [];
+  }
+}
+
+async function promVal(expr){
+  const res = await promQuery(expr);
+  return res.length ? parseFloat(res[0].value[1]) : NaN;
+}
+
+async function promLabels(metric, label){
+  try{
+    const r = await fetch(
+      `${PROM_BASE}/label/${label}/values?match[]=${encodeURIComponent(metric)}`,
+      { headers: GFAUTH }
+    );
+    if(!r.ok) throw new Error(`HTTP ${r.status}`);
+    return (await r.json()).data ?? [];
+  } catch(e) {
+    console.warn('[promLabels]', e.message, '|', metric, label);
+    return [];
+  }
+}
+
+function destroyChart(id){ if(charts[id]){ charts[id].destroy(); delete charts[id]; } }
+
+function setKpi(id, val, delta='', cls=''){
+  const el = document.getElementById(id);
+  if(el){ el.innerHTML = val; el.className = 'kpi-value'; }
+  const dd = document.getElementById(id+'-d');
+  if(dd){ dd.textContent = delta; dd.className = 'kpi-delta '+cls; }
+}
+
+function baseChartOpts(extra={}){
+  return Object.assign({
+    responsive:true, maintainAspectRatio:false,
+    plugins:{legend:{display:false}},
+    scales:{
+      x:{ticks:{color:'#8b949e',font:{size:9}},grid:{display:false}},
+      y:{ticks:{color:'#8b949e',font:{size:10}},grid:{color:'rgba(48,54,61,.8)'}}
+    }
+  }, extra);
+}
+
+// ════════════════════════════
+//  DROPDOWNS
+// ════════════════════════════
+function getProj(){ return document.getElementById('selProject').value || '.*'; }
+function getNs()  { return document.getElementById('selNamespace').value || '.*'; }
+
+async function populateDropdowns(){
+  const [projects, namespaces] = await Promise.all([
+    promLabels('phoenix_project_present', 'project_name'),
+    promLabels('temporal_workflow_active', 'namespace'),
+  ]);
+  const pSel = document.getElementById('selProject');
+  const nSel = document.getElementById('selNamespace');
+  const pCur = pSel.value, nCur = nSel.value;
+
+  while(pSel.options.length > 1) pSel.remove(1);
+  projects.forEach(p => { const o = new Option(p,p); if(p===pCur) o.selected=true; pSel.add(o); });
+
+  while(nSel.options.length > 1) nSel.remove(1);
+  namespaces.forEach(n => { const o = new Option(n,n); if(n===nCur) o.selected=true; nSel.add(o); });
+}
+
+// ════════════════════════════
+//  KPI CARDS
+// ════════════════════════════
+async function loadKpis(){
+  const p = getProj(), n = getNs();
+  const [score, tracePos, traceAll, hall, wfAct, wfComp, wfFail, wfTO, projCnt] = await Promise.all([
+    promVal(`avg(phoenix_evaluator_score{project_name=~"${p}",evaluator_name="response_quality"}) * 100`),
+    promVal(`count(phoenix_trace_count{project_name=~"${p}"} > 0) or vector(0)`),
+    promVal(`count(phoenix_trace_count{project_name=~"${p}"}) or vector(0)`),
+    // Span error rate: fraction of spans that are NOT OK across all projects (0=all fine, 100=all errors)
+    promVal(`(1 - avg(phoenix_evaluator_score{project_name=~"${p}",evaluator_name="response_quality"})) * 100`),
+    promVal(`sum(temporal_workflow_active{namespace=~"${n}"}) or vector(0)`),
+    promVal(`sum(temporal_workflow_completed_total{namespace=~"${n}"}) or vector(0)`),
+    promVal(`sum(temporal_workflow_failed_total{namespace=~"${n}"}) or vector(0)`),
+    promVal(`sum(temporal_workflow_timed_out_total{namespace=~"${n}"}) or vector(0)`),
+    promVal(`count(phoenix_project_present{project_name=~"${p}"} == 1) or vector(0)`),
+  ]);
+
+  const cov = traceAll > 0 ? (tracePos/traceAll)*100 : NaN;
+  const tot = wfAct + wfComp;
+  const dur = tot > 0 ? ((tot - wfFail - wfTO) / tot * 100) : NaN;
+
+  setKpi('k-score',  isFinite(score) ? pct(score)       : '—', isFinite(score)   ? 'response_quality evaluator avg' : 'No evaluator data yet', isFinite(score)&&score>=75?'up':'dn');
+  setKpi('k-cover',  isFinite(cov)   ? pct(cov)         : '—', isFinite(cov)     ? `${num(tracePos)} of ${num(traceAll)} projects traced` : 'No trace data', 'up');
+  setKpi('k-hall',   isFinite(hall)  ? pct(hall)        : '—', isFinite(hall)    ? (hall<25?'Within target':'⚠ High error rate') : 'Run evaluations first', isFinite(hall)&&hall<25?'up':'dn');
+  setKpi('k-wf',     num(wfAct),  '', '');
+  setKpi('k-traces', num(traceAll), isFinite(traceAll) ? 'projects with traces' : '', '');
+  setKpi('k-dur',    isFinite(dur) ? pct(dur) : '—', isFinite(dur) ? (dur>=95?'Durable':'⚠ Needs attention') : 'No workflow data', isFinite(dur)&&dur>=95?'up':'dn');
+  setKpi('k-proj',   num(projCnt),  '', '');
+  setKpi('k-wfc',    num(wfComp), isFinite(wfFail)&&wfFail>0 ? `${num(wfFail)} failed` : '', isFinite(wfFail)&&wfFail>0?'dn':'up');
+}
+
+// ════════════════════════════
+//  SECTION 1 — CORRECTNESS
+// ════════════════════════════
+async function loadCorrectness(){
+  const p = getProj();
+  const res = await promQuery(`avg by (evaluator_name) (phoenix_evaluator_score{project_name=~"${p}"})`);
+  const evalMap = {};
+  res.forEach(r => { evalMap[r.metric.evaluator_name||'unknown'] = parseFloat(r.value[1]); });
+
+  const allEvals = [...new Set([...Object.keys(THRESHOLDS), ...Object.keys(evalMap)])].sort();
+
+  // Progress bars
+  document.getElementById('evalBars').innerHTML = allEvals.map(name => {
+    const s  = evalMap[name];
+    const sc = isFinite(s) ? s*100 : null;
+    const t  = THRESHOLDS[name]?.min || 0;
+    const ok = sc !== null && sc >= t*100;
+    const col = sc===null ? 'var(--dim)' : ok ? 'var(--green)' : 'var(--red)';
+    return `<div class="eval-row">
+      <span class="eval-name" title="${name}">${name.replace(/_/g,' ')}</span>
+      <div class="eval-bar-bg"><div class="eval-bar-fill" style="width:${sc??0}%;background:${col}"></div></div>
+      <span class="eval-score" style="color:${col}">${sc!==null?pct(sc):'—'}</span>
+    </div>`;
+  }).join('');
+
+  // Chart
+  destroyChart('cEvalBar');
+  const scores = allEvals.map(n => isFinite(evalMap[n]) ? evalMap[n]*100 : 0);
+  const bgs    = allEvals.map((n,i) => {
+    const s = evalMap[n], t = THRESHOLDS[n]?.min||0;
+    return isFinite(s) ? s>=t ? COLORS.green : COLORS.red : COLORS.dim;
+  });
+  charts['cEvalBar'] = new Chart(document.getElementById('cEvalBar'), {
+    type:'bar',
+    data:{
+      labels: allEvals.map(n=>n.replace(/_/g,'\n')),
+      datasets:[
+        {label:'Score',    data:scores, backgroundColor:bgs, borderRadius:4},
+        {label:'Threshold',data:allEvals.map(n=>(THRESHOLDS[n]?.min||0)*100),
+          type:'line',borderColor:'rgba(139,148,158,.6)',borderWidth:1.5,
+          pointRadius:0,borderDash:[5,3],fill:false}
+      ]
+    },
+    options: baseChartOpts({
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.dataset.label}: ${c.raw.toFixed(1)}%`}}},
+      scales:{
+        y:{min:0,max:100,ticks:{callback:v=>v+'%',color:'#8b949e',font:{size:10}},grid:{color:'rgba(48,54,61,.8)'}},
+        x:{ticks:{color:'#8b949e',font:{size:9}},grid:{display:false}}
+      }
+    })
+  });
+
+  // Table
+  document.getElementById('evalTableBody').innerHTML = allEvals.map(name => {
+    const s  = evalMap[name];
+    const sc = isFinite(s) ? s*100 : null;
+    const t  = THRESHOLDS[name];
+    const th = t ? t.min*100 : null;
+    const gate = t?.gate || 'Info';
+    const ok   = sc!==null && th!==null && sc>=th;
+    const noD  = sc === null;
+    const gClass = gate==='Block'?'pill-red':gate==='Warn'?'pill-orange':'pill-blue';
+    const delta  = sc!==null&&th!==null ? (sc-th).toFixed(1) : null;
+    const status = noD
+      ? '<span class="no-data">No data</span>'
+      : ok
+        ? `<span class="pass">✓ Pass (${delta>=0?'+':''}${delta}%)</span>`
+        : `<span class="fail">✗ Fail (${delta}%)</span>`;
+    return `<tr>
+      <td>${mono(name)}</td>
+      <td style="font-weight:700;color:${noD?'var(--dim)':ok?'var(--green)':'var(--red)'}">${sc!==null?pct(sc):'—'}</td>
+      <td style="color:var(--muted)">${th!==null?pct(th):'—'}</td>
+      <td><span class="pill ${gClass}">${gate}</span></td>
+      <td>${status}</td>
+    </tr>`;
+  }).join('');
+
+  // Per-project quality breakdown using response_quality evaluator
+  const projRes = await promQuery(`avg by (project_name) (phoenix_evaluator_score{project_name=~"${p}",evaluator_name="response_quality"})`);
+  const traceRes = await promQuery(`phoenix_trace_count{project_name=~"${p}"}`);
+  const latRes   = await promQuery(`phoenix_latency_ms_p50{project_name=~"${p}"}`);
+  if (projRes.length) {
+    const rows = projRes
+      .sort((a,b)=>parseFloat(b.value[1])-parseFloat(a.value[1]))
+      .map(r=>{
+        const proj  = r.metric.project_name || 'unknown';
+        const rq    = parseFloat(r.value[1])*100;
+        const ok    = rq >= 75;
+        const traces = parseFloat(traceRes.find(t=>t.metric.project_name===proj)?.value[1]||0);
+        const p50    = parseFloat(latRes.find(t=>t.metric.project_name===proj)?.value[1]||0);
+        return `<tr>
+          <td>${mono(proj)}</td>
+          <td style="font-weight:700;color:${ok?'var(--green)':'var(--red)'}">${pct(rq)}</td>
+          <td style="color:var(--muted)">${num(traces)}</td>
+          <td style="color:var(--muted)">${p50>0?Math.round(p50)+'ms':'—'}</td>
+          <td>${ok?'<span class="pass">✓ Pass</span>':'<span class="fail">✗ Below threshold</span>'}</td>
+        </tr>`;
+      }).join('');
+    document.getElementById('projQuality').innerHTML = `
+      <table class="tbl">
+        <thead><tr><th>Project</th><th>Response Quality</th><th>Traces</th><th>p50 Latency</th><th>Status</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>`;
+  } else {
+    document.getElementById('projQuality').innerHTML = '<div class="empty">Run evaluations to populate per-project quality data</div>';
+  }
+}
+
+// ════════════════════════════
+//  SECTION 2 — RELIABILITY
+// ════════════════════════════
+async function loadReliability(){
+  const n = getNs();
+
+  const [actR, compR, failR, toR, allActR] = await Promise.all([
+    promQuery(`temporal_workflow_active{namespace=~"${n}"}`),
+    promQuery(`temporal_workflow_completed_total{namespace=~"${n}"}`),
+    promQuery(`temporal_workflow_failed_total{namespace=~"${n}"}`),
+    promQuery(`temporal_workflow_timed_out_total{namespace=~"${n}"}`),
+    promQuery(`temporal_workflow_active`),
+  ]);
+
+  const sum = arr => arr.reduce((a,r)=>a+parseFloat(r.value[1]),0);
+  const sumAct=sum(actR), sumComp=sum(compR), sumFail=sum(failR), sumTO=sum(toR);
+
+  document.getElementById('wf-active').textContent    = num(sumAct);
+  document.getElementById('wf-completed').textContent = num(sumComp);
+  document.getElementById('wf-failed').textContent    = num(sumFail);
+  document.getElementById('wf-timeout').textContent   = num(sumTO);
+
+  // Chart
+  destroyChart('cWfStatus');
+  const nsSet = [...new Set([...actR,...compR,...failR].map(r=>r.metric.namespace))].sort();
+  charts['cWfStatus'] = new Chart(document.getElementById('cWfStatus'),{
+    type:'bar',
+    data:{
+      labels: nsSet.length ? nsSet : ['No data'],
+      datasets:[
+        {label:'Active',    data:nsSet.map(ns=>parseFloat(actR.find(r=>r.metric.namespace===ns)?.value[1]||0)), backgroundColor:COLORS.green, borderRadius:3},
+        {label:'Completed', data:nsSet.map(ns=>parseFloat(compR.find(r=>r.metric.namespace===ns)?.value[1]||0)), backgroundColor:COLORS.blue,  borderRadius:3},
+        {label:'Failed',    data:nsSet.map(ns=>parseFloat(failR.find(r=>r.metric.namespace===ns)?.value[1]||0)), backgroundColor:COLORS.red,   borderRadius:3},
+      ]
+    },
+    options: baseChartOpts({plugins:{legend:{labels:{color:'#8b949e',font:{size:10}}}}})
+  });
+
+  // Namespace durability
+  const allNs = [...new Set(allActR.map(r=>r.metric.namespace))].sort();
+  document.getElementById('nsHealthList').innerHTML = allNs.length ? allNs.map(ns=>{
+    const act  = parseFloat(allActR.find(r=>r.metric.namespace===ns)?.value[1]||0);
+    const comp = parseFloat(compR.find(r=>r.metric.namespace===ns)?.value[1]||0);
+    const fail = parseFloat(failR.find(r=>r.metric.namespace===ns)?.value[1]||0);
+    const tot  = act+comp;
+    const dur  = tot>0 ? ((tot-fail)/tot*100).toFixed(0) : null;
+    const ok   = dur===null || parseFloat(dur)>=90;
+    return `<div class="stat-row">
+      <span class="stat-label">${mono(ns)}</span>
+      <div style="display:flex;align-items:center;gap:10px">
+        <span style="font-size:11px;color:var(--muted)">${act} active · ${comp} done</span>
+        <span style="font-weight:700;color:${ok?'var(--green)':'var(--red)'}">${dur!==null?dur+'%':'—'}</span>
+      </div>
+    </div>`;
+  }).join('') : '<div class="empty">No namespaces reporting</div>';
+
+  // Workflow failures (temporal_activity_task_error_total doesn't exist — use workflow_failed_total)
+  const failByNs = await promQuery(`temporal_workflow_failed_total{namespace=~"${n}"}`);
+  const toByNs   = await promQuery(`temporal_workflow_timed_out_total{namespace=~"${n}"}`);
+  const hasIssues = failByNs.some(r=>parseFloat(r.value[1])>0) || toByNs.some(r=>parseFloat(r.value[1])>0);
+  document.getElementById('actErrors').innerHTML = hasIssues
+    ? `<table class="tbl"><thead><tr><th>Namespace</th><th>Failed</th><th>Timed Out</th><th>Severity</th></tr></thead><tbody>
+        ${[...new Set([...failByNs,...toByNs].map(r=>r.metric.namespace))].map(ns=>{
+          const fail=parseFloat(failByNs.find(r=>r.metric.namespace===ns)?.value[1]||0);
+          const to=parseFloat(toByNs.find(r=>r.metric.namespace===ns)?.value[1]||0);
+          const total=fail+to;
+          const sev=total>10?'<span class="pill pill-red">High</span>':total>3?'<span class="pill pill-orange">Medium</span>':'<span class="pill pill-blue">Low</span>';
+          return `<tr><td>${mono(ns)}</td>
+            <td style="font-weight:700;color:${fail>0?'var(--red)':'var(--muted)'}">${fail}</td>
+            <td style="font-weight:700;color:${to>0?'var(--orange)':'var(--muted)'}">${to}</td>
+            <td>${sev}</td></tr>`;
+        }).join('')}</tbody></table>`
+    : '<div class="empty" style="color:var(--green)">✓ No workflow failures or timeouts reported</div>';
+}
+
+// ════════════════════════════
+//  SECTION 3 — OBSERVABILITY
+// ════════════════════════════
+async function loadObservability(){
+  const p = getProj();
+
+  const [traceR, p50R, p99R, tokInR, tokOutR, projR] = await Promise.all([
+    promQuery(`phoenix_trace_count{project_name=~"${p}"}`),
+    promQuery(`phoenix_latency_ms_p50{project_name=~"${p}"}`),
+    promQuery(`phoenix_latency_ms_p99{project_name=~"${p}"}`),
+    promQuery(`phoenix_token_count_prompt{project_name=~"${p}"}`),
+    promQuery(`phoenix_token_count_completion{project_name=~"${p}"}`),
+    promQuery(`phoenix_project_present{project_name=~"${p}"}`),
+  ]);
+
+  // Trace chart
+  destroyChart('cTraces');
+  const tLabels = traceR.map(r=>r.metric.project_name||'unknown');
+  const tData   = traceR.map(r=>parseFloat(r.value[1]));
+  charts['cTraces'] = new Chart(document.getElementById('cTraces'),{
+    type:'bar',
+    data:{labels:tLabels.length?tLabels:['No data'],datasets:[{label:'Traces',data:tLabels.length?tData:[0],backgroundColor:COLORS.blue,borderRadius:4}]},
+    options:baseChartOpts()
+  });
+
+  // Latency chart
+  destroyChart('cLatency');
+  const latNs = [...new Set([...p50R,...p99R].map(r=>r.metric.project_name))];
+  charts['cLatency'] = new Chart(document.getElementById('cLatency'),{
+    type:'bar',
+    data:{
+      labels:latNs.length?latNs:['No data'],
+      datasets:[
+        {label:'p50 ms',data:latNs.map(n=>parseFloat(p50R.find(r=>r.metric.project_name===n)?.value[1]||0)),backgroundColor:COLORS.green,borderRadius:4},
+        {label:'p99 ms',data:latNs.map(n=>parseFloat(p99R.find(r=>r.metric.project_name===n)?.value[1]||0)),backgroundColor:COLORS.red,borderRadius:4},
+      ]
+    },
+    options:baseChartOpts({plugins:{legend:{labels:{color:'#8b949e',font:{size:10}}}},scales:{y:{ticks:{callback:v=>v+'ms',color:'#8b949e',font:{size:10}},grid:{color:'rgba(48,54,61,.8)'}},x:{ticks:{color:'#8b949e',font:{size:9}},grid:{display:false}}}})
+  });
+
+  // Token chart
+  destroyChart('cTokens');
+  const tokNs = [...new Set([...tokInR,...tokOutR].map(r=>r.metric.project_name))];
+  charts['cTokens'] = new Chart(document.getElementById('cTokens'),{
+    type:'bar',
+    data:{
+      labels:tokNs.length?tokNs:['No data'],
+      datasets:[
+        {label:'Prompt tokens',     data:tokNs.map(n=>parseFloat(tokInR.find(r=>r.metric.project_name===n)?.value[1]||0)),  backgroundColor:COLORS.purple, borderRadius:4},
+        {label:'Completion tokens', data:tokNs.map(n=>parseFloat(tokOutR.find(r=>r.metric.project_name===n)?.value[1]||0)), backgroundColor:COLORS.orange, borderRadius:4},
+      ]
+    },
+    options:baseChartOpts({plugins:{legend:{labels:{color:'#8b949e',font:{size:10}}}}})
+  });
+
+  // Aggregated stats
+  const totT   = tData.reduce((a,v)=>a+v,0);
+  const avgP50 = p50R.length ? p50R.reduce((a,r)=>a+parseFloat(r.value[1]),0)/p50R.length : NaN;
+  const avgP99 = p99R.length ? p99R.reduce((a,r)=>a+parseFloat(r.value[1]),0)/p99R.length : NaN;
+  const totIn  = tokInR.reduce((a,r)=>a+parseFloat(r.value[1]),0);
+  const totOut = tokOutR.reduce((a,r)=>a+parseFloat(r.value[1]),0);
+  document.getElementById('obsMetrics').innerHTML = `
+    <div class="stat-row"><span class="stat-label">Total traces</span><span class="stat-value">${num(totT)}</span></div>
+    <div class="stat-row"><span class="stat-label">Projects reporting</span><span class="stat-value">${tLabels.length}</span></div>
+    <div class="stat-row"><span class="stat-label">Avg latency p50</span><span class="stat-value">${isFinite(avgP50)?Math.round(avgP50)+'ms':'—'}</span></div>
+    <div class="stat-row"><span class="stat-label">Avg latency p99</span><span class="stat-value">${isFinite(avgP99)?Math.round(avgP99)+'ms':'—'}</span></div>
+    <div class="stat-row"><span class="stat-label">Total prompt tokens</span><span class="stat-value">${num(totIn)}</span></div>
+    <div class="stat-row"><span class="stat-label">Total completion tokens</span><span class="stat-value">${num(totOut)}</span></div>
+    <div class="stat-row"><span class="stat-label">Total tokens consumed</span><span class="stat-value">${num(totIn+totOut)}</span></div>
+  `;
+
+  // Project registry
+  document.getElementById('projStatus').innerHTML = projR.length
+    ? projR.map(r=>{
+        const name  = r.metric.project_name||'unknown';
+        const up    = parseFloat(r.value[1])===1;
+        const count = parseFloat(traceR.find(t=>t.metric.project_name===name)?.value[1]||0);
+        return `<div class="stat-row">
+          <span class="stat-label">${mono(name)}</span>
+          <div style="display:flex;align-items:center;gap:10px">
+            <span style="font-size:11px;color:var(--muted)">${num(count)} traces</span>
+            <span style="font-weight:700;color:${up?'var(--green)':'var(--red)'}">${up?'● Online':'○ Offline'}</span>
+          </div>
+        </div>`;
+      }).join('')
+    : '<div class="empty">No projects registered in Phoenix</div>';
+}
+
+// ════════════════════════════
+//  SECTION 4 — GOVERNANCE
+// ════════════════════════════
+async function loadGovernance(){
+  const p = getProj();
+  // Fetch all evaluator scores — real ones we have plus domain-specific if they exist
+  const allEvalNames = [...Object.values(GOV_DOMAINS), ...Object.values(GOV_DOMAIN_EXTRA)].join('|');
+  const res = await promQuery(`avg by (evaluator_name) (phoenix_evaluator_score{project_name=~"${p}",evaluator_name=~"${allEvalNames}"})`);
+  const sm = {};
+  res.forEach(r=>{ sm[r.metric.evaluator_name] = parseFloat(r.value[1])*100; });
+
+  // Chart uses GOV_DOMAINS (evaluators we always have)
+  const domains = Object.keys(GOV_DOMAINS);
+  const scores  = domains.map(d=>isFinite(sm[GOV_DOMAINS[d]])?sm[GOV_DOMAINS[d]]:0);
+  const bgs     = scores.map(s=>s>=75?COLORS.green:s>=55?COLORS.orange:s>0?COLORS.red:COLORS.dim);
+
+  destroyChart('cGovScores');
+  charts['cGovScores'] = new Chart(document.getElementById('cGovScores'),{
+    type:'bar',
+    data:{labels:domains,datasets:[{label:'Score',data:scores,backgroundColor:bgs,borderRadius:6}]},
+    options:baseChartOpts({
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.raw.toFixed(1)}%`}}},
+      scales:{y:{min:0,max:100,ticks:{callback:v=>v+'%',color:'#8b949e',font:{size:10}},grid:{color:'rgba(48,54,61,.8)'}},x:{ticks:{color:'#8b949e',font:{size:11}},grid:{display:false}}}
+    })
+  });
+
+  // Coverage table — show primary evaluators + domain-specific if present
+  const allRows = [...Object.entries(GOV_DOMAINS), ...Object.entries(GOV_DOMAIN_EXTRA)];
+  document.getElementById('govCoverage').innerHTML = `
+    <table class="tbl">
+      <thead><tr><th>Domain</th><th>Evaluator</th><th>Score</th><th>Status</th></tr></thead>
+      <tbody>${allRows.map(([d,ev])=>{
+        const sc = sm[ev];
+        const th = 75;
+        const ok = isFinite(sc)&&sc>=th, nd = !isFinite(sc)||sc===0;
+        return `<tr>
+          <td style="font-weight:600">${d}</td>
+          <td>${mono(ev)}</td>
+          <td style="font-weight:700;color:${nd?'var(--dim)':ok?'var(--green)':'var(--red)'}">${nd?'—':pct(sc)}</td>
+          <td>${nd?'<span class="no-data">Pending</span>':ok?'<span class="pass">✓ Pass</span>':'<span class="fail">✗ Fail</span>'}</td>
+        </tr>`;
+      }).join('')}</tbody>
+    </table>`;
+}
+
+// ════════════════════════════
+//  SECTION SWITCHING
+// ════════════════════════════
+const LOADERS = [null, loadCorrectness, loadReliability, loadObservability, loadGovernance];
+
+function showSec(n){
+  document.querySelectorAll('.p-sec').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.sec-btn').forEach(b=>b.classList.remove('on'));
+  document.getElementById('ps'+n).classList.add('active');
+  document.querySelectorAll('.sec-btn')[n-1].classList.add('on');
+  currentSec = n;
+  LOADERS[n]?.();
+}
+
+// ════════════════════════════
+//  LOAD ALL
+// ════════════════════════════
+async function loadAll(){
+  document.getElementById('lastRefresh').textContent = 'Refreshing…';
+  const errEl = document.getElementById('errBox');
+  errEl.style.display = 'none';
+  try{
+    // Quick connectivity check
+    const hc = await fetch(`${GRAFANA}/api/health`, { headers: GFAUTH }).catch(e=>({ok:false,_err:e}));
+    if(!hc.ok){
+      const isCors = hc._err?.message?.includes('fetch') || hc._err?.message?.includes('CORS');
+      errEl.textContent = isCors
+        ? '⚠ CORS error — Grafana is not allowing cross-origin requests. Open the browser console for details.'
+        : `⚠ Cannot reach Grafana (${hc._err?.message||'Network error'})  — metrics unavailable.`;
+      errEl.style.display = 'block';
+      document.getElementById('lastRefresh').textContent = 'Connection failed · ' + new Date().toLocaleTimeString();
+      return;
+    }
+    await Promise.all([populateDropdowns(), loadKpis(), LOADERS[currentSec]?.()]);
+    document.getElementById('lastRefresh').textContent = 'Updated ' + new Date().toLocaleTimeString();
+  } catch(e){
+    errEl.textContent = '⚠ Unexpected error: ' + e.message;
+    errEl.style.display = 'block';
+    document.getElementById('lastRefresh').textContent = 'Error · ' + new Date().toLocaleTimeString();
+    console.error('[loadAll]', e);
+  }
+}
+
+function setAutoRefresh(){
+  if(autoTick){ clearInterval(autoTick); autoTick=null; }
+  const s = parseInt(document.getElementById('selInterval').value);
+  if(s>0) autoTick = setInterval(loadAll, s*1000);
+}
+
+loadAll();
+setAutoRefresh();
 </script>
 </body>
 </html>
