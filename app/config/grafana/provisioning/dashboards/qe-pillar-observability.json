@@ -1,6 +1,6 @@
 {
-  "uid": "qe-observability",
-  "title": "QE for AI \u2014 Observability & Tracing",
+  "uid": "qe-pillar-observability",
+  "title": "QE Pillar \u2014 Observability & Tracing",
   "tags": [
     "qe-pillar",
     "qe",
@@ -180,11 +180,11 @@
               },
               {
                 "color": "#EF9F27",
-                "value": 50
+                "value": 70
               },
               {
                 "color": "#1D9E75",
-                "value": 90
+                "value": 85
               }
             ]
           },
@@ -227,7 +227,7 @@
       "fieldConfig": {
         "defaults": {
           "unit": "percent",
-          "decimals": 1,
+          "decimals": 0,
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -241,7 +241,7 @@
               },
               {
                 "color": "#E24B4A",
-                "value": 10
+                "value": 15
               }
             ]
           },
@@ -284,7 +284,7 @@
       "fieldConfig": {
         "defaults": {
           "unit": "currencyUSD",
-          "decimals": 2,
+          "decimals": 4,
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -294,11 +294,11 @@
               },
               {
                 "color": "#EF9F27",
-                "value": 10
+                "value": 1
               },
               {
                 "color": "#E24B4A",
-                "value": 50
+                "value": 5
               }
             ]
           },
@@ -389,7 +389,7 @@
       "datasource": "Prometheus",
       "targets": [
         {
-          "expr": "((sum(temporal_workflow_completed_total{namespace=~\"$namespace\"}) or vector(0)) / clamp_min(sum(temporal_workflow_completed_total{namespace=~\"$namespace\"}) + sum(temporal_workflow_failed_total{namespace=~\"$namespace\"}) + sum(temporal_workflow_timed_out_total{namespace=~\"$namespace\"}), 1) * 100) or vector(0)",
+          "expr": "((sum(temporal_workflow_completed_total{}) or vector(0)) / clamp_min(sum(temporal_workflow_completed_total{}) + sum(temporal_workflow_failed_total{}) + sum(temporal_workflow_timed_out_total{}), 1) * 100) or vector(0)",
           "legendFormat": "",
           "instant": true,
           "refId": "A"
@@ -408,11 +408,11 @@
               },
               {
                 "color": "#EF9F27",
-                "value": 80
+                "value": 70
               },
               {
                 "color": "#1D9E75",
-                "value": 95
+                "value": 85
               }
             ]
           },
@@ -436,178 +436,25 @@
     {
       "id": 30,
       "type": "row",
-      "title": "03 \u00b7 Observability & Tracing \u2014 Span coverage, hallucination detection, latency",
+      "title": "03 \u00b7 Observability & Tracing \u2014 Span coverage, traces, latency, tokens",
+      "collapsed": false,
       "gridPos": {
         "x": 0,
-        "y": 48,
+        "y": 4,
         "w": 24,
         "h": 1
       },
-      "collapsed": false
+      "panels": []
     },
     {
       "id": 31,
-      "type": "piechart",
-      "title": "Span Type Distribution",
-      "description": "Distribution of span kinds from recent traces \u2014 LLM, Chain, Tool, Retriever, Embedding, HTTP.",
-      "gridPos": {
-        "x": 0,
-        "y": 49,
-        "w": 12,
-        "h": 11
-      },
-      "datasource": "Prometheus",
-      "targets": [
-        {
-          "expr": "phoenix_span_type_percent{project_name=~\"$project\"}",
-          "legendFormat": "{{span_kind}}",
-          "instant": true,
-          "refId": "A"
-        }
-      ],
-      "fieldConfig": {
-        "defaults": {
-          "unit": "percent",
-          "color": {
-            "mode": "palette-classic"
-          }
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "LLM"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "#378ADD",
-                  "mode": "fixed"
-                }
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "CHAIN"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "#7F77DD",
-                  "mode": "fixed"
-                }
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "TOOL"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "#1D9E75",
-                  "mode": "fixed"
-                }
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "RETRIEVER"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "#EF9F27",
-                  "mode": "fixed"
-                }
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "EMBEDDING"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "#D4537E",
-                  "mode": "fixed"
-                }
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "AGENT"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "#FF6B6B",
-                  "mode": "fixed"
-                }
-              }
-            ]
-          }
-        ]
-      },
-      "options": {
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ]
-        },
-        "pieType": "donut",
-        "legend": {
-          "displayMode": "table",
-          "placement": "right",
-          "values": [
-            "value",
-            "percent"
-          ]
-        },
-        "tooltip": {
-          "mode": "single"
-        },
-        "displayLabels": [
-          "name",
-          "percent"
-        ]
-      },
-      "transformations": [
-        {
-          "id": "reduce",
-          "options": {
-            "reducers": [
-              "lastNotNull"
-            ]
-          }
-        }
-      ]
-    },
-    {
-      "id": 32,
       "type": "stat",
       "title": "LLM Call Trace Coverage",
       "gridPos": {
-        "x": 12,
-        "y": 49,
-        "w": 6,
-        "h": 3
+        "x": 0,
+        "y": 5,
+        "w": 4,
+        "h": 4
       },
       "datasource": "Prometheus",
       "targets": [
@@ -626,8 +473,16 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "#1D9E75",
+                "color": "#E24B4A",
                 "value": null
+              },
+              {
+                "color": "#EF9F27",
+                "value": 70
+              },
+              {
+                "color": "#1D9E75",
+                "value": 85
               }
             ]
           },
@@ -649,14 +504,14 @@
       }
     },
     {
-      "id": 33,
+      "id": 32,
       "type": "stat",
       "title": "Total Traces",
       "gridPos": {
-        "x": 18,
-        "y": 49,
-        "w": 6,
-        "h": 3
+        "x": 4,
+        "y": 5,
+        "w": 4,
+        "h": 4
       },
       "datasource": "Prometheus",
       "targets": [
@@ -670,17 +525,67 @@
       "fieldConfig": {
         "defaults": {
           "unit": "short",
+          "decimals": 0,
           "thresholds": {
             "mode": "absolute",
             "steps": [
               {
-                "color": "#378ADD",
+                "color": "blue",
                 "value": null
               }
             ]
           },
           "color": {
-            "mode": "thresholds"
+            "mode": "fixed"
+          },
+          "noValue": "0"
+        }
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "colorMode": "value",
+        "graphMode": "none",
+        "textMode": "value_and_name"
+      }
+    },
+    {
+      "id": 33,
+      "type": "stat",
+      "title": "Phoenix Projects",
+      "gridPos": {
+        "x": 8,
+        "y": 5,
+        "w": 4,
+        "h": 4
+      },
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "phoenix_project_count",
+          "legendFormat": "",
+          "instant": true,
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "decimals": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": null
+              }
+            ]
+          },
+          "color": {
+            "mode": "fixed"
           },
           "noValue": "0"
         }
@@ -702,9 +607,9 @@
       "title": "Latency P50",
       "gridPos": {
         "x": 12,
-        "y": 52,
+        "y": 5,
         "w": 4,
-        "h": 3
+        "h": 4
       },
       "datasource": "Prometheus",
       "targets": [
@@ -728,11 +633,11 @@
               },
               {
                 "color": "#EF9F27",
-                "value": 2000
+                "value": 5000
               },
               {
                 "color": "#E24B4A",
-                "value": 5000
+                "value": 15000
               }
             ]
           },
@@ -759,9 +664,9 @@
       "title": "Latency P99",
       "gridPos": {
         "x": 16,
-        "y": 52,
+        "y": 5,
         "w": 4,
-        "h": 3
+        "h": 4
       },
       "datasource": "Prometheus",
       "targets": [
@@ -785,11 +690,11 @@
               },
               {
                 "color": "#EF9F27",
-                "value": 5000
+                "value": 30000
               },
               {
                 "color": "#E24B4A",
-                "value": 10000
+                "value": 60000
               }
             ]
           },
@@ -813,17 +718,17 @@
     {
       "id": 36,
       "type": "stat",
-      "title": "Phoenix Projects",
+      "title": "Evaluators per Trace",
       "gridPos": {
         "x": 20,
-        "y": 52,
+        "y": 5,
         "w": 4,
-        "h": 3
+        "h": 4
       },
       "datasource": "Prometheus",
       "targets": [
         {
-          "expr": "phoenix_project_count",
+          "expr": "(count(phoenix_evaluator_score{project_name=~\"$project\"} >= 0)) or vector(0)",
           "legendFormat": "",
           "instant": true,
           "refId": "A"
@@ -832,17 +737,18 @@
       "fieldConfig": {
         "defaults": {
           "unit": "short",
+          "decimals": 0,
           "thresholds": {
             "mode": "absolute",
             "steps": [
               {
-                "color": "#378ADD",
+                "color": "blue",
                 "value": null
               }
             ]
           },
           "color": {
-            "mode": "thresholds"
+            "mode": "fixed"
           },
           "noValue": "0"
         }
@@ -863,10 +769,10 @@
       "type": "stat",
       "title": "Total Tokens (Prompt)",
       "gridPos": {
-        "x": 12,
-        "y": 55,
-        "w": 4,
-        "h": 3
+        "x": 0,
+        "y": 9,
+        "w": 6,
+        "h": 4
       },
       "datasource": "Prometheus",
       "targets": [
@@ -880,17 +786,18 @@
       "fieldConfig": {
         "defaults": {
           "unit": "short",
+          "decimals": 0,
           "thresholds": {
             "mode": "absolute",
             "steps": [
               {
-                "color": "#7F77DD",
+                "color": "blue",
                 "value": null
               }
             ]
           },
           "color": {
-            "mode": "thresholds"
+            "mode": "fixed"
           },
           "noValue": "0"
         }
@@ -911,10 +818,10 @@
       "type": "stat",
       "title": "Total Tokens (Completion)",
       "gridPos": {
-        "x": 16,
-        "y": 55,
-        "w": 4,
-        "h": 3
+        "x": 6,
+        "y": 9,
+        "w": 6,
+        "h": 4
       },
       "datasource": "Prometheus",
       "targets": [
@@ -928,17 +835,18 @@
       "fieldConfig": {
         "defaults": {
           "unit": "short",
+          "decimals": 0,
           "thresholds": {
             "mode": "absolute",
             "steps": [
               {
-                "color": "#D4537E",
+                "color": "blue",
                 "value": null
               }
             ]
           },
           "color": {
-            "mode": "thresholds"
+            "mode": "fixed"
           },
           "noValue": "0"
         }
@@ -957,17 +865,17 @@
     {
       "id": 39,
       "type": "stat",
-      "title": "Evaluators per Trace",
+      "title": "Hallucination Rate \u2014 V1 Baseline",
       "gridPos": {
-        "x": 20,
-        "y": 55,
-        "w": 4,
-        "h": 3
+        "x": 12,
+        "y": 9,
+        "w": 6,
+        "h": 4
       },
       "datasource": "Prometheus",
       "targets": [
         {
-          "expr": "(count(phoenix_evaluator_score{project_name=~\"$project\"} >= 0)) or vector(0)",
+          "expr": "vector(14)",
           "legendFormat": "",
           "instant": true,
           "refId": "A"
@@ -975,12 +883,13 @@
       ],
       "fieldConfig": {
         "defaults": {
-          "unit": "short",
+          "unit": "percent",
+          "decimals": 0,
           "thresholds": {
             "mode": "absolute",
             "steps": [
               {
-                "color": "#1D9E75",
+                "color": "#E24B4A",
                 "value": null
               }
             ]
@@ -988,7 +897,6 @@
           "color": {
             "mode": "thresholds"
           },
-          "displayName": "evaluators",
           "noValue": "0"
         }
       },
@@ -1004,66 +912,14 @@
       }
     },
     {
-      "id": 401,
-      "type": "stat",
-      "title": "Hallucination Rate \u2014 V1 Baseline",
-      "description": "Historical hallucination rate before LLM-as-judge evaluation was introduced. Documented project baseline.",
-      "gridPos": {
-        "x": 0,
-        "y": 58,
-        "w": 6,
-        "h": 5
-      },
-      "datasource": "Prometheus",
-      "targets": [
-        {
-          "expr": "vector(14)",
-          "legendFormat": "",
-          "instant": true,
-          "refId": "A"
-        }
-      ],
-      "fieldConfig": {
-        "defaults": {
-          "unit": "percent",
-          "decimals": 0,
-          "displayName": "V1 Baseline (pre-eval)",
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "#E24B4A",
-                "value": null
-              }
-            ]
-          },
-          "color": {
-            "mode": "thresholds"
-          },
-          "noValue": "0"
-        }
-      },
-      "options": {
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ]
-        },
-        "colorMode": "background",
-        "graphMode": "none",
-        "textMode": "value_and_name"
-      }
-    },
-    {
-      "id": 402,
+      "id": 40,
       "type": "stat",
       "title": "Hallucination Rate \u2014 Current (Live)",
-      "description": "Current hallucination rate derived from factual_grounding evaluator: (1 - score) * 100. Lower is better.",
       "gridPos": {
-        "x": 6,
-        "y": 58,
+        "x": 18,
+        "y": 9,
         "w": 6,
-        "h": 5
+        "h": 4
       },
       "datasource": "Prometheus",
       "targets": [
@@ -1077,8 +933,7 @@
       "fieldConfig": {
         "defaults": {
           "unit": "percent",
-          "decimals": 1,
-          "displayName": "Current Hallucination Rate",
+          "decimals": 0,
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -1092,7 +947,7 @@
               },
               {
                 "color": "#E24B4A",
-                "value": 10
+                "value": 15
               }
             ]
           },
@@ -1108,24 +963,205 @@
             "lastNotNull"
           ]
         },
-        "colorMode": "background",
+        "colorMode": "value",
         "graphMode": "none",
         "textMode": "value_and_name"
       }
     },
     {
       "id": 41,
+      "type": "piechart",
+      "title": "Span Type Distribution",
+      "gridPos": {
+        "x": 0,
+        "y": 13,
+        "w": 12,
+        "h": 9
+      },
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "phoenix_span_type_percent{project_name=~\"$project\"}",
+          "legendFormat": "{{span_kind}}",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          }
+        }
+      },
+      "options": {
+        "pieType": "pie",
+        "displayLabels": [
+          "name",
+          "percent"
+        ],
+        "legend": {
+          "displayMode": "table",
+          "placement": "right",
+          "showLegend": true,
+          "values": [
+            "value",
+            "percent"
+          ]
+        },
+        "tooltip": {
+          "mode": "single"
+        }
+      }
+    },
+    {
+      "id": 42,
+      "type": "timeseries",
+      "title": "Latency Trend \u2014 P50 vs P99 (ms)",
+      "gridPos": {
+        "x": 12,
+        "y": 13,
+        "w": 12,
+        "h": 9
+      },
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "avg(phoenix_latency_ms_p50{project_name=~\"$project\"})",
+          "legendFormat": "P50 (ms)",
+          "refId": "A"
+        },
+        {
+          "expr": "avg(phoenix_latency_ms_p99{project_name=~\"$project\"})",
+          "legendFormat": "P99 (ms)",
+          "refId": "B"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ms",
+          "color": {
+            "mode": "palette-classic"
+          }
+        }
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "right",
+          "showLegend": true,
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      }
+    },
+    {
+      "id": 43,
+      "type": "timeseries",
+      "title": "Trace Count by Project",
+      "gridPos": {
+        "x": 0,
+        "y": 22,
+        "w": 12,
+        "h": 8
+      },
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "phoenix_trace_count{project_name=~\"$project\"}",
+          "legendFormat": "{{project_name}}",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": {
+            "mode": "palette-classic"
+          }
+        }
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "right",
+          "showLegend": true,
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      }
+    },
+    {
+      "id": 44,
+      "type": "timeseries",
+      "title": "Token Usage Over Time",
+      "gridPos": {
+        "x": 12,
+        "y": 22,
+        "w": 12,
+        "h": 8
+      },
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "sum(phoenix_token_count_prompt{project_name=~\"$project\"})",
+          "legendFormat": "Prompt Tokens",
+          "refId": "A"
+        },
+        {
+          "expr": "sum(phoenix_token_count_completion{project_name=~\"$project\"})",
+          "legendFormat": "Completion Tokens",
+          "refId": "B"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": {
+            "mode": "palette-classic"
+          }
+        }
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "right",
+          "showLegend": true,
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      }
+    },
+    {
+      "id": 45,
       "type": "text",
       "title": "Hallucination Taxonomy \u2014 Banking-Specific Risk Types",
       "gridPos": {
-        "x": 12,
-        "y": 58,
-        "w": 12,
-        "h": 5
+        "x": 0,
+        "y": 30,
+        "w": 24,
+        "h": 8
       },
       "options": {
-        "mode": "html",
-        "content": "<table class='ht'><thead><tr><th>Type</th><th>Banking Example</th><th>Detection</th></tr></thead><tbody><tr><td style='color:#E24B4A;font-weight:600'>Factual fabrication</td><td>Invents customer DOB or passport</td><td style='font-family:monospace;font-size:11px'>eval.factual_grounding</td></tr><tr><td style='color:#EF9F27;font-weight:600'>Reference hallucination</td><td>Cites non-existent regulation</td><td style='font-family:monospace;font-size:11px'>eval.factual_grounding</td></tr><tr><td style='color:#EF9F27;font-weight:600'>Confident uncertainty</td><td>Definitive AML ruling on insufficient data</td><td style='font-family:monospace;font-size:11px'>eval.aml_decision_quality</td></tr><tr><td style='color:#E24B4A;font-weight:600'>Context drift</td><td>Confuses two customers in session</td><td style='font-family:monospace;font-size:11px'>eval.kyc_quality</td></tr><tr><td style='color:#E24B4A;font-weight:600'>Tool call hallucination</td><td>Invents search result never received</td><td style='font-family:monospace;font-size:11px'>eval.factual_grounding</td></tr></tbody></table>"
+        "content": "| Hallucination Type | Description | Evaluator Pattern |\n|---|---|---|\n| **Factual Hallucination** | Model states incorrect facts about regulations or products | `.*factual.*` |\n| **Grounding Failure** | Response not grounded in provided context/documents | `.*grounding.*` |\n| **PEP Misidentification** | Incorrect PEP classification (false positive/negative) | `.*pep.*` |\n| **FATCA Error** | Incorrect FATCA account flagging or reporting | `.*fatca.*` |\n| **AML False Signal** | Incorrect money-laundering risk assessment | `.*aml.*` |\n| **KYC Gap** | Missing or incorrect customer identity verification step | `.*kyc.*` |\n\n> **Metric**: `phoenix_evaluator_score` filtered by evaluator pattern. Hallucination Rate = `(1 - grounding_score) \u00d7 100`",
+        "mode": "markdown"
       }
     }
   ]

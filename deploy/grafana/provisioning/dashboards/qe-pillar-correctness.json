@@ -1,6 +1,6 @@
 {
-  "uid": "qe-correctness",
-  "title": "QE for AI — Correctness & Evaluation",
+  "uid": "qe-pillar-correctness",
+  "title": "QE Pillar \u2014 Correctness",
   "tags": [
     "qe-pillar",
     "qe",
@@ -15,7 +15,7 @@
     "to": "now"
   },
   "style": "dark",
-  "description": "ZenLabs Foundry · Correctness & Evaluation",
+  "description": "ZenLabs Foundry \u00b7 Correctness & Evaluation",
   "annotations": {
     "list": [
       {
@@ -48,7 +48,7 @@
     "list": [
       {
         "name": "project",
-        "label": "Agentic App",
+        "label": "Project / App",
         "type": "query",
         "datasource": {
           "type": "prometheus",
@@ -56,6 +56,27 @@
         },
         "query": {
           "query": "label_values(phoenix_project_present, project_name)",
+          "refId": "StandardVariableQuery"
+        },
+        "refresh": 2,
+        "includeAll": true,
+        "allValue": ".*",
+        "multi": false,
+        "sort": 1,
+        "hide": 0,
+        "skipUrlSync": false,
+        "current": {}
+      },
+      {
+        "name": "namespace",
+        "label": "Namespace",
+        "type": "query",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "prometheus-ds"
+        },
+        "query": {
+          "query": "label_values(temporal_workflow_active, namespace)",
           "refId": "StandardVariableQuery"
         },
         "refresh": 2,
@@ -159,11 +180,11 @@
               },
               {
                 "color": "#EF9F27",
-                "value": 50
+                "value": 70
               },
               {
                 "color": "#1D9E75",
-                "value": 90
+                "value": 85
               }
             ]
           },
@@ -206,7 +227,7 @@
       "fieldConfig": {
         "defaults": {
           "unit": "percent",
-          "decimals": 1,
+          "decimals": 0,
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -220,7 +241,7 @@
               },
               {
                 "color": "#E24B4A",
-                "value": 10
+                "value": 15
               }
             ]
           },
@@ -263,7 +284,7 @@
       "fieldConfig": {
         "defaults": {
           "unit": "currencyUSD",
-          "decimals": 2,
+          "decimals": 4,
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -273,11 +294,11 @@
               },
               {
                 "color": "#EF9F27",
-                "value": 10
+                "value": 1
               },
               {
                 "color": "#E24B4A",
-                "value": 50
+                "value": 5
               }
             ]
           },
@@ -387,11 +408,11 @@
               },
               {
                 "color": "#EF9F27",
-                "value": 80
+                "value": 70
               },
               {
                 "color": "#1D9E75",
-                "value": 95
+                "value": 85
               }
             ]
           },
@@ -415,40 +436,321 @@
     {
       "id": 10,
       "type": "row",
-      "title": "01 · Correctness & Evaluation — LLM-as-judge scores across 9 evaluators",
+      "title": "01 \u00b7 Correctness & Evaluation \u2014 LLM-as-judge scores",
+      "collapsed": false,
       "gridPos": {
         "x": 0,
         "y": 4,
         "w": 24,
         "h": 1
       },
-      "collapsed": false
+      "panels": []
     },
     {
       "id": 11,
-      "type": "barchart",
-      "title": "Evaluator Scores — Current",
-      "description": "Phoenix LLM-as-judge evaluator scores (0“1 scale). Bars colored green when passing threshold, red when below.",
+      "type": "stat",
+      "title": "Avg Eval Score",
       "gridPos": {
         "x": 0,
         "y": 5,
-        "w": 12,
-        "h": 12
+        "w": 6,
+        "h": 4
       },
       "datasource": "Prometheus",
       "targets": [
         {
-          "expr": "(phoenix_evaluator_score{project_name=~\"$project\"}) or vector(0)",
-          "legendFormat": "{{evaluator_name}}",
+          "expr": "(avg(phoenix_evaluator_score{project_name=~\"$project\"}) * 100) or vector(0)",
+          "legendFormat": "",
           "instant": true,
           "refId": "A"
         }
       ],
       "fieldConfig": {
         "defaults": {
-          "unit": "short",
-          "min": 0,
-          "max": 1,
+          "unit": "percent",
+          "decimals": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#E24B4A",
+                "value": null
+              },
+              {
+                "color": "#EF9F27",
+                "value": 70
+              },
+              {
+                "color": "#1D9E75",
+                "value": 85
+              }
+            ]
+          },
+          "color": {
+            "mode": "thresholds"
+          },
+          "noValue": "0"
+        }
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "colorMode": "value",
+        "graphMode": "none",
+        "textMode": "value_and_name"
+      }
+    },
+    {
+      "id": 12,
+      "type": "stat",
+      "title": "Hallucination Rate",
+      "gridPos": {
+        "x": 6,
+        "y": 5,
+        "w": 6,
+        "h": 4
+      },
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "((1 - avg(phoenix_evaluator_score{project_name=~\"$project\", evaluator_name=~\".*factual.*|.*grounding.*\"})) * 100) or vector(0)",
+          "legendFormat": "",
+          "instant": true,
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "decimals": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#1D9E75",
+                "value": null
+              },
+              {
+                "color": "#EF9F27",
+                "value": 5
+              },
+              {
+                "color": "#E24B4A",
+                "value": 15
+              }
+            ]
+          },
+          "color": {
+            "mode": "thresholds"
+          },
+          "noValue": "0"
+        }
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "colorMode": "value",
+        "graphMode": "none",
+        "textMode": "value_and_name"
+      }
+    },
+    {
+      "id": 13,
+      "type": "stat",
+      "title": "PEP False-Positive Rate",
+      "gridPos": {
+        "x": 12,
+        "y": 5,
+        "w": 6,
+        "h": 4
+      },
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "((1 - avg(phoenix_evaluator_score{project_name=~\"$project\", evaluator_name=~\".*pep.*\"})) * 100) or vector(0)",
+          "legendFormat": "",
+          "instant": true,
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "decimals": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#1D9E75",
+                "value": null
+              },
+              {
+                "color": "#EF9F27",
+                "value": 5
+              },
+              {
+                "color": "#E24B4A",
+                "value": 15
+              }
+            ]
+          },
+          "color": {
+            "mode": "thresholds"
+          },
+          "noValue": "0"
+        }
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "colorMode": "value",
+        "graphMode": "none",
+        "textMode": "value_and_name"
+      }
+    },
+    {
+      "id": 14,
+      "type": "stat",
+      "title": "Workflow Durability",
+      "gridPos": {
+        "x": 18,
+        "y": 5,
+        "w": 6,
+        "h": 4
+      },
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "((sum(temporal_workflow_completed_total{}) or vector(0)) / clamp_min(sum(temporal_workflow_completed_total{}) + sum(temporal_workflow_failed_total{}) + sum(temporal_workflow_timed_out_total{}), 1) * 100) or vector(0)",
+          "legendFormat": "",
+          "instant": true,
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "decimals": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#E24B4A",
+                "value": null
+              },
+              {
+                "color": "#EF9F27",
+                "value": 70
+              },
+              {
+                "color": "#1D9E75",
+                "value": 85
+              }
+            ]
+          },
+          "color": {
+            "mode": "thresholds"
+          },
+          "noValue": "0"
+        }
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "colorMode": "value",
+        "graphMode": "none",
+        "textMode": "value_and_name"
+      }
+    },
+    {
+      "id": 15,
+      "type": "barchart",
+      "title": "Evaluator Scores \u2014 Current",
+      "gridPos": {
+        "x": 0,
+        "y": 9,
+        "w": 12,
+        "h": 9
+      },
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "(phoenix_evaluator_score{project_name=~\"$project\"}) or vector(0)",
+          "legendFormat": "{{evaluator_name}}",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#E24B4A",
+                "value": null
+              },
+              {
+                "color": "#EF9F27",
+                "value": 70
+              },
+              {
+                "color": "#1D9E75",
+                "value": 85
+              }
+            ]
+          }
+        }
+      },
+      "options": {
+        "orientation": "horizontal",
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single"
+        }
+      }
+    },
+    {
+      "id": 20,
+      "type": "stat",
+      "title": "PEP Accuracy",
+      "gridPos": {
+        "x": 12,
+        "y": 9,
+        "w": 6,
+        "h": 4
+      },
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "(avg(phoenix_evaluator_score{project_name=~\"$project\", evaluator_name=~\".*pep.*\"}) or vector(0))",
+          "legendFormat": "",
+          "instant": true,
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit",
           "decimals": 2,
           "thresholds": {
             "mode": "absolute",
@@ -459,7 +761,7 @@
               },
               {
                 "color": "#EF9F27",
-                "value": 0.8
+                "value": 0.7
               },
               {
                 "color": "#1D9E75",
@@ -469,115 +771,552 @@
           },
           "color": {
             "mode": "thresholds"
-          }
+          },
+          "noValue": "0"
         }
       },
       "options": {
-        "orientation": "horizontal",
-        "showValue": "always",
-        "barWidth": 0.7,
-        "groupWidth": 0.7,
-        "stacking": "none",
-        "legend": {
-          "displayMode": "list",
-          "placement": "bottom"
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
         },
-        "tooltip": {
-          "mode": "single"
-        }
-      },
-      "transformations": [
-        {
-          "id": "reduce",
-          "options": {
-            "reducers": [
-              "lastNotNull"
-            ]
-          }
-        }
-      ]
+        "colorMode": "value",
+        "graphMode": "none",
+        "textMode": "value_and_name"
+      }
     },
     {
-      "id": 12,
-      "type": "timeseries",
-      "title": "Evaluator Score Trend",
-      "description": "Score trend over time for all evaluators — tracks improvement across model versions.",
+      "id": 21,
+      "type": "stat",
+      "title": "FATCA Accuracy",
+      "gridPos": {
+        "x": 18,
+        "y": 9,
+        "w": 6,
+        "h": 4
+      },
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "(avg(phoenix_evaluator_score{project_name=~\"$project\", evaluator_name=~\".*fatca.*\"}) or vector(0))",
+          "legendFormat": "",
+          "instant": true,
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit",
+          "decimals": 2,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#E24B4A",
+                "value": null
+              },
+              {
+                "color": "#EF9F27",
+                "value": 0.7
+              },
+              {
+                "color": "#1D9E75",
+                "value": 0.85
+              }
+            ]
+          },
+          "color": {
+            "mode": "thresholds"
+          },
+          "noValue": "0"
+        }
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "colorMode": "value",
+        "graphMode": "none",
+        "textMode": "value_and_name"
+      }
+    },
+    {
+      "id": 22,
+      "type": "stat",
+      "title": "AML Decision Quality",
       "gridPos": {
         "x": 12,
-        "y": 5,
-        "w": 12,
-        "h": 12
+        "y": 13,
+        "w": 6,
+        "h": 4
+      },
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "(avg(phoenix_evaluator_score{project_name=~\"$project\", evaluator_name=~\".*aml.*\"}) or vector(0))",
+          "legendFormat": "",
+          "instant": true,
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit",
+          "decimals": 2,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#E24B4A",
+                "value": null
+              },
+              {
+                "color": "#EF9F27",
+                "value": 0.7
+              },
+              {
+                "color": "#1D9E75",
+                "value": 0.85
+              }
+            ]
+          },
+          "color": {
+            "mode": "thresholds"
+          },
+          "noValue": "0"
+        }
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "colorMode": "value",
+        "graphMode": "none",
+        "textMode": "value_and_name"
+      }
+    },
+    {
+      "id": 23,
+      "type": "stat",
+      "title": "KYC Quality",
+      "gridPos": {
+        "x": 18,
+        "y": 13,
+        "w": 6,
+        "h": 4
+      },
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "(avg(phoenix_evaluator_score{project_name=~\"$project\", evaluator_name=~\".*kyc.*\"}) or vector(0))",
+          "legendFormat": "",
+          "instant": true,
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit",
+          "decimals": 2,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#E24B4A",
+                "value": null
+              },
+              {
+                "color": "#EF9F27",
+                "value": 0.7
+              },
+              {
+                "color": "#1D9E75",
+                "value": 0.85
+              }
+            ]
+          },
+          "color": {
+            "mode": "thresholds"
+          },
+          "noValue": "0"
+        }
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "colorMode": "value",
+        "graphMode": "none",
+        "textMode": "value_and_name"
+      }
+    },
+    {
+      "id": 24,
+      "type": "stat",
+      "title": "Factual / Grounding",
+      "gridPos": {
+        "x": 12,
+        "y": 17,
+        "w": 6,
+        "h": 4
+      },
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "(avg(phoenix_evaluator_score{project_name=~\"$project\", evaluator_name=~\".*factual.*|.*grounding.*\"}) or vector(0))",
+          "legendFormat": "",
+          "instant": true,
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit",
+          "decimals": 2,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#E24B4A",
+                "value": null
+              },
+              {
+                "color": "#EF9F27",
+                "value": 0.7
+              },
+              {
+                "color": "#1D9E75",
+                "value": 0.85
+              }
+            ]
+          },
+          "color": {
+            "mode": "thresholds"
+          },
+          "noValue": "0"
+        }
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "colorMode": "value",
+        "graphMode": "none",
+        "textMode": "value_and_name"
+      }
+    },
+    {
+      "id": 25,
+      "type": "stat",
+      "title": "Escalation Quality",
+      "gridPos": {
+        "x": 18,
+        "y": 17,
+        "w": 6,
+        "h": 4
+      },
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "(avg(phoenix_evaluator_score{project_name=~\"$project\", evaluator_name=~\".*escalation.*\"}) or vector(0))",
+          "legendFormat": "",
+          "instant": true,
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit",
+          "decimals": 2,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#E24B4A",
+                "value": null
+              },
+              {
+                "color": "#EF9F27",
+                "value": 0.7
+              },
+              {
+                "color": "#1D9E75",
+                "value": 0.85
+              }
+            ]
+          },
+          "color": {
+            "mode": "thresholds"
+          },
+          "noValue": "0"
+        }
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "colorMode": "value",
+        "graphMode": "none",
+        "textMode": "value_and_name"
+      }
+    },
+    {
+      "id": 26,
+      "type": "stat",
+      "title": "Step Completion",
+      "gridPos": {
+        "x": 12,
+        "y": 21,
+        "w": 6,
+        "h": 4
+      },
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "(avg(phoenix_evaluator_score{project_name=~\"$project\", evaluator_name=~\".*step.*\"}) or vector(0))",
+          "legendFormat": "",
+          "instant": true,
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit",
+          "decimals": 2,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#E24B4A",
+                "value": null
+              },
+              {
+                "color": "#EF9F27",
+                "value": 0.7
+              },
+              {
+                "color": "#1D9E75",
+                "value": 0.85
+              }
+            ]
+          },
+          "color": {
+            "mode": "thresholds"
+          },
+          "noValue": "0"
+        }
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "colorMode": "value",
+        "graphMode": "none",
+        "textMode": "value_and_name"
+      }
+    },
+    {
+      "id": 27,
+      "type": "stat",
+      "title": "Response Quality",
+      "gridPos": {
+        "x": 18,
+        "y": 21,
+        "w": 6,
+        "h": 4
+      },
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "(avg(phoenix_evaluator_score{project_name=~\"$project\", evaluator_name=~\".*response.*\"}) or vector(0))",
+          "legendFormat": "",
+          "instant": true,
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit",
+          "decimals": 2,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#E24B4A",
+                "value": null
+              },
+              {
+                "color": "#EF9F27",
+                "value": 0.7
+              },
+              {
+                "color": "#1D9E75",
+                "value": 0.85
+              }
+            ]
+          },
+          "color": {
+            "mode": "thresholds"
+          },
+          "noValue": "0"
+        }
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "colorMode": "value",
+        "graphMode": "none",
+        "textMode": "value_and_name"
+      }
+    },
+    {
+      "id": 28,
+      "type": "stat",
+      "title": "Document Verification",
+      "gridPos": {
+        "x": 12,
+        "y": 25,
+        "w": 6,
+        "h": 4
+      },
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "(avg(phoenix_evaluator_score{project_name=~\"$project\", evaluator_name=~\".*doc.*|.*verif.*\"}) or vector(0))",
+          "legendFormat": "",
+          "instant": true,
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit",
+          "decimals": 2,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#E24B4A",
+                "value": null
+              },
+              {
+                "color": "#EF9F27",
+                "value": 0.7
+              },
+              {
+                "color": "#1D9E75",
+                "value": 0.85
+              }
+            ]
+          },
+          "color": {
+            "mode": "thresholds"
+          },
+          "noValue": "0"
+        }
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "colorMode": "value",
+        "graphMode": "none",
+        "textMode": "value_and_name"
+      }
+    },
+    {
+      "id": 40,
+      "type": "timeseries",
+      "title": "Evaluator Score Trend",
+      "gridPos": {
+        "x": 0,
+        "y": 29,
+        "w": 24,
+        "h": 9
       },
       "datasource": "Prometheus",
       "targets": [
         {
           "expr": "(phoenix_evaluator_score{project_name=~\"$project\", evaluator_name=~\".*pep.*\"}) or vector(0)",
-          "legendFormat": "pep_accuracy",
+          "legendFormat": "PEP Accuracy",
           "refId": "A"
         },
         {
           "expr": "(phoenix_evaluator_score{project_name=~\"$project\", evaluator_name=~\".*fatca.*\"}) or vector(0)",
-          "legendFormat": "fatca_accuracy",
+          "legendFormat": "FATCA Accuracy",
           "refId": "B"
         },
         {
           "expr": "(phoenix_evaluator_score{project_name=~\"$project\", evaluator_name=~\".*aml.*\"}) or vector(0)",
-          "legendFormat": "aml_decision_quality",
+          "legendFormat": "AML Decision Quality",
           "refId": "C"
         },
         {
           "expr": "(phoenix_evaluator_score{project_name=~\"$project\", evaluator_name=~\".*kyc.*\"}) or vector(0)",
-          "legendFormat": "kyc_quality",
+          "legendFormat": "KYC Quality",
           "refId": "D"
         },
         {
           "expr": "(phoenix_evaluator_score{project_name=~\"$project\", evaluator_name=~\".*factual.*|.*grounding.*\"}) or vector(0)",
-          "legendFormat": "factual_grounding",
+          "legendFormat": "Factual / Grounding",
           "refId": "E"
         },
         {
           "expr": "(phoenix_evaluator_score{project_name=~\"$project\", evaluator_name=~\".*escalation.*\"}) or vector(0)",
-          "legendFormat": "escalation_quality",
+          "legendFormat": "Escalation Quality",
           "refId": "F"
         },
         {
           "expr": "(phoenix_evaluator_score{project_name=~\"$project\", evaluator_name=~\".*step.*\"}) or vector(0)",
-          "legendFormat": "step_completion",
+          "legendFormat": "Step Completion",
           "refId": "G"
         },
         {
           "expr": "(phoenix_evaluator_score{project_name=~\"$project\", evaluator_name=~\".*response.*\"}) or vector(0)",
-          "legendFormat": "response_quality",
+          "legendFormat": "Response Quality",
           "refId": "H"
         },
         {
-          "expr": "(phoenix_evaluator_score{project_name=~\"$project\", evaluator_name=~\".*doc.*|.*verification.*\"}) or vector(0)",
-          "legendFormat": "doc_verification",
+          "expr": "(phoenix_evaluator_score{project_name=~\"$project\", evaluator_name=~\".*doc.*|.*verif.*\"}) or vector(0)",
+          "legendFormat": "Document Verification",
           "refId": "I"
         }
       ],
       "fieldConfig": {
         "defaults": {
-          "unit": "short",
-          "min": 0.5,
-          "max": 1.0,
-          "decimals": 2,
+          "unit": "percentunit",
           "color": {
             "mode": "palette-classic"
-          },
-          "custom": {
-            "lineWidth": 2,
-            "pointSize": 5,
-            "showPoints": "auto",
-            "spanNulls": true,
-            "fillOpacity": 5
           }
         }
       },
       "options": {
         "legend": {
-          "displayMode": "list",
-          "placement": "bottom"
+          "displayMode": "table",
+          "placement": "right",
+          "showLegend": true,
+          "calcs": [
+            "mean",
+            "max"
+          ]
         },
         "tooltip": {
           "mode": "multi",
@@ -586,19 +1325,18 @@
       }
     },
     {
-      "id": 13,
+      "id": 50,
       "type": "text",
-      "title": "CI Gate Thresholds & Current Status",
-      "description": "Reference table: evaluator thresholds, gate levels, and pass/fail status.",
+      "title": "CI Gate Thresholds",
       "gridPos": {
         "x": 0,
-        "y": 17,
+        "y": 38,
         "w": 24,
-        "h": 9
+        "h": 6
       },
       "options": {
-        "mode": "html",
-        "content": "<table class='gt'><thead><tr><th>Evaluator</th><th>Min Threshold</th><th>Gate</th><th>Description</th></tr></thead><tbody><tr><td>eval.pep_accuracy</td><td>0.95</td><td><span class='bd bbl'>Block</span></td><td>PEP screening accuracy — false positives must be minimised</td></tr><tr><td>eval.fatca_accuracy</td><td>0.95</td><td><span class='bd bbl'>Block</span></td><td>FATCA classification accuracy for US tax compliance</td></tr><tr><td>eval.aml_decision_quality</td><td>0.90</td><td><span class='bd bbl'>Block</span></td><td>AML decision quality — must not miss suspicious activity</td></tr><tr><td>eval.escalation_quality</td><td>0.88</td><td><span class='bd bbl'>Block</span></td><td>Correct escalation routing and priority assignment</td></tr><tr><td>eval.factual_grounding</td><td>0.85</td><td><span class='bd bbl'>Block</span></td><td>LLM output grounded in source data — anti-hallucination</td></tr><tr><td>eval.kyc_quality</td><td>0.85</td><td><span class='bd bwa'>Warn</span></td><td>KYC data extraction and verification quality</td></tr><tr><td>eval.document_verification</td><td>0.85</td><td><span class='bd bwa'>Warn</span></td><td>Document authenticity and data extraction accuracy</td></tr><tr><td>eval.step_completion</td><td>0.80</td><td><span class='bd bwa'>Warn</span></td><td>Workflow step completion and ordering correctness</td></tr><tr><td>eval.response_quality</td><td>0.75</td><td><span class='bd bin'>Info</span></td><td>Overall LLM response quality and coherence</td></tr></tbody></table>"
+        "content": "| Evaluator | Threshold | Status |\n|-----------|-----------|--------|\n| PEP Accuracy | \u2265 85% | Live via `phoenix_evaluator_score{evaluator_name=~\".*pep.*\"}` |\n| FATCA Accuracy | \u2265 85% | Live via `phoenix_evaluator_score{evaluator_name=~\".*fatca.*\"}` |\n| AML Decision Quality | \u2265 85% | Live via `phoenix_evaluator_score{evaluator_name=~\".*aml.*\"}` |\n| KYC Quality | \u2265 85% | Live via `phoenix_evaluator_score{evaluator_name=~\".*kyc.*\"}` |\n| Hallucination Rate | \u2264 5% | Derived from factual/grounding evaluator (inverted) |\n| Workflow Durability | \u2265 90% | Live via Temporal namespace counts |\n\n> **Source**: Phoenix GraphQL `spanAnnotationSummary` \u2192 `phoenix_evaluator_score` Prometheus metric (60s collection)",
+        "mode": "markdown"
       }
     }
   ]

@@ -1,6 +1,6 @@
 {
-  "uid": "qe-reliability",
-  "title": "QE for AI \u2014 Reliability & Durability",
+  "uid": "qe-pillar-reliability",
+  "title": "QE Pillar \u2014 Reliability & Durability",
   "tags": [
     "qe-pillar",
     "qe",
@@ -180,11 +180,11 @@
               },
               {
                 "color": "#EF9F27",
-                "value": 50
+                "value": 70
               },
               {
                 "color": "#1D9E75",
-                "value": 90
+                "value": 85
               }
             ]
           },
@@ -227,7 +227,7 @@
       "fieldConfig": {
         "defaults": {
           "unit": "percent",
-          "decimals": 1,
+          "decimals": 0,
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -241,7 +241,7 @@
               },
               {
                 "color": "#E24B4A",
-                "value": 10
+                "value": 15
               }
             ]
           },
@@ -284,7 +284,7 @@
       "fieldConfig": {
         "defaults": {
           "unit": "currencyUSD",
-          "decimals": 2,
+          "decimals": 4,
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -294,11 +294,11 @@
               },
               {
                 "color": "#EF9F27",
-                "value": 10
+                "value": 1
               },
               {
                 "color": "#E24B4A",
-                "value": 50
+                "value": 5
               }
             ]
           },
@@ -389,7 +389,7 @@
       "datasource": "Prometheus",
       "targets": [
         {
-          "expr": "((sum(temporal_workflow_completed_total{namespace=~\"$namespace\"}) or vector(0)) / clamp_min(sum(temporal_workflow_completed_total{namespace=~\"$namespace\"}) + sum(temporal_workflow_failed_total{namespace=~\"$namespace\"}) + sum(temporal_workflow_timed_out_total{namespace=~\"$namespace\"}), 1) * 100) or vector(0)",
+          "expr": "((sum(temporal_workflow_completed_total{}) or vector(0)) / clamp_min(sum(temporal_workflow_completed_total{}) + sum(temporal_workflow_failed_total{}) + sum(temporal_workflow_timed_out_total{}), 1) * 100) or vector(0)",
           "legendFormat": "",
           "instant": true,
           "refId": "A"
@@ -399,448 +399,6 @@
         "defaults": {
           "unit": "percent",
           "decimals": 0,
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "#E24B4A",
-                "value": null
-              },
-              {
-                "color": "#EF9F27",
-                "value": 80
-              },
-              {
-                "color": "#1D9E75",
-                "value": 95
-              }
-            ]
-          },
-          "color": {
-            "mode": "thresholds"
-          },
-          "noValue": "0"
-        }
-      },
-      "options": {
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ]
-        },
-        "colorMode": "value",
-        "graphMode": "none",
-        "textMode": "value_and_name"
-      }
-    },
-    {
-      "id": 20,
-      "type": "row",
-      "title": "02 \u00b7 Reliability & Durability \u2014 Workflow resilience, fault injection, coverage",
-      "gridPos": {
-        "x": 0,
-        "y": 26,
-        "w": 24,
-        "h": 1
-      },
-      "collapsed": false
-    },
-    {
-      "id": 21,
-      "type": "barchart",
-      "title": "Workflow Execution Status",
-      "description": "Temporal workflow counts by status per namespace \u2014 Running, Completed, Failed, TimedOut, Canceled.",
-      "gridPos": {
-        "x": 0,
-        "y": 27,
-        "w": 12,
-        "h": 10
-      },
-      "datasource": "Prometheus",
-      "targets": [
-        {
-          "expr": "temporal_workflow_completed_total{namespace=~\"$namespace\"}",
-          "legendFormat": "Completed \u2014 {{namespace}}",
-          "instant": true,
-          "refId": "A"
-        },
-        {
-          "expr": "temporal_workflow_failed_total{namespace=~\"$namespace\"}",
-          "legendFormat": "Failed \u2014 {{namespace}}",
-          "instant": true,
-          "refId": "B"
-        },
-        {
-          "expr": "temporal_workflow_active{namespace=~\"$namespace\"}",
-          "legendFormat": "Running \u2014 {{namespace}}",
-          "instant": true,
-          "refId": "C"
-        },
-        {
-          "expr": "temporal_workflow_timed_out_total{namespace=~\"$namespace\"}",
-          "legendFormat": "TimedOut \u2014 {{namespace}}",
-          "instant": true,
-          "refId": "D"
-        },
-        {
-          "expr": "temporal_workflow_canceled_total{namespace=~\"$namespace\"}",
-          "legendFormat": "Canceled \u2014 {{namespace}}",
-          "instant": true,
-          "refId": "E"
-        }
-      ],
-      "fieldConfig": {
-        "defaults": {
-          "unit": "short",
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "fillOpacity": 80
-          }
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byRegexp",
-              "options": "Completed.*"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "#1D9E75",
-                  "mode": "fixed"
-                }
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byRegexp",
-              "options": "Failed.*"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "#E24B4A",
-                  "mode": "fixed"
-                }
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byRegexp",
-              "options": "Running.*"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "#378ADD",
-                  "mode": "fixed"
-                }
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byRegexp",
-              "options": "TimedOut.*"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "#EF9F27",
-                  "mode": "fixed"
-                }
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byRegexp",
-              "options": "Canceled.*"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "#888780",
-                  "mode": "fixed"
-                }
-              }
-            ]
-          }
-        ]
-      },
-      "options": {
-        "orientation": "horizontal",
-        "showValue": "always",
-        "barWidth": 0.7,
-        "stacking": "none",
-        "legend": {
-          "displayMode": "list",
-          "placement": "bottom"
-        },
-        "tooltip": {
-          "mode": "multi"
-        }
-      },
-      "transformations": [
-        {
-          "id": "reduce",
-          "options": {
-            "reducers": [
-              "lastNotNull"
-            ]
-          }
-        }
-      ]
-    },
-    {
-      "id": 22,
-      "type": "text",
-      "title": "Fault Injection \u2014 QE Test Results",
-      "description": "Fault injection test results from QE testing suite.",
-      "gridPos": {
-        "x": 12,
-        "y": 27,
-        "w": 12,
-        "h": 10
-      },
-      "options": {
-        "mode": "html",
-        "content": "<table class='ft'><thead><tr><th>Fault Scenario</th><th>Expected Behaviour</th><th>Result</th></tr></thead><tbody><tr><td>LLM timeout (&gt;5 min)</td><td>Retry \u00c3\u20143 then compensate</td><td class='ps'>Pass \u00e2\u0153\u201c</td></tr><tr><td>Worker kill -9 mid-run</td><td>Replay from checkpoint</td><td class='ps'>Pass \u00e2\u0153\u201c</td></tr><tr><td>Redis down</td><td>Retry; DB persist succeeds</td><td class='ps'>Pass \u00e2\u0153\u201c</td></tr><tr><td>DB constraint violation</td><td>Non-retryable + compensate</td><td class='ps'>Pass \u00e2\u0153\u201c</td></tr><tr><td>OpenAI 429 rate limit</td><td>Backoff 2s\u00e2\u2020\u20194s\u00e2\u2020\u20198s</td><td class='ps'>Pass \u00e2\u0153\u201c</td></tr><tr><td>Namespace bootstrap race</td><td>Idempotent registration</td><td class='ps'>Pass \u00e2\u0153\u201c</td></tr></tbody></table>"
-      }
-    },
-    {
-      "id": 23,
-      "type": "stat",
-      "title": "Retry Policy",
-      "gridPos": {
-        "x": 0,
-        "y": 37,
-        "w": 8,
-        "h": 4
-      },
-      "datasource": "Prometheus",
-      "targets": [
-        {
-          "expr": "vector(3)",
-          "legendFormat": "",
-          "instant": true,
-          "refId": "A"
-        }
-      ],
-      "fieldConfig": {
-        "defaults": {
-          "unit": "short",
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "#1D9E75",
-                "value": null
-              }
-            ]
-          },
-          "color": {
-            "mode": "thresholds"
-          },
-          "displayName": "max retries (coeff 2.0, init 2s)",
-          "noValue": "0"
-        }
-      },
-      "options": {
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ]
-        },
-        "colorMode": "background",
-        "graphMode": "none",
-        "textMode": "value_and_name"
-      }
-    },
-    {
-      "id": 24,
-      "type": "stat",
-      "title": "Schedule-to-Close Timeout",
-      "gridPos": {
-        "x": 8,
-        "y": 37,
-        "w": 8,
-        "h": 4
-      },
-      "datasource": "Prometheus",
-      "targets": [
-        {
-          "expr": "vector(10)",
-          "legendFormat": "",
-          "instant": true,
-          "refId": "A"
-        }
-      ],
-      "fieldConfig": {
-        "defaults": {
-          "unit": "short",
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "#378ADD",
-                "value": null
-              }
-            ]
-          },
-          "color": {
-            "mode": "thresholds"
-          },
-          "displayName": "minutes (schedule-to-close)",
-          "noValue": "0"
-        }
-      },
-      "options": {
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ]
-        },
-        "colorMode": "background",
-        "graphMode": "none",
-        "textMode": "value_and_name"
-      }
-    },
-    {
-      "id": 25,
-      "type": "stat",
-      "title": "Durability",
-      "gridPos": {
-        "x": 16,
-        "y": 37,
-        "w": 8,
-        "h": 4
-      },
-      "datasource": "Prometheus",
-      "targets": [
-        {
-          "expr": "((sum(temporal_workflow_completed_total{namespace=~\"$namespace\"}) or vector(0)) / clamp_min(sum(temporal_workflow_completed_total{namespace=~\"$namespace\"}) + sum(temporal_workflow_failed_total{namespace=~\"$namespace\"}) + sum(temporal_workflow_timed_out_total{namespace=~\"$namespace\"}), 1) * 100) or vector(0)",
-          "legendFormat": "",
-          "instant": true,
-          "refId": "A"
-        }
-      ],
-      "fieldConfig": {
-        "defaults": {
-          "unit": "percent",
-          "decimals": 0,
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "#7F77DD",
-                "value": null
-              }
-            ]
-          },
-          "color": {
-            "mode": "thresholds"
-          },
-          "displayName": "deterministic replay",
-          "noValue": "0"
-        }
-      },
-      "options": {
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ]
-        },
-        "colorMode": "background",
-        "graphMode": "none",
-        "textMode": "value_and_name"
-      }
-    },
-    {
-      "id": 261,
-      "type": "stat",
-      "title": "V1 Baseline \u2014 Pre-QE Quality",
-      "description": "Historical quality baseline before QE tooling was introduced. No trace coverage, no LLM-judge evaluators.",
-      "gridPos": {
-        "x": 0,
-        "y": 41,
-        "w": 6,
-        "h": 7
-      },
-      "datasource": "Prometheus",
-      "targets": [
-        {
-          "expr": "vector(52)",
-          "legendFormat": "",
-          "instant": true,
-          "refId": "A"
-        }
-      ],
-      "fieldConfig": {
-        "defaults": {
-          "unit": "percent",
-          "decimals": 0,
-          "displayName": "V1 Baseline (pre-QE)",
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "#E24B4A",
-                "value": null
-              }
-            ]
-          },
-          "color": {
-            "mode": "thresholds"
-          },
-          "noValue": "0"
-        }
-      },
-      "options": {
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ]
-        },
-        "colorMode": "background",
-        "graphMode": "none",
-        "textMode": "value_and_name"
-      }
-    },
-    {
-      "id": 262,
-      "type": "stat",
-      "title": "Current Avg Eval Score",
-      "description": "Live average across all Phoenix evaluators for selected project. Source: phoenix_evaluator_score.",
-      "gridPos": {
-        "x": 6,
-        "y": 41,
-        "w": 6,
-        "h": 7
-      },
-      "datasource": "Prometheus",
-      "targets": [
-        {
-          "expr": "(avg(phoenix_evaluator_score{project_name=~\"$project\"}) * 100) or vector(0)",
-          "legendFormat": "",
-          "instant": true,
-          "refId": "A"
-        }
-      ],
-      "fieldConfig": {
-        "defaults": {
-          "unit": "percent",
-          "decimals": 1,
-          "displayName": "Current Quality Score",
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -870,26 +428,38 @@
             "lastNotNull"
           ]
         },
-        "colorMode": "background",
+        "colorMode": "value",
         "graphMode": "none",
         "textMode": "value_and_name"
       }
     },
     {
-      "id": 263,
-      "type": "stat",
-      "title": "Quality Improvement vs V1",
-      "description": "Delta between current avg eval score and V1 baseline of 52%. Positive = improvement.",
+      "id": 20,
+      "type": "row",
+      "title": "02 \u00b7 Reliability & Durability \u2014 Workflow resilience, fault injection, retry policy",
+      "collapsed": false,
       "gridPos": {
-        "x": 12,
-        "y": 41,
+        "x": 0,
+        "y": 4,
+        "w": 24,
+        "h": 1
+      },
+      "panels": []
+    },
+    {
+      "id": 21,
+      "type": "stat",
+      "title": "Workflow Durability",
+      "gridPos": {
+        "x": 0,
+        "y": 5,
         "w": 6,
-        "h": 7
+        "h": 4
       },
       "datasource": "Prometheus",
       "targets": [
         {
-          "expr": "(avg(phoenix_evaluator_score{project_name=~\"$project\"}) * 100 - 52) or vector(0)",
+          "expr": "((sum(temporal_workflow_completed_total{}) or vector(0)) / clamp_min(sum(temporal_workflow_completed_total{}) + sum(temporal_workflow_failed_total{}) + sum(temporal_workflow_timed_out_total{}), 1) * 100) or vector(0)",
           "legendFormat": "",
           "instant": true,
           "refId": "A"
@@ -898,8 +468,7 @@
       "fieldConfig": {
         "defaults": {
           "unit": "percent",
-          "decimals": 1,
-          "displayName": "Improvement over V1",
+          "decimals": 0,
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -909,11 +478,11 @@
               },
               {
                 "color": "#EF9F27",
-                "value": 10
+                "value": 70
               },
               {
                 "color": "#1D9E75",
-                "value": 30
+                "value": 85
               }
             ]
           },
@@ -929,21 +498,20 @@
             "lastNotNull"
           ]
         },
-        "colorMode": "background",
+        "colorMode": "value",
         "graphMode": "none",
         "textMode": "value_and_name"
       }
     },
     {
-      "id": 264,
+      "id": 22,
       "type": "stat",
-      "title": "Workflow Success Rate",
-      "description": "Live Temporal workflow completion rate across all namespaces. Source: temporal_workflow_completed_total.",
+      "title": "Success Rate",
       "gridPos": {
-        "x": 18,
-        "y": 41,
+        "x": 6,
+        "y": 5,
         "w": 6,
-        "h": 7
+        "h": 4
       },
       "datasource": "Prometheus",
       "targets": [
@@ -957,8 +525,7 @@
       "fieldConfig": {
         "defaults": {
           "unit": "percent",
-          "decimals": 1,
-          "displayName": "Workflow Success Rate",
+          "decimals": 0,
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -968,11 +535,11 @@
               },
               {
                 "color": "#EF9F27",
-                "value": 80
+                "value": 70
               },
               {
                 "color": "#1D9E75",
-                "value": 95
+                "value": 85
               }
             ]
           },
@@ -988,9 +555,531 @@
             "lastNotNull"
           ]
         },
-        "colorMode": "background",
+        "colorMode": "value",
         "graphMode": "none",
         "textMode": "value_and_name"
+      }
+    },
+    {
+      "id": 23,
+      "type": "stat",
+      "title": "Activity Error Rate",
+      "gridPos": {
+        "x": 12,
+        "y": 5,
+        "w": 6,
+        "h": 4
+      },
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "(sum(temporal_workflow_failed_total{namespace=~\"$namespace\"}) or vector(0))",
+          "legendFormat": "",
+          "instant": true,
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "decimals": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#1D9E75",
+                "value": null
+              },
+              {
+                "color": "#EF9F27",
+                "value": 10
+              },
+              {
+                "color": "#E24B4A",
+                "value": 50
+              }
+            ]
+          },
+          "color": {
+            "mode": "thresholds"
+          },
+          "noValue": "0"
+        }
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "colorMode": "value",
+        "graphMode": "none",
+        "textMode": "value_and_name"
+      }
+    },
+    {
+      "id": 24,
+      "type": "stat",
+      "title": "Retry Policy",
+      "gridPos": {
+        "x": 18,
+        "y": 5,
+        "w": 3,
+        "h": 4
+      },
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "vector(3)",
+          "legendFormat": "",
+          "instant": true,
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "decimals": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": null
+              }
+            ]
+          },
+          "color": {
+            "mode": "fixed"
+          },
+          "noValue": "0"
+        }
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "colorMode": "value",
+        "graphMode": "none",
+        "textMode": "value_and_name"
+      }
+    },
+    {
+      "id": 25,
+      "type": "stat",
+      "title": "Schedule-to-Close Timeout",
+      "gridPos": {
+        "x": 21,
+        "y": 5,
+        "w": 3,
+        "h": 4
+      },
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "vector(10)",
+          "legendFormat": "",
+          "instant": true,
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "m",
+          "decimals": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": null
+              }
+            ]
+          },
+          "color": {
+            "mode": "fixed"
+          },
+          "noValue": "0"
+        }
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "colorMode": "value",
+        "graphMode": "none",
+        "textMode": "value_and_name"
+      }
+    },
+    {
+      "id": 26,
+      "type": "barchart",
+      "title": "Workflow Execution Status by Namespace",
+      "gridPos": {
+        "x": 0,
+        "y": 9,
+        "w": 16,
+        "h": 9
+      },
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "temporal_workflow_completed_total{namespace=~\"$namespace\"}",
+          "legendFormat": "Completed \u2014 {{namespace}}",
+          "refId": "A"
+        },
+        {
+          "expr": "temporal_workflow_failed_total{namespace=~\"$namespace\"}",
+          "legendFormat": "Failed \u2014 {{namespace}}",
+          "refId": "B"
+        },
+        {
+          "expr": "temporal_workflow_active{namespace=~\"$namespace\"}",
+          "legendFormat": "Running \u2014 {{namespace}}",
+          "refId": "C"
+        },
+        {
+          "expr": "temporal_workflow_timed_out_total{namespace=~\"$namespace\"}",
+          "legendFormat": "TimedOut \u2014 {{namespace}}",
+          "refId": "D"
+        },
+        {
+          "expr": "temporal_workflow_canceled_total{namespace=~\"$namespace\"}",
+          "legendFormat": "Canceled \u2014 {{namespace}}",
+          "refId": "E"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#E24B4A",
+                "value": null
+              },
+              {
+                "color": "#EF9F27",
+                "value": 70
+              },
+              {
+                "color": "#1D9E75",
+                "value": 85
+              }
+            ]
+          }
+        }
+      },
+      "options": {
+        "orientation": "horizontal",
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single"
+        }
+      }
+    },
+    {
+      "id": 27,
+      "type": "stat",
+      "title": "V1 Baseline \u2014 Pre-QE Quality",
+      "gridPos": {
+        "x": 16,
+        "y": 9,
+        "w": 4,
+        "h": 4
+      },
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "vector(52)",
+          "legendFormat": "",
+          "instant": true,
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "decimals": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#E24B4A",
+                "value": null
+              }
+            ]
+          },
+          "color": {
+            "mode": "thresholds"
+          },
+          "noValue": "0"
+        }
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "colorMode": "value",
+        "graphMode": "none",
+        "textMode": "value_and_name"
+      }
+    },
+    {
+      "id": 28,
+      "type": "stat",
+      "title": "Current Avg Eval Score",
+      "gridPos": {
+        "x": 20,
+        "y": 9,
+        "w": 4,
+        "h": 4
+      },
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "(avg(phoenix_evaluator_score{project_name=~\"$project\"}) * 100) or vector(0)",
+          "legendFormat": "",
+          "instant": true,
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "decimals": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#E24B4A",
+                "value": null
+              },
+              {
+                "color": "#EF9F27",
+                "value": 70
+              },
+              {
+                "color": "#1D9E75",
+                "value": 85
+              }
+            ]
+          },
+          "color": {
+            "mode": "thresholds"
+          },
+          "noValue": "0"
+        }
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "colorMode": "value",
+        "graphMode": "none",
+        "textMode": "value_and_name"
+      }
+    },
+    {
+      "id": 29,
+      "type": "stat",
+      "title": "Quality Improvement vs V1",
+      "gridPos": {
+        "x": 16,
+        "y": 13,
+        "w": 4,
+        "h": 4
+      },
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "(avg(phoenix_evaluator_score{project_name=~\"$project\"}) * 100 - 52) or vector(0)",
+          "legendFormat": "",
+          "instant": true,
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "decimals": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#E24B4A",
+                "value": null
+              },
+              {
+                "color": "#EF9F27",
+                "value": 5
+              },
+              {
+                "color": "#1D9E75",
+                "value": 15
+              }
+            ]
+          },
+          "color": {
+            "mode": "thresholds"
+          },
+          "noValue": "0"
+        }
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "colorMode": "value",
+        "graphMode": "none",
+        "textMode": "value_and_name"
+      }
+    },
+    {
+      "id": 291,
+      "type": "stat",
+      "title": "Workflow Success Rate",
+      "gridPos": {
+        "x": 20,
+        "y": 13,
+        "w": 4,
+        "h": 4
+      },
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "((sum(temporal_workflow_completed_total{namespace=~\"$namespace\"}) or vector(0)) / clamp_min(sum(temporal_workflow_completed_total{namespace=~\"$namespace\"}) + sum(temporal_workflow_failed_total{namespace=~\"$namespace\"}) + sum(temporal_workflow_timed_out_total{namespace=~\"$namespace\"}), 1) * 100) or vector(0)",
+          "legendFormat": "",
+          "instant": true,
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "decimals": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#E24B4A",
+                "value": null
+              },
+              {
+                "color": "#EF9F27",
+                "value": 70
+              },
+              {
+                "color": "#1D9E75",
+                "value": 85
+              }
+            ]
+          },
+          "color": {
+            "mode": "thresholds"
+          },
+          "noValue": "0"
+        }
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "colorMode": "value",
+        "graphMode": "none",
+        "textMode": "value_and_name"
+      }
+    },
+    {
+      "id": 30,
+      "type": "timeseries",
+      "title": "Workflow Status Trend",
+      "gridPos": {
+        "x": 0,
+        "y": 18,
+        "w": 24,
+        "h": 8
+      },
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "sum(temporal_workflow_completed_total{namespace=~\"$namespace\"})",
+          "legendFormat": "Completed",
+          "refId": "A"
+        },
+        {
+          "expr": "sum(temporal_workflow_failed_total{namespace=~\"$namespace\"})",
+          "legendFormat": "Failed",
+          "refId": "B"
+        },
+        {
+          "expr": "sum(temporal_workflow_timed_out_total{namespace=~\"$namespace\"})",
+          "legendFormat": "Timed Out",
+          "refId": "C"
+        },
+        {
+          "expr": "sum(temporal_workflow_active{namespace=~\"$namespace\"})",
+          "legendFormat": "Running",
+          "refId": "D"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "color": {
+            "mode": "palette-classic"
+          }
+        }
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "right",
+          "showLegend": true,
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      }
+    },
+    {
+      "id": 31,
+      "type": "text",
+      "title": "Fault Injection \u2014 QE Test Results",
+      "gridPos": {
+        "x": 0,
+        "y": 26,
+        "w": 24,
+        "h": 8
+      },
+      "options": {
+        "content": "| Fault Scenario | Expected Behavior | Status |\n|---|---|---|\n| **Activity Timeout** | Retry 3\u00d7 with exponential backoff (2s \u2192 4s \u2192 8s) | \u23f3 CI pipeline writes `qa_fault_injection_result{scenario=\"timeout\"}` |\n| **Downstream API Failure** | Fallback + compensation workflow triggered | \u23f3 CI pipeline writes `qa_fault_injection_result{scenario=\"api_failure\"}` |\n| **Invalid Payload** | Schema validation error, immediate fail without retry | \u23f3 CI pipeline writes `qa_fault_injection_result{scenario=\"invalid_payload\"}` |\n| **LLM Timeout** | Retry with backoff, escalate after 3 failures | \u23f3 CI pipeline writes `qa_fault_injection_result{scenario=\"llm_timeout\"}` |\n| **Partial Commit** | Saga compensation rolls back partial state | \u23f3 CI pipeline writes `qa_fault_injection_result{scenario=\"partial_commit\"}` |\n| **Duplicate Event** | Idempotent check deduplicates, no replay | \u23f3 CI pipeline writes `qa_fault_injection_result{scenario=\"duplicate_event\"}` |\n\n> **Retry Policy**: Max 3 retries, backoff coefficient 2.0, initial interval 2s \u2192 4s \u2192 8s  \n> **Schedule-to-Close Timeout**: 10 minutes  \n> **To make live**: CI pipeline must push `qa_fault_injection_result{scenario=\"...\"}` = 1 (pass) / 0 (fail) to Prometheus",
+        "mode": "markdown"
       }
     }
   ]

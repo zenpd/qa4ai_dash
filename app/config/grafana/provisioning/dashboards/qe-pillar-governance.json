@@ -1,6 +1,6 @@
 {
-  "uid": "qe-governance",
-  "title": "QE for AI \u2014 Governance & Compliance",
+  "uid": "qe-pillar-governance",
+  "title": "QE Pillar \u2014 Governance & Compliance",
   "tags": [
     "qe-pillar",
     "qe",
@@ -180,11 +180,11 @@
               },
               {
                 "color": "#EF9F27",
-                "value": 50
+                "value": 70
               },
               {
                 "color": "#1D9E75",
-                "value": 90
+                "value": 85
               }
             ]
           },
@@ -227,7 +227,7 @@
       "fieldConfig": {
         "defaults": {
           "unit": "percent",
-          "decimals": 1,
+          "decimals": 0,
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -241,7 +241,7 @@
               },
               {
                 "color": "#E24B4A",
-                "value": 10
+                "value": 15
               }
             ]
           },
@@ -284,7 +284,7 @@
       "fieldConfig": {
         "defaults": {
           "unit": "currencyUSD",
-          "decimals": 2,
+          "decimals": 4,
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -294,11 +294,11 @@
               },
               {
                 "color": "#EF9F27",
-                "value": 10
+                "value": 1
               },
               {
                 "color": "#E24B4A",
-                "value": 50
+                "value": 5
               }
             ]
           },
@@ -389,7 +389,7 @@
       "datasource": "Prometheus",
       "targets": [
         {
-          "expr": "((sum(temporal_workflow_completed_total{namespace=~\"$namespace\"}) or vector(0)) / clamp_min(sum(temporal_workflow_completed_total{namespace=~\"$namespace\"}) + sum(temporal_workflow_failed_total{namespace=~\"$namespace\"}) + sum(temporal_workflow_timed_out_total{namespace=~\"$namespace\"}), 1) * 100) or vector(0)",
+          "expr": "((sum(temporal_workflow_completed_total{}) or vector(0)) / clamp_min(sum(temporal_workflow_completed_total{}) + sum(temporal_workflow_failed_total{}) + sum(temporal_workflow_timed_out_total{}), 1) * 100) or vector(0)",
           "legendFormat": "",
           "instant": true,
           "refId": "A"
@@ -408,11 +408,11 @@
               },
               {
                 "color": "#EF9F27",
-                "value": 80
+                "value": 70
               },
               {
                 "color": "#1D9E75",
-                "value": 95
+                "value": 85
               }
             ]
           },
@@ -436,59 +436,55 @@
     {
       "id": 50,
       "type": "row",
-      "title": "04 \u00b7 Governance & Compliance \u2014 CI gates, cost efficiency, regulatory audit readiness",
+      "title": "04 \u00b7 Governance & Compliance \u2014 CI gates, cost efficiency, regulatory evaluators",
+      "collapsed": false,
       "gridPos": {
         "x": 0,
-        "y": 63,
+        "y": 4,
         "w": 24,
         "h": 1
       },
-      "collapsed": false
+      "panels": []
     },
     {
       "id": 51,
       "type": "barchart",
       "title": "Compliance Evaluator Scores \u2014 Current",
-      "description": "Compliance-related evaluator scores from Phoenix \u2014 AML, KYC, PEP, FATCA accuracy.",
       "gridPos": {
         "x": 0,
-        "y": 64,
+        "y": 5,
         "w": 12,
-        "h": 10
+        "h": 9
       },
       "datasource": "Prometheus",
       "targets": [
         {
-          "expr": "(phoenix_evaluator_score{project_name=~\"$project\", evaluator_name=~\".*aml.*\"} * 100) or vector(0)",
+          "expr": "(phoenix_evaluator_score{project_name=~\"$project\", evaluator_name=~\".*aml.*\"} * 100)",
           "legendFormat": "AML",
-          "instant": true,
           "refId": "A"
         },
         {
-          "expr": "(phoenix_evaluator_score{project_name=~\"$project\", evaluator_name=~\".*kyc.*\"} * 100) or vector(0)",
+          "expr": "(phoenix_evaluator_score{project_name=~\"$project\", evaluator_name=~\".*kyc.*\"} * 100)",
           "legendFormat": "KYC",
-          "instant": true,
           "refId": "B"
         },
         {
-          "expr": "(phoenix_evaluator_score{project_name=~\"$project\", evaluator_name=~\".*pep.*\"} * 100) or vector(0)",
+          "expr": "(phoenix_evaluator_score{project_name=~\"$project\", evaluator_name=~\".*pep.*\"} * 100)",
           "legendFormat": "PEP",
-          "instant": true,
           "refId": "C"
         },
         {
-          "expr": "(phoenix_evaluator_score{project_name=~\"$project\", evaluator_name=~\".*fatca.*\"} * 100) or vector(0)",
+          "expr": "(phoenix_evaluator_score{project_name=~\"$project\", evaluator_name=~\".*fatca.*\"} * 100)",
           "legendFormat": "FATCA",
-          "instant": true,
           "refId": "D"
         }
       ],
       "fieldConfig": {
         "defaults": {
           "unit": "percent",
-          "min": 0,
-          "max": 100,
-          "decimals": 0,
+          "color": {
+            "mode": "palette-classic"
+          },
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -498,51 +494,35 @@
               },
               {
                 "color": "#EF9F27",
-                "value": 80
+                "value": 70
               },
               {
                 "color": "#1D9E75",
-                "value": 90
+                "value": 85
               }
             ]
-          },
-          "color": {
-            "mode": "thresholds"
           }
         }
       },
       "options": {
         "orientation": "horizontal",
-        "showValue": "always",
-        "barWidth": 0.7,
-        "stacking": "none",
         "legend": {
           "displayMode": "list",
-          "placement": "bottom"
+          "placement": "bottom",
+          "showLegend": true
         },
         "tooltip": {
-          "mode": "multi"
+          "mode": "single"
         }
-      },
-      "transformations": [
-        {
-          "id": "reduce",
-          "options": {
-            "reducers": [
-              "lastNotNull"
-            ]
-          }
-        }
-      ]
+      }
     },
     {
       "id": 521,
       "type": "stat",
       "title": "Current Cost / Analysis (Live)",
-      "description": "Live cost per trace calculated from actual token usage via Phoenix. Formula: (prompt_tokens * $2.50 + completion_tokens * $10.00) / 1M / trace_count.",
       "gridPos": {
         "x": 12,
-        "y": 64,
+        "y": 5,
         "w": 4,
         "h": 4
       },
@@ -558,8 +538,7 @@
       "fieldConfig": {
         "defaults": {
           "unit": "currencyUSD",
-          "decimals": 2,
-          "displayName": "Current Cost / Analysis",
+          "decimals": 4,
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -569,11 +548,11 @@
               },
               {
                 "color": "#EF9F27",
-                "value": 10
+                "value": 1
               },
               {
                 "color": "#E24B4A",
-                "value": 50
+                "value": 10
               }
             ]
           },
@@ -589,7 +568,7 @@
             "lastNotNull"
           ]
         },
-        "colorMode": "background",
+        "colorMode": "value",
         "graphMode": "none",
         "textMode": "value_and_name"
       }
@@ -598,10 +577,9 @@
       "id": 522,
       "type": "stat",
       "title": "V1 Cost Baseline",
-      "description": "Historical cost per analysis before QE tooling and token optimisation. Documented project baseline.",
       "gridPos": {
         "x": 16,
-        "y": 64,
+        "y": 5,
         "w": 4,
         "h": 4
       },
@@ -618,7 +596,6 @@
         "defaults": {
           "unit": "currencyUSD",
           "decimals": 0,
-          "displayName": "V1 Baseline (per analysis)",
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -640,7 +617,7 @@
             "lastNotNull"
           ]
         },
-        "colorMode": "background",
+        "colorMode": "value",
         "graphMode": "none",
         "textMode": "value_and_name"
       }
@@ -649,10 +626,9 @@
       "id": 523,
       "type": "stat",
       "title": "Cost Reduction vs V1 (Live)",
-      "description": "Percentage cost reduction vs V1 baseline ($160). Calculated from live token metrics.",
       "gridPos": {
         "x": 20,
-        "y": 64,
+        "y": 5,
         "w": 4,
         "h": 4
       },
@@ -668,8 +644,7 @@
       "fieldConfig": {
         "defaults": {
           "unit": "percent",
-          "decimals": 1,
-          "displayName": "Cost Reduction vs V1",
+          "decimals": 0,
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -683,7 +658,7 @@
               },
               {
                 "color": "#1D9E75",
-                "value": 80
+                "value": 90
               }
             ]
           },
@@ -699,7 +674,7 @@
             "lastNotNull"
           ]
         },
-        "colorMode": "background",
+        "colorMode": "value",
         "graphMode": "none",
         "textMode": "value_and_name"
       }
@@ -707,18 +682,17 @@
     {
       "id": 524,
       "type": "stat",
-      "title": "Current Latency P50 / Analysis (Live)",
-      "description": "Live median LLM call latency from Phoenix traces. Source: phoenix_latency_ms_p50.",
+      "title": "Current Latency P50 / Analysis",
       "gridPos": {
         "x": 12,
-        "y": 68,
+        "y": 9,
         "w": 4,
-        "h": 3
+        "h": 4
       },
       "datasource": "Prometheus",
       "targets": [
         {
-          "expr": "avg(phoenix_latency_ms_p50{project_name=~\"$project\"}) / 1000",
+          "expr": "avg(phoenix_latency_ms_p50{project_name=~\"$project\"})",
           "legendFormat": "",
           "instant": true,
           "refId": "A"
@@ -726,9 +700,8 @@
       ],
       "fieldConfig": {
         "defaults": {
-          "unit": "s",
-          "decimals": 1,
-          "displayName": "Current Latency P50",
+          "unit": "ms",
+          "decimals": 0,
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -738,11 +711,11 @@
               },
               {
                 "color": "#EF9F27",
-                "value": 60
+                "value": 5000
               },
               {
                 "color": "#E24B4A",
-                "value": 300
+                "value": 15000
               }
             ]
           },
@@ -758,7 +731,7 @@
             "lastNotNull"
           ]
         },
-        "colorMode": "background",
+        "colorMode": "value",
         "graphMode": "none",
         "textMode": "value_and_name"
       }
@@ -766,64 +739,12 @@
     {
       "id": 525,
       "type": "stat",
-      "title": "V1 Time Baseline",
-      "description": "Historical time per analysis before automation. Manual process baseline.",
+      "title": "Active Monitored Projects",
       "gridPos": {
         "x": 16,
-        "y": 68,
+        "y": 9,
         "w": 4,
-        "h": 3
-      },
-      "datasource": "Prometheus",
-      "targets": [
-        {
-          "expr": "vector(14400)",
-          "legendFormat": "",
-          "instant": true,
-          "refId": "A"
-        }
-      ],
-      "fieldConfig": {
-        "defaults": {
-          "unit": "s",
-          "decimals": 0,
-          "displayName": "V1 Baseline (4 hr)",
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "#E24B4A",
-                "value": null
-              }
-            ]
-          },
-          "color": {
-            "mode": "thresholds"
-          },
-          "noValue": "0"
-        }
-      },
-      "options": {
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ]
-        },
-        "colorMode": "background",
-        "graphMode": "none",
-        "textMode": "value_and_name"
-      }
-    },
-    {
-      "id": 526,
-      "type": "stat",
-      "title": "Active Monitored Projects (Live)",
-      "description": "Number of Phoenix projects currently reporting metrics. Source: phoenix_project_count.",
-      "gridPos": {
-        "x": 20,
-        "y": 68,
-        "w": 4,
-        "h": 3
+        "h": 4
       },
       "datasource": "Prometheus",
       "targets": [
@@ -838,18 +759,17 @@
         "defaults": {
           "unit": "short",
           "decimals": 0,
-          "displayName": "Monitored Projects",
           "thresholds": {
             "mode": "absolute",
             "steps": [
               {
-                "color": "#378ADD",
+                "color": "blue",
                 "value": null
               }
             ]
           },
           "color": {
-            "mode": "thresholds"
+            "mode": "fixed"
           },
           "noValue": "0"
         }
@@ -860,77 +780,25 @@
             "lastNotNull"
           ]
         },
-        "colorMode": "background",
+        "colorMode": "value",
         "graphMode": "none",
         "textMode": "value_and_name"
       }
     },
     {
-      "id": 527,
+      "id": 526,
       "type": "stat",
-      "title": "Total Tokens Consumed (Live)",
-      "description": "Total prompt + completion tokens across all selected projects. Source: phoenix_token_count_total.",
+      "title": "Latency Reduction vs V1",
       "gridPos": {
-        "x": 12,
-        "y": 71,
+        "x": 20,
+        "y": 9,
         "w": 4,
-        "h": 3
+        "h": 4
       },
       "datasource": "Prometheus",
       "targets": [
         {
-          "expr": "sum(phoenix_token_count_total{project_name=~\"$project\"})",
-          "legendFormat": "",
-          "instant": true,
-          "refId": "A"
-        }
-      ],
-      "fieldConfig": {
-        "defaults": {
-          "unit": "short",
-          "decimals": 0,
-          "displayName": "Total Tokens Consumed",
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "#7F77DD",
-                "value": null
-              }
-            ]
-          },
-          "color": {
-            "mode": "thresholds"
-          },
-          "noValue": "0"
-        }
-      },
-      "options": {
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ]
-        },
-        "colorMode": "background",
-        "graphMode": "none",
-        "textMode": "value_and_name"
-      }
-    },
-    {
-      "id": 528,
-      "type": "stat",
-      "title": "Latency Reduction vs V1 (Live)",
-      "description": "Percentage time reduction vs V1 baseline (4 hr = 14400s). Calculated from live phoenix_latency_ms_p50.",
-      "gridPos": {
-        "x": 16,
-        "y": 71,
-        "w": 4,
-        "h": 3
-      },
-      "datasource": "Prometheus",
-      "targets": [
-        {
-          "expr": "(14400 - avg(phoenix_latency_ms_p50{project_name=~\"$project\"}) / 1000) / 14400 * 100",
+          "expr": "(14400 - avg(phoenix_latency_ms_p50{project_name=~\"$project\"})) / 14400 * 100 or vector(0)",
           "legendFormat": "",
           "instant": true,
           "refId": "A"
@@ -939,8 +807,7 @@
       "fieldConfig": {
         "defaults": {
           "unit": "percent",
-          "decimals": 1,
-          "displayName": "Time Reduction vs V1",
+          "decimals": 0,
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -954,7 +821,7 @@
               },
               {
                 "color": "#1D9E75",
-                "value": 80
+                "value": 90
               }
             ]
           },
@@ -970,79 +837,66 @@
             "lastNotNull"
           ]
         },
-        "colorMode": "background",
+        "colorMode": "value",
         "graphMode": "none",
         "textMode": "value_and_name"
       }
     },
     {
-      "id": 529,
-      "type": "stat",
-      "title": "Phoenix API Status (Live)",
-      "description": "Phoenix API reachability. 1 = up, 0 = down. Source: phoenix_up.",
+      "id": 52,
+      "type": "timeseries",
+      "title": "Compliance Evaluator Score Trend",
       "gridPos": {
-        "x": 20,
-        "y": 71,
-        "w": 4,
-        "h": 3
+        "x": 0,
+        "y": 14,
+        "w": 24,
+        "h": 8
       },
       "datasource": "Prometheus",
       "targets": [
         {
-          "expr": "phoenix_up",
-          "legendFormat": "",
-          "instant": true,
+          "expr": "(phoenix_evaluator_score{project_name=~\"$project\", evaluator_name=~\".*aml.*\"})",
+          "legendFormat": "AML",
           "refId": "A"
+        },
+        {
+          "expr": "(phoenix_evaluator_score{project_name=~\"$project\", evaluator_name=~\".*kyc.*\"})",
+          "legendFormat": "KYC",
+          "refId": "B"
+        },
+        {
+          "expr": "(phoenix_evaluator_score{project_name=~\"$project\", evaluator_name=~\".*pep.*\"})",
+          "legendFormat": "PEP",
+          "refId": "C"
+        },
+        {
+          "expr": "(phoenix_evaluator_score{project_name=~\"$project\", evaluator_name=~\".*fatca.*\"})",
+          "legendFormat": "FATCA",
+          "refId": "D"
         }
       ],
       "fieldConfig": {
         "defaults": {
-          "unit": "short",
-          "decimals": 0,
-          "displayName": "Phoenix API",
-          "mappings": [
-            {
-              "type": "value",
-              "options": {
-                "0": {
-                  "text": "DOWN",
-                  "color": "#E24B4A"
-                },
-                "1": {
-                  "text": "UP",
-                  "color": "#1D9E75"
-                }
-              }
-            }
-          ],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "#E24B4A",
-                "value": null
-              },
-              {
-                "color": "#1D9E75",
-                "value": 1
-              }
-            ]
-          },
+          "unit": "percentunit",
           "color": {
-            "mode": "thresholds"
-          },
-          "noValue": "0"
+            "mode": "palette-classic"
+          }
         }
       },
       "options": {
-        "reduceOptions": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "right",
+          "showLegend": true,
           "calcs": [
-            "lastNotNull"
+            "mean",
+            "max"
           ]
         },
-        "colorMode": "background",
-        "graphMode": "none",
-        "textMode": "value_and_name"
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
       }
     },
     {
@@ -1051,13 +905,13 @@
       "title": "4-Layer Audit Stack",
       "gridPos": {
         "x": 0,
-        "y": 74,
+        "y": 22,
         "w": 12,
         "h": 8
       },
       "options": {
-        "mode": "html",
-        "content": "<div class='as'><div class='sr'><span class='sl'>Layer 1 \u2014 Temporal event history</span><span class='sv'>30-day retention</span></div><div class='sr'><span class='sl'>Layer 2 \u2014 Phoenix OTel spans</span><span class='sv'>90-day retention</span></div><div class='sr'><span class='sl'>Layer 3 \u2014 Structured app logs</span><span class='sv'>structlog + Azure Monitor</span></div><div class='sr'><span class='sl'>Layer 4 \u2014 DB decision records</span><span class='sv'>5\u201c7 yr (AML rules)</span></div><div class='sr'><span class='sl'>Audit report time</span><span class='sv' style='color:#1D9E75'>&lt;2 min (was 2\u201c3 days)</span></div><div class='sr'><span class='sl'>PII in traces</span><span class='sv'>OTel attribute filtering (GDPR)</span></div></div>"
+        "content": "| Layer | System | Retention | GDPR Controls |\n|---|---|---|---|\n| **L1** | Temporal Workflow History | 30 days | Workflow IDs \u2014 no PII in workflow args |\n| **L2** | Phoenix OTel Spans | 90 days | PII filtered at OTel attribute level before export |\n| **L3** | structlog \u2192 Azure Monitor | 1 year | Logs anonymised; customer IDs hashed with SHA-256 |\n| **L4** | Database Decision Records | 5\u20137 years (AML regs) | Encrypted at rest; access via RBAC audit trail |\n\n> **Audit Report Generation**: Previously 2\u20133 days manual \u2192 now **< 2 minutes** automated via structured log queries  \n> *Update this panel manually when retention policies or architecture changes.*",
+        "mode": "markdown"
       }
     },
     {
@@ -1066,13 +920,13 @@
       "title": "QE Maturity Model",
       "gridPos": {
         "x": 12,
-        "y": 74,
+        "y": 22,
         "w": 12,
         "h": 8
       },
       "options": {
-        "mode": "html",
-        "content": "<div class='mm'><div class='mr'><span class='ml' style='color:#888'>L1 \u2014 Ad-hoc</span><div class='mb'><div class='mf' style='width:100%;background:#555'></div></div></div><div class='mr'><span class='ml' style='color:#888'>L2 \u2014 Traced</span><div class='mb'><div class='mf' style='width:100%;background:#378ADD'></div></div></div><div class='mr'><span class='ml' style='color:#1D9E75;font-weight:600'>L3 \u2014 Evaluated \u00e2\u2014\u20ac current</span><div class='mb' style='border:1px solid #1D9E75'><div class='mf' style='width:100%;background:#1D9E75'></div></div></div><div class='mr'><span class='ml' style='color:#378ADD'>L4 \u2014 Gated (target)</span><div class='mb'><div class='mf' style='width:30%;background:#378ADD;opacity:0.5'></div></div></div><div class='mr'><span class='ml' style='color:#666'>L5 \u2014 Self-improving</span><div class='mb'><div class='mf' style='width:5%;background:#555'></div></div></div><div style='background:#1a1a1a;border-radius:8px;padding:12px;margin-top:12px'><p style='font-size:13px;color:#aaa;line-height:1.6'>\"Temporal makes AI workflows <strong style=\"color:#1D9E75\">durable</strong>. Phoenix makes them <strong style=\"color:#7F77DD\">measurable</strong>. Together they make them <strong style=\"color:#ddd\">trustworthy</strong>.\"</p></div></div>"
+        "content": "| Level | Stage | Description | Status |\n|---|---|---|---|\n| **L1** | Initial | Ad-hoc testing, no automation | \u2705 Complete |\n| **L2** | Developing | Basic CI gates, unit tests | \u2705 Complete |\n| **L3** | Defined | LLM-as-judge evals, Phoenix tracing | \u2705 **Current Level** |\n| **L4** | Managed | Full evaluator coverage, cost gates, SLA monitoring | \ud83d\udd04 In Progress |\n| **L5** | Optimizing | Continuous self-improvement, automated retraining gates | \ud83d\udcc5 Planned |\n\n> **Current AI Maturity Score**: Derived from CI gate pass rates + evaluator coverage  \n> *To make dynamic: derive maturity level from `(ci_gate_pass_rate > 0.9 AND evaluator_coverage > 0.8)` Prometheus rules*",
+        "mode": "markdown"
       }
     }
   ]
