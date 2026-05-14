@@ -66,27 +66,6 @@
         "hide": 0,
         "skipUrlSync": false,
         "current": {}
-      },
-      {
-        "name": "namespace",
-        "label": "Namespace",
-        "type": "query",
-        "datasource": {
-          "type": "prometheus",
-          "uid": "prometheus-ds"
-        },
-        "query": {
-          "query": "label_values(temporal_workflow_active, namespace)",
-          "refId": "StandardVariableQuery"
-        },
-        "refresh": 2,
-        "includeAll": true,
-        "allValue": ".*",
-        "multi": false,
-        "sort": 1,
-        "hide": 0,
-        "skipUrlSync": false,
-        "current": {}
       }
     ]
   },
